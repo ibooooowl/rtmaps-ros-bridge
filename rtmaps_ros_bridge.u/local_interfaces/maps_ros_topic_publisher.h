@@ -91,7 +91,7 @@ class MAPSros_topic_publisher : public MAPSComponent
     int CreateIOsForNavTopics(bool* output_header);
 private :
 	// Place here your specific methods and attributes
-    MAPSRosUtils*       _ros;
+    std::shared_ptr< MAPSRosUtils* >       _ros;
 	ros::NodeHandle* 	_n;
 	ros::Publisher* 	_pub;
 

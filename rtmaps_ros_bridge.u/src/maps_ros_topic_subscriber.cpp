@@ -399,10 +399,10 @@ void MAPSros_topic_subscriber::Birth()
     _n = NULL;
     _sub = NULL;
 
-    _ros = MAPSRosUtils::get();
+    _ros = MAPSRosUtils::get_singleton();
     if (_ros == NULL)
         Error("Could not init ROS");
-    _n =  _ros->get_ros_node();
+    _n = (*_ros)->get_ros_node();
     if (_n == NULL)
         Error("Could not create ROS node handle.");
 
@@ -1743,10 +1743,10 @@ void MAPSros_topic_subscriber::Death()
         MAPS_SAFE_DELETE(_sub);
     }
     if (_n) {
-         _ros->release_ros_node();
-         _ros->release();
-         _n = NULL;
-         _ros = NULL;
+        (*_ros)->release_ros_node();
+        (*_ros)->release();
+         _n = nullptr;
+         _ros = nullptr;
     }
     _markers_cache.clear();
 }

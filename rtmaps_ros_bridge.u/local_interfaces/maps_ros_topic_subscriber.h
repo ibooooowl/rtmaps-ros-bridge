@@ -154,7 +154,7 @@ class MAPSros_topic_subscriber : public MAPSComponent
     void AllocateOutputsForVisuTopics();
 
 	// Place here your specific methods and attributes
-    MAPSRosUtils* _ros;
+    std::shared_ptr< MAPSRosUtils* > _ros;
 	ros::NodeHandle* _n;
 	ros::Subscriber* _sub;
     //ros::CallbackQueue _cb_queue;

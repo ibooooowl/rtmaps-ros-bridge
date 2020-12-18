@@ -65,8 +65,8 @@ void MAPSros_clock::RunClock()
 		_clockDisabled = true;
 		ReportError("Trying to synchronize the RTMaps clock with the GPS UTC time is not allowed in replay mode.");
 	}
-    _ros = MAPSRosUtils::get();
-    if (NULL == _ros) {
+    _ros = MAPSRosUtils::get_singleton();
+    if (nullptr == *_ros) {
 		_clockDisabled = true;
 		ReportError("Could not initialize ROS.");
 	}
@@ -98,7 +98,8 @@ void MAPSros_clock::Death()
 
 void MAPSros_clock::ShutdownClock()
 {
-    _ros->release();
+    (*_ros)->release();
+    _ros = nullptr;
     _clockHasShutdown = true;
 	_clockDisabled = false;
-}
+ }

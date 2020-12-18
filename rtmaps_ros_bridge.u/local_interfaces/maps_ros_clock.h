@@ -20,7 +20,7 @@ class MAPSros_clock : public MAPSComponent, public MAPSBaseClock
 	void Set(MAPSProperty& p, MAPSInt64 value);
 private :
 	// Place here your specific methods and attributes
-    MAPSRosUtils* _ros;
+    std::shared_ptr< MAPSRosUtils* > _ros;
 	bool _clockDisabled;
 	bool _clockHasShutdown;
 	MAPSMutex m_MyTimeMonitor;

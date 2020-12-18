@@ -7,10 +7,8 @@
 
 
 class MAPSRosUtils {
-
-    static MAPSRosUtils* s_singleton;
+    static std::shared_ptr< MAPSRosUtils* > s_singleton;
     static MAPSMutex    s_mtx;
-    int                 m_singleton_refcount;
     int                 m_rosnode_refcount;
 
     ros::NodeHandle*         m_node; //One node per process.
@@ -18,13 +16,13 @@ class MAPSRosUtils {
     MAPSRunnable<MAPSRosUtils> m_ros_spin_runnable;
 
 
-    MAPSRosUtils() : m_singleton_refcount(0),m_rosnode_refcount(0), m_node(NULL) {}
     bool init_ros();
     void* SpinThread(void* instancePtr);
 
 public:
+    MAPSRosUtils() : m_rosnode_refcount(0), m_node(NULL) {}
 
-    static MAPSRosUtils* get();
+    static std::shared_ptr< MAPSRosUtils* > get_singleton();
     static bool release();
 
 

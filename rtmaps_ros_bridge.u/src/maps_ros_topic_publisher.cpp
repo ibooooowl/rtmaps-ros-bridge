@@ -316,11 +316,11 @@ void MAPSros_topic_publisher::Birth()
 	MAPSString topic_name = GetStringProperty("topic_name");
 
 	try {
-        _ros = MAPSRosUtils::get();
+        _ros = MAPSRosUtils::get_singleton();
         if (_ros == NULL) {
             Error("Could not initialize ROS.");
         }
-        _n = _ros->get_ros_node();//new ros::NodeHandle();
+        _n = (*_ros)->get_ros_node();//new ros::NodeHandle();
 		if (_n == NULL)
 			Error("Could not create NodeHandle.");
 		_pub = new ros::Publisher();
@@ -1033,10 +1033,10 @@ void MAPSros_topic_publisher::Death()
 	}
 
 	if (_n) {
-        _ros->release_ros_node();
-        _ros->release();
-        _n = NULL;
-        _ros = NULL;
+        (*_ros)->release_ros_node();
+        (*_ros)->release();
+        _n = nullptr;
+        _ros = nullptr;
 	}
 
     if (_pointcloud2_channel) {
