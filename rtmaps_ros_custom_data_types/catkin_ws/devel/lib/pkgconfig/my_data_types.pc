@@ -1,0 +1,8 @@
+prefix=/home/intempora/rtmaps-ros-bridge/rtmaps_ros_custom_data_types/catkin_ws/devel
+
+Name: my_data_types
+Description: Description of my_data_types
+Version: 0.0.1
+Cflags: -I/home/intempora/rtmaps-ros-bridge/rtmaps_ros_custom_data_types/catkin_ws/devel/include
+Libs: -L/home/intempora/rtmaps-ros-bridge/rtmaps_ros_custom_data_types/catkin_ws/devel/lib 
+Requires: message_runtime roscpp std_msgs

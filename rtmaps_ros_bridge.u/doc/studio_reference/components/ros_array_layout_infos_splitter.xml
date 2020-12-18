@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ComponentResources xmlns="http://schemas.intempora.com/RTMaps/2011/ComponentResources" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="" xsi:noNamespaceSchemaLocation="http://www.intempora.com/schemas/RTMaps/2011/ComponentResources.xsd">
+<Type>Component</Type>
+<IconFile>ros.png</IconFile>
+<TargetOS>Linux</TargetOS>
+<Lang lang="ENG">
+<GroupName>ROS Bridge</GroupName>
+<Documentation>
+<Component>
+<Alias>ROS array layout infos splitter</Alias>
+<Description>
+<span><![CDATA[Splits the binary structure provided by the "array infos" output of component ROS topic subscriber
+onto standard types outputs.]]></span>
+</Description>
+</Component>
+<Output MAPSName="data_offset">
+<Alias>Data offset</Alias>
+<Description/>
+</Output>
+<Output MAPSName="dim_labels">
+<Alias>Dim labels</Alias>
+<Description>
+<span><![CDATA[Ascii string containing the labels (';' seperated) of the dimensions of the received arrays.]]></span>
+</Description>
+</Output>
+<Output MAPSName="dim_sizes">
+<Alias>Dim sizes</Alias>
+<Description>
+<span><![CDATA[Data sizes (number of elements) for each dimension of the array (output as a vector of integers, one element per dimension).]]></span>
+</Description>
+</Output>
+<Output MAPSName="dim_strides">
+<Alias>Dim strides</Alias>
+<Description>
+<span><![CDATA[Data strides for each dimension of the array (output as a vector of integers, 1 element per dimension).]]></span>
+</Description>
+</Output>
+<Input MAPSName="array_layout">
+<Alias>Array layout</Alias>
+<Description>
+<span><![CDATA[Binary data structure from "ROS topic publisher" component "Array infos" output (when subscribing
+to sts_msgs numerical array topics).]]></span>
+</Description>
+</Input>
+</Documentation>
+</Lang>
+</ComponentResources>

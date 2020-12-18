@@ -1,0 +1,17 @@
+Create a Catkin workspace
+http://wiki.ros.org/catkin/Tutorials/create_a_workspace
+
+Create a package in Catkin workspace
+http://wiki.ros.org/ROS/Tutorials/CreatingPackage
+
+
+Before compiling, add the catkin workspace to the ROS environment:
+. catkin_ws/devel/setup.bash
+
+Creating a custom message and including it to the ROS package
+http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv
+
+Generating the data types
+http://wiki.ros.org/ROS/Tutorials/CreatingMsgAndSrv#Common_step_for_msg_and_srv
+
+

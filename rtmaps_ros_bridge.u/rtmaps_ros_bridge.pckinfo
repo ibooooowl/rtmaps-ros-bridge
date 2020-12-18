@@ -1,0 +1,26 @@
+# Package information
+VERSION=1.20.3
+DESCRIPTION=ROS bridge for RTMaps 4
+
+# LOG
+# 1.0: initial release
+# 1.1: corrected potential bugs with non-aligned images.
+# 1.2: rewritten way to specify topic type and message type.
+# 1.3: added Imu support in subscriber.
+# 1.6: Subscriber to v1.6
+# 1.7: Subscriber to v1.7
+# 1.8: Subscriber to v1.8
+#1.9: Publisher to v1.3
+#1.10: Publisher to v1.4
+#1.11: Publisher to v1.5
+#1.12: Publisher to v1.6, Subscriber to v1.9
+#1.13: Subscriber to v2.0
+#1.14: Subscriber to v2.1
+#1.15: Publisher to v1.7
+#1.16: Publisher to v1.8, Subscriber to v2.2
+#1.17: Publisher to v1.9.
+#1.18: Subscriber to v2.2
+#1.19: Subscriber to v2.4, Publisher to v2.1
+#1.20: Subscriber to v2.5, Publisher to v2.2
+#1.20.1: ROSTimeToTimestamp fixed in ROSUtils. All components increase minor version.
+

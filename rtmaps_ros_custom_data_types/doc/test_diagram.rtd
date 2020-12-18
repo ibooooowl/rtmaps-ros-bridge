@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RTMapsDiagram version="4.3.6" EngineVersion="4.5" xmlns="http://schemas.intempora.com/RTMaps/2011/RTMapsFiles" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.intempora.com/RTMaps/2011/RTMapsFiles http://www.intempora.com/schemas/RTMaps/2011/RTMapsDiagram.xsd">
+  <RequiredPackages>
+    <File><![CDATA[/home/nicolas/rtmaps-ros-bridge/rtmaps_ros_custom_data_types/packages/ubuntu1604_x86_64/rtmaps_ros_custom_data_types.pck]]><Relative><![CDATA[%RTMAPS_DIAGRAMDIR%/../packages/ubuntu1604_x86_64/rtmaps_ros_custom_data_types.pck]]></Relative></File>
+  </RequiredPackages>
+  <EngineProperties>
+    <Property LongName="Engine.startTimespeed" Type="1">1000</Property>
+    <Property LongName="Engine.startTime" Type="1">0</Property>
+    <Property LongName="Engine.session" Type="3"><![CDATA[unspecified]]></Property>
+    <Property LongName="Engine.recordingAtStart" Type="0">true</Property>
+    <Property LongName="Engine.recording" Type="0">true</Property>
+    <Property LongName="Engine.sequentialStart" Type="0">false</Property>
+    <Property LongName="Engine.shutdownTimeout" Type="1">10000000</Property>
+    <Property LongName="Engine.autoDetectStartTime" Type="0">true</Property>
+    <Property LongName="Engine.coreFunctionsToSaveInDiag" Type="4"><![CDATA[0|-1]]></Property>
+    <Property LongName="Engine.useUTCTimeReference" Type="0">false</Property>
+  </EngineProperties>
+  <ClocksManagement>
+    <Property LongName="ClocksManagement.activeClock" Type="4"><![CDATA[1|0|RTMaps_standard_clock]]></Property>
+  </ClocksManagement>
+  <Component InstanceName="DataViewer_1" Model="DataViewer" Version="1.32.5" x="760" y="184" z="0">
+    <Input LongName="DataViewer_1.input_0" Name="input_0">
+      <Property LongName="DataViewer_1.input_0.readerType" Type="1">2</Property>
+      <Property LongName="DataViewer_1.input_0.subsampling" Type="1">1</Property>
+    </Input>
+    <Input LongName="DataViewer_1.input_1" Name="input_1">
+      <Property LongName="DataViewer_1.input_1.readerType" Type="1">2</Property>
+      <Property LongName="DataViewer_1.input_1.subsampling" Type="1">1</Property>
+    </Input>
+    <Property LongName="DataViewer_1.nbInputs" Type="1">2</Property>
+    <Property LongName="DataViewer_1.compactMode" Type="0">false</Property>
+    <Property LongName="DataViewer_1.showInfo" Type="0">true</Property>
+    <Property LongName="DataViewer_1.showData" Type="0">true</Property>
+    <Property LongName="DataViewer_1.showPrettyTimestamp" Type="0">false</Property>
+    <Property LongName="DataViewer_1.float32Format" Type="3"><![CDATA[%9g]]></Property>
+    <Property LongName="DataViewer_1.float64Format" Type="3"><![CDATA[%9g]]></Property>
+    <Property LongName="DataViewer_1.integer32Format" Type="3"><![CDATA[%d]]></Property>
+    <Property LongName="DataViewer_1.integer64Format" Type="3"><![CDATA[%ld]]></Property>
+    <Property LongName="DataViewer_1.hexDisplay" Type="0">false</Property>
+    <Property LongName="DataViewer_1.internalState" Type="3"><![CDATA[100;205]]></Property>
+    <Property LongName="DataViewer_1.run" Type="0">true</Property>
+    <Property LongName="DataViewer_1.alwaysOnTop" Type="0">true</Property>
+    <Property LongName="DataViewer_1.moveable" Type="0">true</Property>
+    <Property LongName="DataViewer_1.title" Type="3"><![CDATA[DataViewer_1]]></Property>
+    <Property LongName="DataViewer_1.x" Type="1">257</Property>
+    <Property LongName="DataViewer_1.y" Type="1">421</Property>
+    <Property LongName="DataViewer_1.width" Type="1">315</Property>
+    <Property LongName="DataViewer_1.height" Type="1">240</Property>
+    <Property LongName="DataViewer_1.threaded" Type="0">true</Property>
+    <Property LongName="DataViewer_1.priority" Type="1">128</Property>
+    <Property LongName="DataViewer_1.autoStart" Type="0">true</Property>
+  </Component>
+  <Component InstanceName="Integer_constants_generator_1" Model="Integer_constants_generator" Version="2.5" x="64" y="152" z="0">
+    <Output LongName="Integer_constants_generator_1.output" Name="output">
+      <Property LongName="Integer_constants_generator_1.output.subsampling" Type="1">1</Property>
+      <Property LongName="Integer_constants_generator_1.output.fifosize" Type="1">16</Property>
+      <Property LongName="Integer_constants_generator_1.output.periodic" Type="0">false</Property>
+    </Output>
+    <Property LongName="Integer_constants_generator_1.outputMode" Type="4"><![CDATA[3|1|Once at start|Periodic|Use trigger input]]></Property>
+    <Property LongName="Integer_constants_generator_1.outputWhenValueChanges" Type="0">true</Property>
+    <Property LongName="Integer_constants_generator_1.vectorSize" Type="1">1</Property>
+    <Property LongName="Integer_constants_generator_1.outputPeriod" Type="1">100000</Property>
+    <Property LongName="Integer_constants_generator_1.value_1" Type="1">4</Property>
+    <Property LongName="Integer_constants_generator_1.threaded" Type="0">true</Property>
+    <Property LongName="Integer_constants_generator_1.priority" Type="1">128</Property>
+    <Property LongName="Integer_constants_generator_1.autoStart" Type="0">true</Property>
+  </Component>
+  <Component InstanceName="my_ros_datatype_publisher_1" Model="my_ros_datatype_publisher" Version="1.0" x="296" y="120" z="0">
+    <Input LongName="my_ros_datatype_publisher_1.id" Name="id">
+      <Property LongName="my_ros_datatype_publisher_1.id.readerType" Type="1">0</Property>
+      <Property LongName="my_ros_datatype_publisher_1.id.subsampling" Type="1">1</Property>
+    </Input>
+    <Property LongName="my_ros_datatype_publisher_1.topic_name" Type="3"><![CDATA[rtmaps/ros_topic_name]]></Property>
+    <Property LongName="my_ros_datatype_publisher_1.published_timestamps" Type="4"><![CDATA[2|1|RTMaps samples timestamps|ROS current time]]></Property>
+    <Property LongName="my_ros_datatype_publisher_1.frame_id" Type="3"><![CDATA[map]]></Property>
+    <Property LongName="my_ros_datatype_publisher_1.threaded" Type="0">true</Property>
+    <Property LongName="my_ros_datatype_publisher_1.priority" Type="1">128</Property>
+    <Property LongName="my_ros_datatype_publisher_1.autoStart" Type="0">true</Property>
+  </Component>
+  <Component InstanceName="my_ros_datatype_subscriber_1" Model="my_ros_datatype_subscriber" Version="1.0" x="504" y="192" z="0">
+    <Output LongName="my_ros_datatype_subscriber_1.id" Name="id">
+      <Property LongName="my_ros_datatype_subscriber_1.id.subsampling" Type="1">1</Property>
+      <Property LongName="my_ros_datatype_subscriber_1.id.fifosize" Type="1">16</Property>
+      <Property LongName="my_ros_datatype_subscriber_1.id.periodic" Type="0">false</Property>
+    </Output>
+    <Property LongName="my_ros_datatype_subscriber_1.topic_name" Type="3"><![CDATA[rtmaps/ros_topic_name]]></Property>
+    <Property LongName="my_ros_datatype_subscriber_1.transfer_ROS_timestamps" Type="0">true</Property>
+    <Property LongName="my_ros_datatype_subscriber_1.subscribe_queue_size" Type="1">-1</Property>
+    <Property LongName="my_ros_datatype_subscriber_1.threaded" Type="0">true</Property>
+    <Property LongName="my_ros_datatype_subscriber_1.priority" Type="1">128</Property>
+    <Property LongName="my_ros_datatype_subscriber_1.autoStart" Type="0">true</Property>
+  </Component>
+  <Component InstanceName="SampleRate_1" Model="SampleRate" Version="2.3" x="688" y="96" z="0">
+    <Input LongName="SampleRate_1.input" Name="input">
+      <Property LongName="SampleRate_1.input.readerType" Type="1">0</Property>
+      <Property LongName="SampleRate_1.input.subsampling" Type="1">1</Property>
+    </Input>
+    <Property LongName="SampleRate_1.verboseSampleRate" Type="0">true</Property>
+    <Property LongName="SampleRate_1.outputSampleRate" Type="0">false</Property>
+    <Property LongName="SampleRate_1.verboseWarnings" Type="0">false</Property>
+    <Property LongName="SampleRate_1.outputWarnings" Type="0">false</Property>
+    <Property LongName="SampleRate_1.expectedSampleRate" Type="1">25</Property>
+    <Property LongName="SampleRate_1.expectedSampleRateTolerance" Type="1">5</Property>
+    <ReadOnlyProperty LongName="SampleRate_1.sampleRate" Type="1">0</ReadOnlyProperty>
+    <Property LongName="SampleRate_1.threaded" Type="0">true</Property>
+    <Property LongName="SampleRate_1.priority" Type="1">128</Property>
+    <Property LongName="SampleRate_1.autoStart" Type="0">true</Property>
+  </Component>
+  <Connection Output="my_ros_datatype_subscriber_1.id" Input="DataViewer_1.input_0"/>
+  <Connection Output="Integer_constants_generator_1.output" Input="my_ros_datatype_publisher_1.id"/>
+  <Connection Output="my_ros_datatype_subscriber_1.id" Input="SampleRate_1.input"/>
+  <RTBoardView ID="JavaStudio1.0">
+    <ConnectionShape InstanceName="DataViewer_1.input_0" color="0"/>
+    <ConnectionShape InstanceName="my_ros_datatype_publisher_1.id" color="0"/>
+    <ConnectionShape InstanceName="SampleRate_1.input" color="0"/>
+  </RTBoardView>
+</RTMapsDiagram>

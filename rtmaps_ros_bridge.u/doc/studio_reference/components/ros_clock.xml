@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ComponentResources xmlns="http://schemas.intempora.com/RTMaps/2011/ComponentResources" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="" xsi:noNamespaceSchemaLocation="http://www.intempora.com/schemas/RTMaps/2011/ComponentResources.xsd">
+<Type>Component</Type>
+<IconFile>ros.png</IconFile>
+<TargetOS>Windows</TargetOS>
+<Lang lang="ENG">
+<GroupName>ROS Bridge</GroupName>
+<Documentation>
+<Component>
+<Alias>ROS Clock</Alias>
+<Description>
+<span><![CDATA[Allows to synchronize the RTMaps clock on the ROS clock. Each time someone requests the current time in RTMaps (a component, the VCR or so...) the current time request will be transfered to ROS.]]></span>
+</Description>
+</Component>
+<Property MAPSName="max_timespeed">
+<Alias>Max timespeed</Alias>
+<Description>
+<span><![CDATA[Estimated timespeed (percentage of real-time) for the ROS clock. This is necessary for RTMaps timers operation. If you don't know, maximize this, not minimize. If running ROS with standard time, leave to 100 (real-time).]]></span>
+</Description>
+<DefaultValue>100</DefaultValue>
+</Property>
+</Documentation>
+</Lang>
+</ComponentResources>

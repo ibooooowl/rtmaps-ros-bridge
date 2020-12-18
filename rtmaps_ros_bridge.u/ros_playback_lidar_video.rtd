@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<RTMapsDiagram xmlns="http://schemas.intempora.com/RTMaps/2011/RTMapsFiles" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" EngineVersion="4.0" version="4.0" xsi:schemaLocation="http://schemas.intempora.com/RTMaps/2011/RTMapsFiles http://www.intempora.com/schemas/RTMaps/2011/RTMapsDiagram.xsd http://schemas.intempora.com/RTMaps/2011/RTMapsFiles http://www.intempora.com/schemas/RTMaps/2011/RTMapsDiagram_RTBoardView.xsd">
+  <RequiredPackages>
+    <File><![CDATA[/home/nicolas/rtmaps-sdk/packages/linux_x86/rtmaps_ros_bridge.pck]]>
+      <Relative><![CDATA[%RTMAPS_DIAGRAMDIR%/../packages/linux_x86/rtmaps_ros_bridge.pck]]></Relative>
+    </File>
+    <File><![CDATA[/opt/rtmaps/packages/rtmaps_lidar_tools.pck]]>
+      <Relative><![CDATA[%RTMAPS_INSTDIR%/packages/rtmaps_lidar_tools.pck]]></Relative>
+    </File>
+    <File><![CDATA[/opt/rtmaps/packages/rtmaps_osg_viewer.pck]]>
+      <Relative><![CDATA[%RTMAPS_INSTDIR%/packages/rtmaps_osg_viewer.pck]]></Relative>
+    </File>
+  </RequiredPackages>
+  <RequiredMacroPackages/>
+  <MacroComponentDefinitions/>
+  <EngineProperties>
+    <Property LongName="Engine.startTimespeed" Type="1">1000</Property>
+    <Property LongName="Engine.startTime" Type="1">0</Property>
+    <Property LongName="Engine.session" Type="3"><![CDATA[unspecified]]></Property>
+    <Property LongName="Engine.recordingAtStart" Type="0">true</Property>
+    <Property LongName="Engine.recording" Type="0">true</Property>
+    <Property LongName="Engine.sequentialStart" Type="0">false</Property>
+    <Property LongName="Engine.autoDetectStartTime" Type="0">true</Property>
+    <Property LongName="Engine.coreFunctionsToSaveInDiag" Type="4"><![CDATA[0|-1]]></Property>
+  </EngineProperties>
+  <ClocksManagement>
+    <Property LongName="ClocksManagement.activeClock" Type="4"><![CDATA[2|0|RTMaps_standard_clock|ros_clock_1]]></Property>
+  </ClocksManagement>
+  <Component InstanceName="ros_clock_1" Model="ros_clock" x="568" y="32" z="0">
+    <Property LongName="ros_clock_1.max_timespeed" Type="1">100</Property>
+    <Property LongName="ros_clock_1.threaded" Type="0">true</Property>
+    <Property LongName="ros_clock_1.priority" Type="1">128</Property>
+    <Property LongName="ros_clock_1.autoStart" Type="0">true</Property>
+  </Component>
+  <Component InstanceName="ros_topic_publisher_2" Model="ros_topic_publisher" x="456" y="136" z="0">
+    <Input LongName="ros_topic_publisher_2.input_image" Name="input_image">
+      <Property LongName="ros_topic_publisher_2.input_image.readerType" Type="1">0</Property>
+      <Property LongName="ros_topic_publisher_2.input_image.subsampling" Type="1">1</Property>
+    </Input>
+    <Property LongName="ros_topic_publisher_2.topic_name" Type="3"><![CDATA[chatter]]></Property>
+    <Property LongName="ros_topic_publisher_2.topic_type" Type="4"><![CDATA[11|1|Text|Image|Int 32|Int 32 array|Int 64|Int 64 array|Float 32|Float 32 array|Float 64|Float 64 array|Laser scan]]></Property>
+    <Property LongName="ros_topic_publisher_2.published_timestamps" Type="4"><![CDATA[2|1|RTMaps samples timestamps|ROS current time]]></Property>
+    <Property LongName="ros_topic_publisher_2.threaded" Type="0">true</Property>
+    <Property LongName="ros_topic_publisher_2.priority" Type="1">128</Property>
+    <Property LongName="ros_topic_publisher_2.autoStart" Type="0">true</Property>
+  </Component>
+  <Component InstanceName="ros_topic_subscriber_3" Model="ros_topic_subscriber" x="680" y="136" z="0">
+    <Output LongName="ros_topic_subscriber_3.output_image" Name="output_image">
+      <Property LongName="ros_topic_subscriber_3.output_image.subsampling" Type="1">1</Property>
+      <Property LongName="ros_topic_subscriber_3.output_image.fifosize" Type="1">10</Property>
+      <Property LongName="ros_topic_subscriber_3.output_image.periodic" Type="0">false</Property>
+    </Output>
+    <Property LongName="ros_topic_subscriber_3.topic_name" Type="3"><![CDATA[chatter]]></Property>
+    <Property LongName="ros_topic_subscriber_3.topic_type" Type="4"><![CDATA[11|1|Text|Image|Int 32|Int 32 array|Int 64|Int 64 array|Float 32|Float 32 array|Float 64|Float 64 array|Laser Scan]]></Property>
+    <Property LongName="ros_topic_subscriber_3.transfer_ROS_timestamps" Type="0">true</Property>
+    <Property LongName="ros_topic_subscriber_3.threaded" Type="0">true</Property>
+    <Property LongName="ros_topic_subscriber_3.priority" Type="1">128</Property>
+    <Property LongName="ros_topic_subscriber_3.autoStart" Type="0">true</Property>
+  </Component>
+  <Component InstanceName="ImageViewer_5" Model="ImageViewer" x="960" y="136" z="0">
+    <Input LongName="ImageViewer_5.input" Name="input">
+      <Property LongName="ImageViewer_5.input.readerType" Type="1">2</Property>
+      <Property LongName="ImageViewer_5.input.subsampling" Type="1">1</Property>
+    </Input>
+    <Input LongName="ImageViewer_5.iDrawingObjects" Name="iDrawingObjects">
+      <Property LongName="ImageViewer_5.iDrawingObjects.readerType" Type="1">2</Property>
+      <Property LongName="ImageViewer_5.iDrawingObjects.subsampling" Type="1">1</Property>
+    </Input>
+    <Output LongName="ImageViewer_5.mouseClick" Name="mouseClick">
+      <Property LongName="ImageViewer_5.mouseClick.subsampling" Type="1">1</Property>
+      <Property LongName="ImageViewer_5.mouseClick.fifosize" Type="1">16</Property>
+      <Property LongName="ImageViewer_5.mouseClick.periodic" Type="0">false</Property>
+    </Output>
+    <Output LongName="ImageViewer_5.keyPress" Name="keyPress">
+      <Property LongName="ImageViewer_5.keyPress.subsampling" Type="1">1</Property>
+      <Property LongName="ImageViewer_5.keyPress.fifosize" Type="1">16</Property>
+      <Property LongName="ImageViewer_5.keyPress.periodic" Type="0">false</Property>
+    </Output>
+    <Property LongName="ImageViewer_5.title" Type="3"><![CDATA[Image Viewer]]></Property>
+    <Property LongName="ImageViewer_5.x" Type="1">105</Property>
+    <Property LongName="ImageViewer_5.y" Type="1">165</Property>
+    <Property LongName="ImageViewer_5.width" Type="1">384</Property>
+    <Property LongName="ImageViewer_5.height" Type="1">288</Property>
+    <Property LongName="ImageViewer_5.autoResize" Type="0">true</Property>
+    <Property LongName="ImageViewer_5.imagePriority" Type="0">false</Property>
+    <Property LongName="ImageViewer_5.accumulateDrawingObjects" Type="0">false</Property>
+    <Property LongName="ImageViewer_5.threaded" Type="0">true</Property>
+    <Property LongName="ImageViewer_5.priority" Type="1">0</Property>
+    <Property LongName="ImageViewer_5.autoStart" Type="0">true</Property>
+  </Component>
+  <Component InstanceName="ros_topic_publisher_6" Model="ros_topic_publisher" x="504" y="328" z="0">
+    <Input LongName="ros_topic_publisher_6.input_laser_scan_ranges" Name="input_laser_scan_ranges">
+      <Property LongName="ros_topic_publisher_6.input_laser_scan_ranges.readerType" Type="1">0</Property>
+      <Property LongName="ros_topic_publisher_6.input_laser_scan_ranges.subsampling" Type="1">1</Property>
+    </Input>
+    <Property LongName="ros_topic_publisher_6.topic_name" Type="3"><![CDATA[lidar]]></Property>
+    <Property LongName="ros_topic_publisher_6.topic_type" Type="4"><![CDATA[11|10|Text|Image|Int 32|Int 32 array|Int 64|Int 64 array|Float 32|Float 32 array|Float 64|Float 64 array|Laser scan]]></Property>
+    <Property LongName="ros_topic_publisher_6.laser_min_angle" Type="2">-90</Property>
+    <Property LongName="ros_topic_publisher_6.laser_max_angle" Type="2">90</Property>
+    <Property LongName="ros_topic_publisher_6.laser_angle_increment" Type="2">1</Property>
+    <Property LongName="ros_topic_publisher_6.laser_time_increment" Type="2">0</Property>
+    <Property LongName="ros_topic_publisher_6.laser_scan_time" Type="2">0</Property>
+    <Property LongName="ros_topic_publisher_6.laser_min_range" Type="2">0</Property>
+    <Property LongName="ros_topic_publisher_6.laser_max_range" Type="2">100</Property>
+    <Property LongName="ros_topic_publisher_6.laser_supports_intensities" Type="0">false</Property>
+    <Property LongName="ros_topic_publisher_6.published_timestamps" Type="4"><![CDATA[2|1|RTMaps samples timestamps|ROS current time]]></Property>
+    <Property LongName="ros_topic_publisher_6.threaded" Type="0">true</Property>
+    <Property LongName="ros_topic_publisher_6.priority" Type="1">128</Property>
+    <Property LongName="ros_topic_publisher_6.autoStart" Type="0">true</Property>
+  </Component>
+  <Component InstanceName="Player_7" Model="Player" x="40" y="136" z="0">
+    <Output LongName="Player_7.CropAndDecimate_2.output" Name="CropAndDecimate_2.output">
+      <Property LongName="Player_7.CropAndDecimate_2.output.subsampling" Type="1">1</Property>
+      <Property LongName="Player_7.CropAndDecimate_2.output.fifosize" Type="1">16</Property>
+      <Property LongName="Player_7.CropAndDecimate_2.output.periodic" Type="0">false</Property>
+      <Property LongName="Player_7.CropAndDecimate_2.output.replayPath" SubType="96" Type="3"/>
+      <Property LongName="Player_7.CropAndDecimate_2.output.fastReplayPath" SubType="96" Type="3"/>
+      <Property LongName="Player_7.CropAndDecimate_2.output.replayMode" Type="4"><![CDATA[3|0|Normal|Immediate|Timestamp]]></Property>
+      <Property LongName="Player_7.CropAndDecimate_2.output.autopause" Type="0">false</Property>
+      <Property LongName="Player_7.CropAndDecimate_2.output.threaded" Type="0">true</Property>
+      <Property LongName="Player_7.CropAndDecimate_2.output.priority" Type="1">128</Property>
+      <Property LongName="Player_7.CropAndDecimate_2.output.replayThreadPriority" Type="1">128</Property>
+      <Property LongName="Player_7.CropAndDecimate_2.output.spatialSubsampling" Type="1">1</Property>
+    </Output>
+    <Output LongName="Player_7.lms.output" Name="lms.output">
+      <Property LongName="Player_7.lms.output.subsampling" Type="1">1</Property>
+      <Property LongName="Player_7.lms.output.fifosize" Type="1">16</Property>
+      <Property LongName="Player_7.lms.output.periodic" Type="0">false</Property>
+      <Property LongName="Player_7.lms.output.replayPath" SubType="96" Type="3"/>
+      <Property LongName="Player_7.lms.output.fastReplayPath" SubType="96" Type="3"/>
+      <Property LongName="Player_7.lms.output.replayMode" Type="4"><![CDATA[3|0|Normal|Immediate|Timestamp]]></Property>
+      <Property LongName="Player_7.lms.output.autopause" Type="0">false</Property>
+      <Property LongName="Player_7.lms.output.threaded" Type="0">false</Property>
+      <Property LongName="Player_7.lms.output.priority" Type="1">128</Property>
+      <Property LongName="Player_7.lms.output.replayThreadPriority" Type="1">128</Property>
+    </Output>
+    <Output LongName="Player_7.busCAN.output" Name="busCAN.output">
+      <Property LongName="Player_7.busCAN.output.subsampling" Type="1">1</Property>
+      <Property LongName="Player_7.busCAN.output.fifosize" Type="1">16</Property>
+      <Property LongName="Player_7.busCAN.output.periodic" Type="0">false</Property>
+    </Output>
+    <Property LongName="Player_7.file" SubType="16" Type="3"><![CDATA[/opt/rtmaps/samples/databases/demo_lidar/RecFile_3_20030919_113204.rec]]>
+      <Relative><![CDATA[%RTMAPS_INSTDIR%/samples/databases/demo_lidar/RecFile_3_20030919_113204.rec]]></Relative>
+    </Property>
+    <Property LongName="Player_7.offset" Type="1">0</Property>
+    <Property LongName="Player_7.beginning" Type="1">0</Property>
+    <Property LongName="Player_7.end" Type="1">0</Property>
+    <Property LongName="Player_7.timelag" Type="1">100000</Property>
+    <Property LongName="Player_7.update" Type="0">true</Property>
+    <Property LongName="Player_7.serverThreadPriority" Type="1">200</Property>
+    <Property LongName="Player_7.mainClientThreadPriority" Type="1">200</Property>
+    <Property LongName="Player_7.threaded" Type="0">true</Property>
+    <Property LongName="Player_7.priority" Type="1">200</Property>
+    <Property LongName="Player_7.autoStart" Type="0">true</Property>
+  </Component>
+  <Component InstanceName="numbers_converter_8" Model="numbers_converter" x="256" y="344" z="0">
+    <Input LongName="numbers_converter_8.input" Name="input">
+      <Property LongName="numbers_converter_8.input.readerType" Type="1">0</Property>
+      <Property LongName="numbers_converter_8.input.subsampling" Type="1">1</Property>
+    </Input>
+    <Output LongName="numbers_converter_8.output" Name="output">
+      <Property LongName="numbers_converter_8.output.subsampling" Type="1">1</Property>
+      <Property LongName="numbers_converter_8.output.fifosize" Type="1">16</Property>
+      <Property LongName="numbers_converter_8.output.periodic" Type="0">false</Property>
+    </Output>
+    <Property LongName="numbers_converter_8.outputType" Type="4"><![CDATA[4|3|Integer32|Integer64|Float32|Float64]]></Property>
+    <Property LongName="numbers_converter_8.threaded" Type="0">false</Property>
+    <Property LongName="numbers_converter_8.priority" Type="1">128</Property>
+    <Property LongName="numbers_converter_8.autoStart" Type="0">true</Property>
+  </Component>
+  <Component InstanceName="ros_topic_subscriber_9" Model="ros_topic_subscriber" x="680" y="320" z="0">
+    <Output LongName="ros_topic_subscriber_9.output_laser_scan_ranges" Name="output_laser_scan_ranges">
+      <Property LongName="ros_topic_subscriber_9.output_laser_scan_ranges.subsampling" Type="1">1</Property>
+      <Property LongName="ros_topic_subscriber_9.output_laser_scan_ranges.fifosize" Type="1">16</Property>
+      <Property LongName="ros_topic_subscriber_9.output_laser_scan_ranges.periodic" Type="0">false</Property>
+    </Output>
+    <Output LongName="ros_topic_subscriber_9.output_laser_scan_intensities" Name="output_laser_scan_intensities">
+      <Property LongName="ros_topic_subscriber_9.output_laser_scan_intensities.subsampling" Type="1">1</Property>
+      <Property LongName="ros_topic_subscriber_9.output_laser_scan_intensities.fifosize" Type="1">16</Property>
+      <Property LongName="ros_topic_subscriber_9.output_laser_scan_intensities.periodic" Type="0">false</Property>
+    </Output>
+    <Output LongName="ros_topic_subscriber_9.output_laser_scan_infos" Name="output_laser_scan_infos">
+      <Property LongName="ros_topic_subscriber_9.output_laser_scan_infos.subsampling" Type="1">1</Property>
+      <Property LongName="ros_topic_subscriber_9.output_laser_scan_infos.fifosize" Type="1">16</Property>
+      <Property LongName="ros_topic_subscriber_9.output_laser_scan_infos.periodic" Type="0">false</Property>
+    </Output>
+    <Property LongName="ros_topic_subscriber_9.topic_name" Type="3"><![CDATA[lidar]]></Property>
+    <Property LongName="ros_topic_subscriber_9.topic_type" Type="4"><![CDATA[11|10|Text|Image|Int 32|Int 32 array|Int 64|Int 64 array|Float 32|Float 32 array|Float 64|Float 64 array|Laser Scan]]></Property>
+    <Property LongName="ros_topic_subscriber_9.laser_discard_out_or_range_data" Type="0">false</Property>
+    <Property LongName="ros_topic_subscriber_9.transfer_ROS_timestamps" Type="0">false</Property>
+    <Property LongName="ros_topic_subscriber_9.threaded" Type="0">true</Property>
+    <Property LongName="ros_topic_subscriber_9.priority" Type="1">128</Property>
+    <Property LongName="ros_topic_subscriber_9.autoStart" Type="0">true</Property>
+  </Component>
+  <Component InstanceName="laser_scan_to_xyz_points_10" Model="laser_scan_to_xyz_points" x="912" y="272" z="0">
+    <Input LongName="laser_scan_to_xyz_points_10.dist_points" Name="dist_points">
+      <Property LongName="laser_scan_to_xyz_points_10.dist_points.readerType" Type="1">0</Property>
+      <Property LongName="laser_scan_to_xyz_points_10.dist_points.subsampling" Type="1">1</Property>
+    </Input>
+    <Output LongName="laser_scan_to_xyz_points_10.xyz_points" Name="xyz_points">
+      <Property LongName="laser_scan_to_xyz_points_10.xyz_points.subsampling" Type="1">1</Property>
+      <Property LongName="laser_scan_to_xyz_points_10.xyz_points.fifosize" Type="1">16</Property>
+      <Property LongName="laser_scan_to_xyz_points_10.xyz_points.periodic" Type="0">false</Property>
+    </Output>
+    <Property LongName="laser_scan_to_xyz_points_10.min_angle_deg" Type="2">-90</Property>
+    <Property LongName="laser_scan_to_xyz_points_10.max_angle_deg" Type="2">90</Property>
+    <Property LongName="laser_scan_to_xyz_points_10.height" Type="2">0</Property>
+    <Property LongName="laser_scan_to_xyz_points_10.scale" Type="2">1</Property>
+    <Property LongName="laser_scan_to_xyz_points_10.threaded" Type="0">true</Property>
+    <Property LongName="laser_scan_to_xyz_points_10.priority" Type="1">128</Property>
+    <Property LongName="laser_scan_to_xyz_points_10.autoStart" Type="0">true</Property>
+  </Component>
+  <Component InstanceName="osg_viewer_11" Model="osg_viewer" x="1064" y="352" z="0">
+    <Input LongName="osg_viewer_11.input_XYZ" Name="input_XYZ">
+      <Property LongName="osg_viewer_11.input_XYZ.readerType" Type="1">0</Property>
+      <Property LongName="osg_viewer_11.input_XYZ.subsampling" Type="1">1</Property>
+    </Input>
+    <Input LongName="osg_viewer_11.real_objects" Name="real_objects">
+      <Property LongName="osg_viewer_11.real_objects.readerType" Type="1">0</Property>
+      <Property LongName="osg_viewer_11.real_objects.subsampling" Type="1">1</Property>
+    </Input>
+    <Property LongName="osg_viewer_11.title" Type="3"><![CDATA[RTMaps - OSG Viewer]]></Property>
+    <Property LongName="osg_viewer_11.fullscreen" Type="0">false</Property>
+    <Property LongName="osg_viewer_11.left" Type="1">100</Property>
+    <Property LongName="osg_viewer_11.top" Type="1">100</Property>
+    <Property LongName="osg_viewer_11.width" Type="1">640</Property>
+    <Property LongName="osg_viewer_11.height" Type="1">480</Property>
+    <Property LongName="osg_viewer_11.accumulate_n_samples" Type="1">1</Property>
+    <Property LongName="osg_viewer_11.refresh_rate" Type="1">30</Property>
+    <Property LongName="osg_viewer_11.display_axis" Type="0">true</Property>
+    <Property LongName="osg_viewer_11.axis_size" Type="2">1</Property>
+    <Property LongName="osg_viewer_11.camera_manipulator" Type="4"><![CDATA[5|0|Trackball|Drive|Flight|Key switch|UFO]]></Property>
+    <Property LongName="osg_viewer_11.set_camera_home_position" Type="0">false</Property>
+    <Property LongName="osg_viewer_11.threaded" Type="0">true</Property>
+    <Property LongName="osg_viewer_11.priority" Type="1">128</Property>
+    <Property LongName="osg_viewer_11.autoStart" Type="0">true</Property>
+  </Component>
+  <Connection Input="ros_topic_publisher_2.input_image" Output="Player_7.CropAndDecimate_2.output">
+    <Replay Method="jseq"/>
+  </Connection>
+  <Connection Input="ImageViewer_5.input" Output="ros_topic_subscriber_3.output_image"/>
+  <Connection Input="ros_topic_publisher_6.input_laser_scan_ranges" Output="numbers_converter_8.output"/>
+  <Connection Input="numbers_converter_8.input" Output="Player_7.lms.output">
+    <Replay Method="mfile"/>
+  </Connection>
+  <Connection Input="laser_scan_to_xyz_points_10.dist_points" Output="ros_topic_subscriber_9.output_laser_scan_ranges"/>
+  <Connection Input="osg_viewer_11.input_XYZ" Output="laser_scan_to_xyz_points_10.xyz_points"/>
+<RTBoardView ID="JavaStudio1.0">
+    <Description/>
+    <ComponentBox InstanceName="ros_topic_publisher_2" reversed="false">
+      <Description/>
+      <InputInfos Name="input_image">
+        <Description/>
+      </InputInfos>
+    </ComponentBox>
+    <ComponentBox InstanceName="osg_viewer_11" reversed="false">
+      <Description/>
+      <InputInfos Name="input_XYZ">
+        <Description/>
+      </InputInfos>
+      <InputInfos Name="real_objects">
+        <Description/>
+      </InputInfos>
+    </ComponentBox>
+    <ComponentBox InstanceName="Player_7" reversed="false">
+      <Description/>
+      <OutputInfos Name="CropAndDecimate_2.output">
+        <Description/>
+      </OutputInfos>
+      <OutputInfos Name="lms.output">
+        <Description/>
+      </OutputInfos>
+      <OutputInfos Name="busCAN.output">
+        <Description/>
+      </OutputInfos>
+    </ComponentBox>
+    <ComponentBox InstanceName="ros_topic_subscriber_3" reversed="false">
+      <Description/>
+      <OutputInfos Name="output_image">
+        <Description/>
+      </OutputInfos>
+    </ComponentBox>
+    <ComponentBox InstanceName="numbers_converter_8" reversed="false">
+      <Description/>
+      <InputInfos Name="input">
+        <Description/>
+      </InputInfos>
+      <OutputInfos Name="output">
+        <Description/>
+      </OutputInfos>
+    </ComponentBox>
+    <ComponentBox InstanceName="ros_clock_1" reversed="false">
+      <Description/>
+    </ComponentBox>
+    <ComponentBox InstanceName="laser_scan_to_xyz_points_10" reversed="false">
+      <Description/>
+      <InputInfos Name="dist_points">
+        <Description/>
+      </InputInfos>
+      <OutputInfos Name="xyz_points">
+        <Description/>
+      </OutputInfos>
+    </ComponentBox>
+    <ComponentBox InstanceName="ros_topic_publisher_6" reversed="false">
+      <Description/>
+      <InputInfos Name="input_laser_scan_ranges">
+        <Description/>
+      </InputInfos>
+    </ComponentBox>
+    <ComponentBox InstanceName="ros_topic_subscriber_9" reversed="false">
+      <Description/>
+      <OutputInfos Name="output_laser_scan_ranges">
+        <Description/>
+      </OutputInfos>
+      <OutputInfos Name="output_laser_scan_intensities">
+        <Description/>
+      </OutputInfos>
+      <OutputInfos Name="output_laser_scan_infos">
+        <Description/>
+      </OutputInfos>
+    </ComponentBox>
+    <ComponentBox InstanceName="ImageViewer_5" reversed="false">
+      <Description/>
+      <InputInfos Name="input">
+        <Description/>
+      </InputInfos>
+      <InputInfos Name="iDrawingObjects">
+        <Description/>
+      </InputInfos>
+      <OutputInfos Name="mouseClick">
+        <Description/>
+      </OutputInfos>
+      <OutputInfos Name="keyPress">
+        <Description/>
+      </OutputInfos>
+    </ComponentBox>
+    <ConnectionShape InstanceName="ros_topic_publisher_2.input_image" color="0"/>
+    <ConnectionShape InstanceName="osg_viewer_11.input_XYZ" color="0"/>
+    <ConnectionShape InstanceName="numbers_converter_8.input" color="0"/>
+    <ConnectionShape InstanceName="laser_scan_to_xyz_points_10.dist_points" color="0"/>
+    <ConnectionShape InstanceName="ros_topic_publisher_6.input_laser_scan_ranges" color="0"/>
+    <ConnectionShape InstanceName="ImageViewer_5.input" color="0"/>
+  </RTBoardView>
+</RTMapsDiagram>
