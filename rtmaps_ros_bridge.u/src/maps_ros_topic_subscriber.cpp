@@ -1548,11 +1548,12 @@ void MAPSros_topic_subscriber::ROSOdometryReceivedCallback(const nav_msgs::Odome
 void MAPSros_topic_subscriber::ROSVisuMarkerReceivedCallback(const visualization_msgs::Marker::ConstPtr& callback_marker)
 {
     try {
-        MAPSTimestamp t;
+        // write timestamp
+        MAPSTimestamp marker_ts;
         if (false == _transfer_ros_timestamp)
-            t = MAPS::CurrentTime();
+            marker_ts = MAPS::CurrentTime();
         else
-            t = MAPSRosUtils::ROSTimeToMAPSTimestamp(callback_marker->header.stamp);
+            marker_ts = MAPSRosUtils::ROSTimeToMAPSTimestamp(callback_marker->header.stamp);
 
         if (_first_time) {
             _first_time = false;
@@ -1574,7 +1575,7 @@ void MAPSros_topic_subscriber::ROSVisuMarkerReceivedCallback(const visualization
         auto v = _markers_cache.get_markers_by_output(concerned_output);
 
         //for each type run the vector, then StartWriting it in one time
-        MarkersWriteByType(v, callback_marker->type, concerned_output);
+        MarkersWriteByType(v, callback_marker->type, concerned_output, marker_ts);
     } catch (int error) {
         if (error == MAPS::ModuleDied)
             return;
@@ -1582,7 +1583,7 @@ void MAPSros_topic_subscriber::ROSVisuMarkerReceivedCallback(const visualization
     }
 }
 
-void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msgs::Marker::ConstPtr >& markers, int32_t marker_type, int concerned_output) {
+void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msgs::Marker::ConstPtr >& markers, int32_t marker_type, int concerned_output, MAPSTimestamp marker_ts) {
     MAPSIOElt *outElt = StartWriting(Output(concerned_output));
 
     switch (marker_type) {
@@ -1720,6 +1721,7 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
             break;
         }
     }
+    outElt->Timestamp() = marker_ts;
     StopWriting(outElt);
 }
 

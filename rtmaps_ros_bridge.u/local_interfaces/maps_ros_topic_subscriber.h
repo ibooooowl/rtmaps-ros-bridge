@@ -244,6 +244,6 @@ class MAPSros_topic_subscriber : public MAPSComponent
     void OutputMarkerOnlyFill(MAPSRealObject& obj, const visualization_msgs::Marker::ConstPtr& marker, int id = 0);
     int GetMarkerOutputByType(const visualization_msgs::Marker::ConstPtr& marker);
     int UpdateMarkerCache(const visualization_msgs::Marker::ConstPtr& marker);
-    void MarkersWriteByType(std::vector< visualization_msgs::Marker::ConstPtr >& markers, int32_t marker_type, int concerned_output);
+    void MarkersWriteByType(std::vector< visualization_msgs::Marker::ConstPtr >& markers, int32_t marker_type, int concerned_output, MAPSTimestamp marker_ts);
 };
 #endif
