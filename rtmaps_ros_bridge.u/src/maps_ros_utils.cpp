@@ -40,7 +40,7 @@ std::shared_ptr< MAPSRosUtils* > MAPSRosUtils::get_singleton()
         MAPSRosUtils* ru = *s_singleton.get();
         if (false == ru->init_ros()) {
             MAPS::ReportError("Initializing ROS failed.");
-            return NULL;
+            return nullptr;
         }
         ru->m_ros_spin_runnable.Init(&MAPSRosUtils::SpinThread, ru);
     }
@@ -70,7 +70,7 @@ bool MAPSRosUtils::init_ros()
         ros::VP_string remappings;
         MAPSProperty* pid_prop = MAPS::Property("Engine.pid");
         int current_pid = 0;
-        if (pid_prop != NULL)
+        if (pid_prop != nullptr)
             current_pid = MAPS::Property("Engine.pid")->IntegerValue();
         MAPSStreamedString ss;
         ss << "rtmaps_ros_bridge_" << current_pid;
@@ -86,19 +86,21 @@ bool MAPSRosUtils::init_ros()
 ros::NodeHandle* MAPSRosUtils::get_ros_node()
 {
     MAPSMutexGuard mtxguard(s_mtx);
-    if (m_node == NULL) {
+    if (m_node == nullptr) {
         m_node = new ros::NodeHandle();
         m_ros_spin_runnable.Start();
     }
+    m_rosnode_refcount++;
     return m_node;
 }
 
 bool MAPSRosUtils::release_ros_node()
 {
     MAPSMutexGuard mtxguard(s_mtx);
-    if (m_node == NULL) {
+    if (m_node == nullptr || m_rosnode_refcount < 1) {
         return false;
     }
+    m_rosnode_refcount--;
     if (s_singleton.use_count() == 0) {
         ros::shutdown();
         m_ros_spin_runnable.Stop();
