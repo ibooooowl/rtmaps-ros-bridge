@@ -699,8 +699,8 @@ void MAPSros_topic_subscriber::ROSImageReceivedCallback(const sensor_msgs::Image
 void MAPSros_topic_subscriber::ROSCompressedImageReceivedCallback(const sensor_msgs::CompressedImage::ConstPtr& ros_image)
 {
     try {
-        auto width = GetIntegerProperty("compressed_image_width");
-        auto height = GetIntegerProperty("compressed_image_height");
+        int32_t width = GetIntegerProperty("compressed_image_width");
+        int32_t height = GetIntegerProperty("compressed_image_height");
 
         if (_first_time) {
             _first_time = false;
@@ -718,7 +718,7 @@ void MAPSros_topic_subscriber::ROSCompressedImageReceivedCallback(const sensor_m
                 SetComponentInError();
                 return;
             }
-            auto size = MAX((long int)ros_image->data.size(), width * height);
+            int32_t size = MAX((int32_t)ros_image->data.size(), (int32_t)(width * height * 4));
 
             MAPSStreamedString ss;
             ss << "Max output image size : " << size << ": " << width << "x" << height;
@@ -727,12 +727,13 @@ void MAPSros_topic_subscriber::ROSCompressedImageReceivedCallback(const sensor_m
 
             Output(0).AllocOutputBufferMAPSImage(size, width, height, encoding);
         }
-        auto size = MIN((long int)ros_image->data.size(), width * height);
+        int32_t size = MIN((int32_t)ros_image->data.size(), width * height * 4);
 
         MAPSIOElt *ioeltout = StartWriting(Output(0));
         MAPSImage &image_out = ioeltout->MAPSImage();
         MAPS::Memcpy(image_out.imageData, (char *) &ros_image->data[0], size);
-
+        image_out.imageSize = (int32_t)ros_image->data.size();
+        image_out.bufferSize = (int32_t)ros_image->data.size();
         if (_transfer_ros_timestamp) {
             ioeltout->Timestamp() = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_image->header.stamp);
         }
@@ -1637,9 +1638,10 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
             if (outElt->BufferSize() < vector_size) {
                 StopWriting(outElt);
                 MAPSStreamedString ss;
-                ss << "Too many points in marker: " << vector_size
+                ss << "Too many points in line strip marker: " << vector_size
                    << " current max:" << outElt->BufferSize();
                 ss << " => try increasing it at output allocation.";
+                ss << " markers size: " << markers.size();
                 Error(ss);
             }
             outElt->VectorSize() = vector_size;
@@ -1662,9 +1664,10 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
             if (outElt->BufferSize() < vector_size) {
                 StopWriting(outElt);
                 MAPSStreamedString ss;
-                ss << "Too many points in marker: " << vector_size
+                ss << "Too many points in line list marker: " << vector_size
                    << " current max:" << outElt->BufferSize();
                 ss << " => try increasing it at output allocation.";
+                ss << " markers size: " << markers.size();
                 Error(ss);
             }
             outElt->VectorSize() = vector_size;
@@ -1694,7 +1697,7 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
             if (outElt->BufferSize() < vector_size) {
                 StopWriting(outElt);
                 MAPSStreamedString ss;
-                ss << "Too many points in marker: " << vector_size
+                ss << "Too many points in triangle list marker: " << vector_size
                    << " current max:" << outElt->BufferSize();
                 ss << " => try increasing it at output allocation.";
                 Error(ss);
