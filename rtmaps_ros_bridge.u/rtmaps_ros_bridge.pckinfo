@@ -1,5 +1,5 @@
 # Package information
-VERSION=1.20.3
+VERSION=1.21.0
 DESCRIPTION=ROS bridge for RTMaps 4
 
 # LOG
@@ -23,4 +23,4 @@ DESCRIPTION=ROS bridge for RTMaps 4
 #1.19: Subscriber to v2.4, Publisher to v2.1
 #1.20: Subscriber to v2.5, Publisher to v2.2
 #1.20.1: ROSTimeToTimestamp fixed in ROSUtils. All components increase minor version.
-
+#1.21.0: Add support for CAN msgs. Fixed output buffer size for MAPSImage (ROS CompressedImage)

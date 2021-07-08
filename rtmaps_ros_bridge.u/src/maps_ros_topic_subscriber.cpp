@@ -52,7 +52,9 @@ MAPS_BEGIN_OUTPUTS_DEFINITION(MAPSros_topic_subscriber)
     MAPS_OUTPUT("output_float64",MAPS::Float64,NULL,NULL,1)
     MAPS_OUTPUT("output_float64_array",MAPS::Float64,NULL,NULL,0)
 	MAPS_OUTPUT_USER_STRUCTURE("array_layout",ROSArrayLayout)
-	//LASER SCAN
+    //CAN
+    MAPS_OUTPUT("can_frames",MAPS::CANFrame,NULL,NULL,1)
+    //LASER SCAN
 	MAPS_OUTPUT("output_laser_scan_ranges",MAPS::Float64,NULL,NULL,0)
 	MAPS_OUTPUT("output_laser_scan_intensities",MAPS::Float64,NULL,NULL,0)
 	MAPS_OUTPUT("output_laser_scan_info",MAPS::Float64,NULL,NULL,7)
@@ -202,6 +204,13 @@ void MAPSros_topic_subscriber::Dynamic()
         if (use_default_message_idx)
             selected_message = 0;
         break;
+    case TOPIC_TYPE_CAN:
+        for (unsigned int i=0; i < sizeof(s_can_msgs)/sizeof(const char*); i++) {
+            messages.enumValues->Append() = s_can_msgs[i];
+        }
+        if (use_default_message_idx)
+            selected_message = 0;
+        break;
     default :
 		messages.enumValues->Append() = "None";
 		ReportError("This topic type is not supported yet.");
@@ -231,6 +240,9 @@ void MAPSros_topic_subscriber::Dynamic()
         break;
     case TOPIC_TYPE_VISU:
         CreateIOsForVisuTopics(&_ros_header_avail);
+        break;
+    case TOPIC_TYPE_CAN:
+        CreateIOsForCANTopics(&_ros_header_avail);
         break;
     default:
 		ReportError("Topic is not supported yet.");
@@ -418,6 +430,12 @@ void MAPSros_topic_subscriber::CreateIOsForVisuTopics(bool* ros_header_avail)
     }
 }
 
+void MAPSros_topic_subscriber::CreateIOsForCANTopics(bool* ros_header_avail)
+{
+    *ros_header_avail = true;
+    NewOutput("can_frames");
+}
+
 void MAPSros_topic_subscriber::Birth()
 {
 	_first_time = true;
@@ -603,6 +621,10 @@ void MAPSros_topic_subscriber::Birth()
             }
             break;
         }
+        break;
+    case TOPIC_TYPE_CAN:
+        *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSCANFrameReceivedCallback, this );
+        break;
 	}
 
 	if (_sub == NULL) {
@@ -733,7 +755,6 @@ void MAPSros_topic_subscriber::ROSCompressedImageReceivedCallback(const sensor_m
         MAPSImage &image_out = ioeltout->MAPSImage();
         MAPS::Memcpy(image_out.imageData, (char *) &ros_image->data[0], size);
         image_out.imageSize = (int32_t)ros_image->data.size();
-        image_out.bufferSize = (int32_t)ros_image->data.size();
         if (_transfer_ros_timestamp) {
             ioeltout->Timestamp() = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_image->header.stamp);
         }
@@ -1726,6 +1747,39 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
     }
     outElt->Timestamp() = marker_ts;
     StopWriting(outElt);
+}
+
+void MAPSros_topic_subscriber::ROSCANFrameReceivedCallback(const can_msgs::Frame::ConstPtr& frame)
+{
+    try {
+    MAPSTimestamp t;
+    if (false == _transfer_ros_timestamp)
+        t = MAPS::CurrentTime();
+    else
+        t = MAPSRosUtils::ROSTimeToMAPSTimestamp(frame->header.stamp);
+
+    MAPSIOElt* ioeltout = StartWriting(Output(0));
+    MAPSCANFrame& frame_out = ioeltout->CANFrame();
+    frame_out.arbitrationId = (frame->id & MAPSCANFrame::AddressMask);
+    if (frame->is_extended)
+        frame_out.arbitrationId |= MAPSCANFrame::ExtendedId;
+    frame_out.isRemote = frame->is_rtr;
+    frame_out.dataLength = frame->dlc;
+    frame_out.ts = t;
+    *(MAPSUInt64*)frame_out.data = *(MAPSUInt64*)&frame->data[0];
+    ioeltout->Timestamp()=t;
+    StopWriting(ioeltout);
+
+    } catch (int error) {
+        if (error == MAPS::ModuleDied)
+            return;
+        else
+        {
+            MAPSStreamedString ss;
+            ss << "Error " << error << " caught in CAN frame reception callback. Stopping component.";
+            ReportError(ss);
+        }
+    }
 }
 
 void MAPSros_topic_subscriber::OutputMarkerOnlyFill(MAPSRealObject& obj, const visualization_msgs::Marker::ConstPtr& marker, int id)

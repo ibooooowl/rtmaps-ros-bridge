@@ -179,6 +179,7 @@ class MAPSros_topic_subscriber : public MAPSComponent
 	void CreateIOsForGeomTopics(bool* _ros_header_avail);
     void CreateIOsForNavTopics(bool* _ros_header_avail);
     void CreateIOsForVisuTopics(bool* _ros_header_avail);
+    void CreateIOsForCANTopics(bool* _ros_header_avail);
     void AllocateOutputsForVisuTopics();
 
 	// Place here your specific methods and attributes
@@ -238,6 +239,8 @@ class MAPSros_topic_subscriber : public MAPSComponent
     void ROSOdometryReceivedCallback(const nav_msgs::Odometry::ConstPtr& odometry);
     void ROSVisuMarkerReceivedCallback(const visualization_msgs::Marker::ConstPtr& marker);
     void ROSVisuMarkerArrayReceivedCallback(const visualization_msgs::MarkerArray::ConstPtr& markers);
+
+    void ROSCANFrameReceivedCallback(const can_msgs::Frame::ConstPtr& frame);
 
 	void OutputArrayLayout(const std_msgs::MultiArrayLayout* ros_layout, MAPSTimestamp t);
     void SetComponentInError();

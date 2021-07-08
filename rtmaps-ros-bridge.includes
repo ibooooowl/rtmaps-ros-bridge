@@ -3,7 +3,10 @@ rtmaps_ros_custom_data_types/catkin_ws/devel/include/my_data_types
 rtmaps_ros_custom_data_types/catkin_ws/install/include/my_data_types
 rtmaps_ros_custom_data_types/rtmaps_ros_custom_data_types.u/local_interfaces
 /opt/rtmaps/sdk/ubuntu1604_x86_64/include
+/opt/rtmaps/sdk/ubuntu1804_x86_64/include
+/opt/rtmaps/sdk/ubuntu2004_x86_64/include
 /opt/ros/lunar/include
+/opt/ros/noetic/include
 rtmaps_ros_custom_data_types/rtmaps_ros_custom_data_types.u
 rtmaps_ros_custom_data_types/rtmaps_ros_custom_data_types.u/src
 rtmaps_ros_bridge.u

@@ -41,6 +41,7 @@
 #include "std_msgs/Float32MultiArray.h"
 #include "std_msgs/Float64.h"
 #include "std_msgs/Float64MultiArray.h"
+#include "can_msgs/Frame.h"
 #include "sensor_msgs/CompressedImage.h"
 #include "sensor_msgs/Image.h"
 #include "sensor_msgs/CompressedImage.h"
@@ -69,7 +70,8 @@ static const char* s_topic_types[] = {
 		"trajectory_msgs",
 		"visualization_msgs",
 		"actionlib_msgs",
-		"diagnostic_msgs"
+        "diagnostic_msgs",
+        "can_msgs"
 };
 
 #define TOPIC_TYPE_STD 			0
@@ -81,6 +83,7 @@ static const char* s_topic_types[] = {
 #define TOPIC_TYPE_VISU			6
 #define TOPIC_TYPE_ACTION		7
 #define TOPIC_TYPE_DIAG			8
+#define TOPIC_TYPE_CAN          9
 
 static const char* s_std_msgs[] = {
 		"Int 32",
@@ -243,6 +246,12 @@ typedef struct ROSArrayLayout
 	int nb_dims;
 	ROSArrayLayoutDim dim[MAX_ARRAY_LAYOUT_DIMENSIONS];
 }ROSArrayLayout;
+
+static const char* s_can_msgs[] = {
+        "Frame"
+};
+
+#define CAN_MSG_FRAME 0
 
 const MAPSTypeFilterBase MAPSFilterROSArrayLayout=MAPSFilterUserStructure(ROSArrayLayout);
 
