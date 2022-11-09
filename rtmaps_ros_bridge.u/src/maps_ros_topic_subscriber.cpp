@@ -159,7 +159,7 @@ MAPSComponent(name,cd)
 
 void MAPSros_topic_subscriber::Dynamic()
 {
-	_topic_type = (int)GetIntegerProperty("topic_type");
+	m_topic_type = (int)GetIntegerProperty("topic_type");
 	int selected_message = (int)GetIntegerProperty("message");
     bool use_default_message_idx = false;
 	if (Property("topic_type").PropertyChanged()) {
@@ -168,7 +168,7 @@ void MAPSros_topic_subscriber::Dynamic()
 	}
 	MAPSEnumStruct messages;
 
-	switch (_topic_type) {
+	switch (m_topic_type) {
 	case TOPIC_TYPE_STD:
         for (unsigned int i=0; i < sizeof(s_std_msgs)/sizeof(const char*); i++) {
 			messages.enumValues->Append() = s_std_msgs[i];
@@ -220,41 +220,41 @@ void MAPSros_topic_subscriber::Dynamic()
 		selected_message = 0;
 	messages.selectedEnum = selected_message;
 	DirectSet(Property("message"),messages);
-	_message = selected_message;
+	m_message = selected_message;
 
 
-	_ros_header_avail = false;
+	m_ros_header_avail = false;
 
-	switch(_topic_type) {
+	switch(m_topic_type) {
 	case TOPIC_TYPE_STD:
-		CreateIOsForStdTopics(&_ros_header_avail);
+		CreateIOsForStdTopics(&m_ros_header_avail);
 		break;
 	case TOPIC_TYPE_SENSOR:
-		CreateIOsForSensorTopics(&_ros_header_avail);
+		CreateIOsForSensorTopics(&m_ros_header_avail);
 		break;
 	case TOPIC_TYPE_GEOM:
-		CreateIOsForGeomTopics(&_ros_header_avail);
+		CreateIOsForGeomTopics(&m_ros_header_avail);
         break;
     case TOPIC_TYPE_NAV:
-        CreateIOsForNavTopics(&_ros_header_avail);
+        CreateIOsForNavTopics(&m_ros_header_avail);
         break;
     case TOPIC_TYPE_VISU:
-        CreateIOsForVisuTopics(&_ros_header_avail);
+        CreateIOsForVisuTopics(&m_ros_header_avail);
         break;
     case TOPIC_TYPE_CAN:
-        CreateIOsForCANTopics(&_ros_header_avail);
+        CreateIOsForCANTopics(&m_ros_header_avail);
         break;
     default:
 		ReportError("Topic is not supported yet.");
 	}
-	if (_ros_header_avail)
+	if (m_ros_header_avail)
 		NewProperty("transfer_ROS_timestamps");
 }
 
 void MAPSros_topic_subscriber::CreateIOsForStdTopics(bool* ros_header_avail)
 {
 	*ros_header_avail = false;
-	switch(_message) {
+	switch(m_message) {
 	case STD_MSG_TEXT :
 		NewOutput("output_text");
 		NewProperty("max_text_length");
@@ -300,7 +300,7 @@ void MAPSros_topic_subscriber::CreateIOsForStdTopics(bool* ros_header_avail)
 void MAPSros_topic_subscriber::CreateIOsForSensorTopics(bool* ros_header_avail)
 {
 	*ros_header_avail = false;
-	switch(_message) {
+	switch(m_message) {
 	case SENSOR_MSG_IMAGE :
 		NewOutput("output_image");
 		*ros_header_avail = true;
@@ -363,7 +363,7 @@ void MAPSros_topic_subscriber::CreateIOsForSensorTopics(bool* ros_header_avail)
 void MAPSros_topic_subscriber::CreateIOsForGeomTopics(bool* ros_header_avail)
 {
 	*ros_header_avail = false;
-	switch(_message) {
+	switch(m_message) {
 	case GEOM_MSG_POINT :
 		NewOutput("output_float64_array","output_point");
 		break;
@@ -375,6 +375,7 @@ void MAPSros_topic_subscriber::CreateIOsForGeomTopics(bool* ros_header_avail)
 		NewOutput("output_float64_array","output_point");
 		NewOutput("output_float64_array","output_quaternion");
 		*ros_header_avail = true;
+        break;
 	case GEOM_MSG_TWIST :
 		NewOutput("output_twist");
 		break;
@@ -390,7 +391,7 @@ void MAPSros_topic_subscriber::CreateIOsForGeomTopics(bool* ros_header_avail)
 void MAPSros_topic_subscriber::CreateIOsForNavTopics(bool* ros_header_avail)
 {
     *ros_header_avail = false;
-    switch(_message) {
+    switch(m_message) {
     case NAV_MSG_ODOMETRY :
         NewOutput("output_float64_array","output_pose_position");
         NewOutput("output_float64_array","output_pose_orientation");
@@ -407,7 +408,7 @@ void MAPSros_topic_subscriber::CreateIOsForNavTopics(bool* ros_header_avail)
 void MAPSros_topic_subscriber::CreateIOsForVisuTopics(bool* ros_header_avail)
 {
     *ros_header_avail = false;
-    switch(_message) {
+    switch(m_message) {
         case VISU_MSG_MARKER :
         case VISU_MSG_MARKER_ARRAY :
             NewOutput("output_marker_arrow");
@@ -438,23 +439,20 @@ void MAPSros_topic_subscriber::CreateIOsForCANTopics(bool* ros_header_avail)
 
 void MAPSros_topic_subscriber::Birth()
 {
-	_first_time = true;
-	if (_ros_header_avail)
-		_transfer_ros_timestamp = GetBoolProperty("transfer_ROS_timestamps");
+	m_first_time = true;
+	if (m_ros_header_avail)
+		m_transfer_ros_timestamp = GetBoolProperty("transfer_ROS_timestamps");
 
-    _n = NULL;
-    _sub = NULL;
+    m_n = NULL;
+    m_sub = NULL;
 
-    _ros = MAPSRosUtils::get_singleton();
-    if (_ros == NULL)
-        Error("Could not init ROS");
-    _n = (*_ros)->get_ros_node();
-    if (_n == NULL)
+    m_n = MAPSRosUtils::GetROSNode();
+    if (m_n == NULL)
         Error("Could not create ROS node handle.");
 
 
-    _sub = new ros::Subscriber();
-	if (_sub == NULL)
+    m_sub = new ros::Subscriber();
+	if (m_sub == NULL)
 		Error("Could not create ROS Subscriber.");
 
 
@@ -462,50 +460,52 @@ void MAPSros_topic_subscriber::Birth()
 
 	MAPSString topic_name = GetStringProperty("topic_name");
 
-	switch(_topic_type) {
+	switch(m_topic_type) 
+    {
 	case TOPIC_TYPE_STD:
-		switch(_message) {
+		switch(m_message) 
+        {
 		case STD_MSG_TEXT:
-			_buffsize_out = (int)GetIntegerProperty("max_text_length");
-			Output(0).AllocOutputBuffer(_buffsize_out + 1);
+			m_buffsize_out = (int)GetIntegerProperty("max_text_length");
+			Output(0).AllocOutputBuffer(m_buffsize_out + 1);
             //{
                 //ros::SubscribeOptions so =ros::SubscribeOptions::create<std_msgs::String>((const char*)topic_name,queue_size == -1? 1000:queue_size,boost::bind(&MAPSros_topic_subscriber::ROSStringReceivedCallback,this,_1),ros::VoidPtr(),&_cb_queue);
                 //sopts.init<std_msgs::String>((const char*)topic_name,queue_size == -1?1000:queue_size,);
                 //*_sub = _n->subscribe(so);
             //}
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSStringReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSStringReceivedCallback,this);
 			break;
 		case STD_MSG_INT32:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSInt32ReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSInt32ReceivedCallback,this);
 			break;
 		case STD_MSG_INT32_ARRAY:
-			_buffsize_out = (int)GetIntegerProperty("max_array_size");
-			Output(0).AllocOutputBuffer(_buffsize_out);
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSInt32ArrayReceivedCallback,this);
+			m_buffsize_out = (int)GetIntegerProperty("max_array_size");
+			Output(0).AllocOutputBuffer(m_buffsize_out);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSInt32ArrayReceivedCallback,this);
 			break;
 		case STD_MSG_INT64:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSInt64ReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSInt64ReceivedCallback,this);
 			break;
 		case STD_MSG_INT64_ARRAY:
-			_buffsize_out = (int)GetIntegerProperty("max_array_size");
-			Output(0).AllocOutputBuffer(_buffsize_out);
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSInt64ArrayReceivedCallback,this);
+			m_buffsize_out = (int)GetIntegerProperty("max_array_size");
+			Output(0).AllocOutputBuffer(m_buffsize_out);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSInt64ArrayReceivedCallback,this);
 			break;
 		case STD_MSG_FLOAT32:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSFloat32ReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSFloat32ReceivedCallback,this);
 			break;
 		case STD_MSG_FLOAT32_ARRAY:
-			_buffsize_out = (int)GetIntegerProperty("max_array_size");
-			Output(0).AllocOutputBuffer(_buffsize_out);
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSFloat32ArrayReceivedCallback,this);
+			m_buffsize_out = (int)GetIntegerProperty("max_array_size");
+			Output(0).AllocOutputBuffer(m_buffsize_out);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSFloat32ArrayReceivedCallback,this);
 			break;
 		case STD_MSG_FLOAT64:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSFloat64ReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSFloat64ReceivedCallback,this);
 			break;
 		case STD_MSG_FLOAT64_ARRAY:
-			_buffsize_out = (int)GetIntegerProperty("max_array_size");
-			Output(0).AllocOutputBuffer(_buffsize_out);
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSFloat64ArrayReceivedCallback,this);
+			m_buffsize_out = (int)GetIntegerProperty("max_array_size");
+			Output(0).AllocOutputBuffer(m_buffsize_out);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSFloat64ArrayReceivedCallback,this);
 			break;
 		default:
 			{
@@ -516,21 +516,22 @@ void MAPSros_topic_subscriber::Birth()
 		}
 		break;
 	case TOPIC_TYPE_SENSOR:
-		switch(_message) {
+		switch(m_message) 
+        {
 		case SENSOR_MSG_IMAGE:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?16:queue_size,
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?16:queue_size,
                                   &MAPSros_topic_subscriber::ROSImageReceivedCallback, this);
 			break;
         case SENSOR_MSG_COMPRESSED_IMAGE:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?16:queue_size,
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?16:queue_size,
                                   &MAPSros_topic_subscriber::ROSCompressedImageReceivedCallback, this);
             break;
 		case SENSOR_MSG_LASER_SCAN:
-			_discard_out_of_range = GetBoolProperty("laser_discard_out_or_range_data");
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?64:queue_size, &MAPSros_topic_subscriber::ROSLaserScanReceivedCallback,this);
+			m_discard_out_of_range = GetBoolProperty("laser_discard_out_or_range_data");
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?64:queue_size, &MAPSros_topic_subscriber::ROSLaserScanReceivedCallback,this);
 			break;
 		case SENSOR_MSG_JOY:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSJoyReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSJoyReceivedCallback,this);
 			break;
 		case SENSOR_MSG_IMU:
 //        {
@@ -538,19 +539,19 @@ void MAPSros_topic_subscriber::Birth()
 //            //sopts.init<std_msgs::String>((const char*)topic_name,queue_size == -1?1000:queue_size,);
 //            *_sub = _n->subscribe(so);
 //        }
-            *_sub = _n->subscribe((const char*)topic_name, 1000, &MAPSros_topic_subscriber::ROSImuReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, 1000, &MAPSros_topic_subscriber::ROSImuReceivedCallback,this);
 			break;
 		case SENSOR_MSG_POINT_CLOUD:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?queue_size == -1?16:queue_size:queue_size, &MAPSros_topic_subscriber::ROSPointCloudReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?queue_size == -1?16:queue_size:queue_size, &MAPSros_topic_subscriber::ROSPointCloudReceivedCallback,this);
 			break;
 		case SENSOR_MSG_POINT_CLOUD2:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?queue_size == -1?16:queue_size:queue_size, &MAPSros_topic_subscriber::ROSPointCloud2ReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?queue_size == -1?16:queue_size:queue_size, &MAPSros_topic_subscriber::ROSPointCloud2ReceivedCallback,this);
 			break;
 		case SENSOR_MSG_RANGE:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?queue_size == -1?1000:queue_size:queue_size, &MAPSros_topic_subscriber::ROSRangeReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?queue_size == -1?1000:queue_size:queue_size, &MAPSros_topic_subscriber::ROSRangeReceivedCallback,this);
 			break;
         case SENSOR_MSG_NAV_SAT_FIX:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?queue_size == -1?1000:queue_size:queue_size, &MAPSros_topic_subscriber::ROSNavSatFixReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?queue_size == -1?1000:queue_size:queue_size, &MAPSros_topic_subscriber::ROSNavSatFixReceivedCallback,this);
             break;
 		default:
 			{
@@ -561,26 +562,27 @@ void MAPSros_topic_subscriber::Birth()
 		}
 		break;
 	case TOPIC_TYPE_GEOM:
-		switch(_message) {
+		switch(m_message) 
+        {
 		case GEOM_MSG_POINT:
 			Output(0).AllocOutputBuffer(3);
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSPointReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSPointReceivedCallback,this);
 			break;
 		case GEOM_MSG_POSE:
 			Output(0).AllocOutputBuffer(3);
 			Output(1).AllocOutputBuffer(4);
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSPoseReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSPoseReceivedCallback,this);
 			break;
 		case GEOM_MSG_POSE_STAMPED:
 			Output(0).AllocOutputBuffer(3);
 			Output(1).AllocOutputBuffer(4);
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSPoseStampedReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSPoseStampedReceivedCallback,this);
 			break;
 		case GEOM_MSG_TWIST:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSTwistReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSTwistReceivedCallback,this);
 			break;
         case GEOM_MSG_TWIST_STAMPED:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSTwistStampedReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSTwistStampedReceivedCallback,this);
             break;
 		default:
 			{
@@ -591,11 +593,11 @@ void MAPSros_topic_subscriber::Birth()
 		}
 		break;
     case TOPIC_TYPE_NAV:
-        switch(_message) {
+        switch(m_message) {
         case NAV_MSG_ODOMETRY:
             Output(0).AllocOutputBuffer(3); //Pose point
             Output(1).AllocOutputBuffer(4); //Pose quaternion
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSOdometryReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSOdometryReceivedCallback,this);
             break;
         default:
             {
@@ -606,12 +608,12 @@ void MAPSros_topic_subscriber::Birth()
         }
         break;
     case TOPIC_TYPE_VISU:
-        switch(_message) {
+        switch(m_message) {
         case VISU_MSG_MARKER:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSVisuMarkerReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSVisuMarkerReceivedCallback,this);
             break;
         case VISU_MSG_MARKER_ARRAY:
-            *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSVisuMarkerArrayReceivedCallback,this);
+            *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSVisuMarkerArrayReceivedCallback,this);
             break;
         default:
             {
@@ -623,11 +625,11 @@ void MAPSros_topic_subscriber::Birth()
         }
         break;
     case TOPIC_TYPE_CAN:
-        *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSCANFrameReceivedCallback, this );
+        *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSCANFrameReceivedCallback, this );
         break;
 	}
 
-	if (_sub == NULL) {
+	if (m_sub == NULL) {
 		MAPSStreamedString ss;
 		ss << "Could not subscribe to topic " << topic_name << " (type: " << GetStringProperty("topic_type") << "/" << GetStringProperty("message");
 		Error(ss);
@@ -641,8 +643,8 @@ void MAPSros_topic_subscriber::ROSStringReceivedCallback(const std_msgs::StringC
     MAPSIOElt* ioeltout = StartWriting(Output(0));
     char* data_out = ioeltout->TextAscii();
 	int txt_len = message->data.length();
-	if (txt_len > _buffsize_out) {
-		txt_len = _buffsize_out;
+	if (txt_len > m_buffsize_out) {
+		txt_len = m_buffsize_out;
 		MAPSStreamedString ss;
 		ss << "Received message too long (length = " << txt_len << "). You should increase the max_text_length property. Truncating...";
 		ReportWarning(ss);
@@ -673,8 +675,8 @@ void MAPSros_topic_subscriber::SetComponentInError()
 void MAPSros_topic_subscriber::ROSImageReceivedCallback(const sensor_msgs::Image::ConstPtr& ros_image)
 {
     try {
-        if (_first_time) {
-            _first_time = false;
+        if (m_first_time) {
+            m_first_time = false;
             MAPSUInt32 chanseq, depth = 8;
             if (ros_image->encoding == "rgb8")
                 chanseq = MAPS_CHANNELSEQ_RGB;
@@ -690,8 +692,8 @@ void MAPSros_topic_subscriber::ROSImageReceivedCallback(const sensor_msgs::Image
             else if (ros_image->encoding == "bgra8")
                 chanseq = MAPS_CHANNELSEQ_BGRA;
             else {
-                if (_sub)
-                    _sub->shutdown(); // stop topic subscription
+                if (m_sub)
+                    m_sub->shutdown(); // stop topic subscription
                 MAPSStreamedString ss;
                 ss << "Image format not supported: " << (const char *) ros_image->encoding.c_str();
                 ReportError(ss);
@@ -707,7 +709,7 @@ void MAPSros_topic_subscriber::ROSImageReceivedCallback(const sensor_msgs::Image
         int size = MIN((unsigned int) image_out.imageSize, ros_image->data.size());
         MAPS::Memcpy(image_out.imageData, (char *) &ros_image->data[0], size);
 
-        if (_transfer_ros_timestamp) {
+        if (m_transfer_ros_timestamp) {
             ioeltout->Timestamp() = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_image->header.stamp);
         }
         StopWriting(ioeltout);
@@ -724,16 +726,16 @@ void MAPSros_topic_subscriber::ROSCompressedImageReceivedCallback(const sensor_m
         int32_t width = GetIntegerProperty("compressed_image_width");
         int32_t height = GetIntegerProperty("compressed_image_height");
 
-        if (_first_time) {
-            _first_time = false;
+        if (m_first_time) {
+            m_first_time = false;
             MAPSUInt32 encoding = MAPS_IMAGECODING_UNKNOWN;
             if (ros_image->format.find("jpeg")  != std::string::npos)
                 encoding = MAPS_IMAGECODING_JPEG;
             else if (ros_image->format.find("png") != std::string::npos)
                 encoding = MAPS_IMAGECODING_PNG;
             else {
-                if (_sub)
-                    _sub->shutdown(); // stop topic subscription
+                if (m_sub)
+                    m_sub->shutdown(); // stop topic subscription
                 MAPSStreamedString ss;
                 ss << "Image format not supported: " << (const char *) ros_image->format.c_str();
                 ReportError(ss);
@@ -755,7 +757,7 @@ void MAPSros_topic_subscriber::ROSCompressedImageReceivedCallback(const sensor_m
         MAPSImage &image_out = ioeltout->MAPSImage();
         MAPS::Memcpy(image_out.imageData, (char *) &ros_image->data[0], size);
         image_out.imageSize = (int32_t)ros_image->data.size();
-        if (_transfer_ros_timestamp) {
+        if (m_transfer_ros_timestamp) {
             ioeltout->Timestamp() = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_image->header.stamp);
         }
         StopWriting(ioeltout);
@@ -788,11 +790,11 @@ void MAPSros_topic_subscriber::ROSInt32ArrayReceivedCallback(const std_msgs::Int
 	MAPSIOElt* ioeltout = StartWriting(Output(0));
 	int vectorsize_out = msg->data.size();
 
-	if (vectorsize_out > _buffsize_out)  {
+	if (vectorsize_out > m_buffsize_out)  {
 		MAPSStreamedString ss;
 		ss << "Received array is too big (size = " << vectorsize_out << "). Increase the max array size property. Truncating...";
 		ReportWarning(ss);
-		vectorsize_out = _buffsize_out;
+		vectorsize_out = m_buffsize_out;
 	}
 	for (int i=0; i<vectorsize_out;i++) {
 		ioeltout->Integer32(i) = msg->data[i];
@@ -832,11 +834,11 @@ void MAPSros_topic_subscriber::ROSInt64ArrayReceivedCallback(const std_msgs::Int
 	MAPSIOElt* ioeltout = StartWriting(Output(0));
 	int vectorsize_out = msg->data.size();
 
-	if (vectorsize_out > _buffsize_out)  {
+	if (vectorsize_out > m_buffsize_out)  {
 		MAPSStreamedString ss;
 		ss << "Received array is too big (size = " << vectorsize_out << "). Increase the max array size property. Truncating...";
 		ReportWarning(ss);
-		vectorsize_out = _buffsize_out;
+		vectorsize_out = m_buffsize_out;
 	}
 	for (int i=0; i<vectorsize_out;i++) {
 		ioeltout->Integer64(i) = msg->data[i];
@@ -875,11 +877,11 @@ void MAPSros_topic_subscriber::ROSFloat32ArrayReceivedCallback(const std_msgs::F
 	MAPSIOElt* ioeltout = StartWriting(Output(0));
 	int vectorsize_out = msg->data.size();
 
-	if (vectorsize_out > _buffsize_out)  {
+	if (vectorsize_out > m_buffsize_out)  {
 		MAPSStreamedString ss;
 		ss << "Received array is too big (size = " << vectorsize_out << "). Increase the max array size property. Truncating...";
 		ReportWarning(ss);
-		vectorsize_out = _buffsize_out;
+		vectorsize_out = m_buffsize_out;
 	}
 	for (int i=0; i<vectorsize_out;i++) {
 		ioeltout->Float32(i) = msg->data[i];
@@ -917,11 +919,11 @@ void MAPSros_topic_subscriber::ROSFloat64ArrayReceivedCallback(const std_msgs::F
 	MAPSIOElt* ioeltout = StartWriting(Output(0));
 	int vectorsize_out = msg->data.size();
 
-	if (vectorsize_out > _buffsize_out)  {
+	if (vectorsize_out > m_buffsize_out)  {
 		MAPSStreamedString ss;
 		ss << "Received array is too big (size = " << vectorsize_out << "). Increase the max array size property. Truncating...";
 		ReportWarning(ss);
-		vectorsize_out = _buffsize_out;
+		vectorsize_out = m_buffsize_out;
 	}
 	for (int i=0; i<vectorsize_out;i++) {
 		ioeltout->Float64(i) = msg->data[i];
@@ -975,50 +977,50 @@ void MAPSros_topic_subscriber::ROSLaserScanReceivedCallback(const sensor_msgs::L
 {
     try {
     MAPSTimestamp t;
-	if (false == _transfer_ros_timestamp)
+	if (false == m_transfer_ros_timestamp)
 		t = MAPS::CurrentTime();
 	else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_laser_scan->header.stamp);
 
-	if (_first_time) {
-		_first_time = false;
-		_nb_laser_scan_points = ros_laser_scan->ranges.size();
-		_nb_laser_intens_data = ros_laser_scan->intensities.size();
-		Output(0).AllocOutputBuffer(_nb_laser_scan_points);
-		if (_nb_laser_intens_data > 0) {
-			Output(1).AllocOutputBuffer(_nb_laser_intens_data);
+	if (m_first_time) {
+		m_first_time = false;
+		m_nb_laser_scan_points = ros_laser_scan->ranges.size();
+		m_nb_laser_intens_data = ros_laser_scan->intensities.size();
+		Output(0).AllocOutputBuffer(m_nb_laser_scan_points);
+		if (m_nb_laser_intens_data > 0) {
+			Output(1).AllocOutputBuffer(m_nb_laser_intens_data);
 		}
 	}
 
-	MAPSIOElt* out_ranges, *out_intens, *out_infos;
+	MAPSIOElt* out_ranges = NULL, *out_intens = NULL, *out_infos = NULL;
 	out_ranges = StartWriting(Output(0));
-	if (_nb_laser_intens_data) {
+	if (m_nb_laser_intens_data) {
 		out_intens = StartWriting(Output(1));
 	}
 	out_infos = StartWriting(Output(2));
     MAPSFloat64* ranges_data = &out_ranges->Float64();
 
 	int nb_points = ros_laser_scan->ranges.size();
-	if (nb_points > _nb_laser_scan_points) {
+	if (nb_points > m_nb_laser_scan_points) {
 		MAPSStreamedString ss;
 		ss << "Number of scan points has increased. Problem. Truncating.";
 		ReportWarning(ss);
-		nb_points = _nb_laser_scan_points;
+		nb_points = m_nb_laser_scan_points;
 	}
 
-    MAPSFloat64* intens_data;
-	if (_nb_laser_intens_data)
+    MAPSFloat64* intens_data = NULL;
+	if (m_nb_laser_intens_data)
 		intens_data = &out_intens->Float64();
 	int vectorsize_out = 0;
     MAPSFloat64 range;
 	for (int i=0; i<nb_points; i++) {
 		range = ros_laser_scan->ranges[i];
-		if (_discard_out_of_range) {
+		if (m_discard_out_of_range) {
 			if (range < ros_laser_scan->range_min || range > ros_laser_scan->range_max)
 				continue;
 		}
 		*(ranges_data++) = ros_laser_scan->ranges[i];
-		if (_nb_laser_intens_data) {
+		if (m_nb_laser_intens_data) {
 			*(intens_data++) = ros_laser_scan->intensities[i];
 		}
 		vectorsize_out++;
@@ -1032,18 +1034,18 @@ void MAPSros_topic_subscriber::ROSLaserScanReceivedCallback(const sensor_msgs::L
 	out_infos->Float64(6) = ros_laser_scan->range_max;
 
 	out_ranges->VectorSize() = vectorsize_out;
-	if (_nb_laser_intens_data) {
+	if (m_nb_laser_intens_data) {
 		out_intens->VectorSize() = vectorsize_out;
 	}
 
 	out_infos->Timestamp() = t;
 	out_ranges->Timestamp() = t;
-	if (_nb_laser_intens_data) {
+	if (m_nb_laser_intens_data) {
 		out_intens->Timestamp() = t;
 	}
 
 	StopWriting(out_infos);
-	if (_nb_laser_intens_data) {
+	if (m_nb_laser_intens_data) {
 		StopWriting(out_intens);
 	}
 	StopWriting(out_ranges);
@@ -1058,37 +1060,37 @@ void MAPSros_topic_subscriber::ROSPointCloudReceivedCallback(const sensor_msgs::
 {
     try {
     MAPSTimestamp t;
-	if (false == _transfer_ros_timestamp)
+	if (false == m_transfer_ros_timestamp)
 		t = MAPS::CurrentTime();
 	else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_point_cloud->header.stamp);
 
-	if (_first_time) {
-		_first_time = false;
-		_nb_points = ros_point_cloud->points.size();
-		_nb_channels = ros_point_cloud->channels.size();
+	if (m_first_time) {
+		m_first_time = false;
+		m_nb_points = ros_point_cloud->points.size();
+		m_nb_channels = ros_point_cloud->channels.size();
 
-		Output(0).AllocOutputBuffer(_nb_points*3);
-		if (_nb_channels > 0) {
-			Output(1).AllocOutputBuffer(_nb_channels);
-			Output(2).AllocOutputBuffer(_nb_points);
+		Output(0).AllocOutputBuffer(m_nb_points*3);
+		if (m_nb_channels > 0) {
+			Output(1).AllocOutputBuffer(m_nb_channels);
+			Output(2).AllocOutputBuffer(m_nb_points);
 		}
 	}
 
-	MAPSIOElt* out_points_xyz, *out_nb_channels, *out_distances;
+	MAPSIOElt* out_points_xyz = NULL, *out_nb_channels = NULL, *out_distances = NULL;
 	out_points_xyz = StartWriting(Output(0));
-	if (_nb_channels) {
+	if (m_nb_channels) {
 		out_nb_channels = StartWriting(Output(1));
 		out_distances = StartWriting(Output(2));
 	}
 	MAPSFloat32* xyz_points = &out_points_xyz->Float32();
 
 	int nb_points = ros_point_cloud->points.size();
-	if (nb_points > _nb_points) {
+	if (nb_points > m_nb_points) {
 		MAPSStreamedString ss;
 		ss << "Number of scan points has increased. Problem. Truncating.";
 		ReportWarning(ss);
-		nb_points = _nb_points;
+		nb_points = m_nb_points;
 	}
 
 	for (int i=0; i<nb_points; i++) {
@@ -1098,13 +1100,13 @@ void MAPSros_topic_subscriber::ROSPointCloudReceivedCallback(const sensor_msgs::
 	}
 	out_points_xyz->VectorSize() = nb_points*3;
 
-	MAPSFloat32* channels_data;
-	MAPSInt32* channels_sizes;
-	if (_nb_channels) {
+	MAPSFloat32* channels_data = NULL;
+	MAPSInt32* channels_sizes = NULL;
+	if (m_nb_channels) {
 		channels_sizes = &out_nb_channels->Integer32();
 		channels_data = &out_distances->Float32();
 	}
-	for (int i=0; i<_nb_channels; i++) {
+	for (int i=0; i<m_nb_channels; i++) {
 		int nb_ranges_on_channel = ros_point_cloud->channels[i].values.size();
 		*(channels_sizes++) = nb_ranges_on_channel;
 		for (int j=0; j<nb_ranges_on_channel; j++) {
@@ -1112,8 +1114,8 @@ void MAPSros_topic_subscriber::ROSPointCloudReceivedCallback(const sensor_msgs::
 		}
 	}
 
-	if (_nb_channels) {
-		out_nb_channels->VectorSize() = _nb_channels;
+	if (m_nb_channels) {
+		out_nb_channels->VectorSize() = m_nb_channels;
 		out_distances->VectorSize() = nb_points;
 		out_nb_channels->Timestamp() = t;
 		out_distances->Timestamp() = t;
@@ -1133,36 +1135,36 @@ void MAPSros_topic_subscriber::ROSPointCloud2ReceivedCallback(const sensor_msgs:
 {
     try {
     MAPSTimestamp t;
-	if (false == _transfer_ros_timestamp)
+	if (false == m_transfer_ros_timestamp)
 		t = MAPS::CurrentTime();
 	else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_point_cloud2->header.stamp);
 
-	if (_first_time) {
-		_first_time = false;
-		_nb_fields = ros_point_cloud2->fields.size();
-        _point_step = ros_point_cloud2->point_step;
-		_nb_points = ros_point_cloud2->data.size()/ros_point_cloud2->point_step;
+	if (m_first_time) {
+		m_first_time = false;
+		m_nb_fields = ros_point_cloud2->fields.size();
+        m_point_step = ros_point_cloud2->point_step;
+		m_nb_points = ros_point_cloud2->data.size()/ros_point_cloud2->point_step;
         int max_nb_points = (int)GetIntegerProperty("max_nb_points");
-		if (_nb_fields > 0) {
-			Output(1).AllocOutputBuffer(_nb_fields*256); //255 chars max per field name.
-			Output(2).AllocOutputBuffer(_nb_fields*3); //(offset, datatype, count)
+		if (m_nb_fields > 0) {
+			Output(1).AllocOutputBuffer(m_nb_fields*256); //255 chars max per field name.
+			Output(2).AllocOutputBuffer(m_nb_fields*3); //(offset, datatype, count)
 		}
         if (max_nb_points > 0) {
-            if (_nb_points > max_nb_points) {
+            if (m_nb_points > max_nb_points) {
                 MAPSStreamedString ss;
-                ss << "Number of points if first packet (" << _nb_points << ") is higher than max_nb_points property (" << max_nb_points << "). Using number of points in first packet received.";
+                ss << "Number of points if first packet (" << m_nb_points << ") is higher than max_nb_points property (" << max_nb_points << "). Using number of points in first packet received.";
                 ReportWarning(ss);
-                max_nb_points = _nb_points;
+                max_nb_points = m_nb_points;
             }
-            _nb_points = max_nb_points;
+            m_nb_points = max_nb_points;
         }
-        Output(3).AllocOutputBuffer(_nb_points * 3); //data
+        Output(3).AllocOutputBuffer(m_nb_points * 3); //data
 	}
 
-	MAPSIOElt* out_info, *out_field_names, *out_fields_info, *out_data;
+	MAPSIOElt* out_info = NULL, *out_field_names = NULL, *out_fields_info = NULL, *out_data = NULL;
 	out_info = StartWriting(Output(0));
-	if (_nb_fields) {
+	if (m_nb_fields) {
 		out_field_names = StartWriting(Output(1));
 		out_fields_info = StartWriting(Output(2));
 	}
@@ -1176,11 +1178,11 @@ void MAPSros_topic_subscriber::ROSPointCloud2ReceivedCallback(const sensor_msgs:
 	out_info->Integer32(5) = ros_point_cloud2->is_dense ? 1 : 0;
 
 	int nb_fields = ros_point_cloud2->fields.size();
-	if (nb_fields > _nb_fields) {
+	if (nb_fields > m_nb_fields) {
 		MAPSStreamedString ss;
 		ss << "Number of fields has increased. Problem. Truncating.";
 		ReportWarning(ss);
-		nb_fields = _nb_fields;
+		nb_fields = m_nb_fields;
 	}
 	if (nb_fields != 3) {
 		if (nb_fields < 3) {
@@ -1188,8 +1190,8 @@ void MAPSros_topic_subscriber::ROSPointCloud2ReceivedCallback(const sensor_msgs:
 			ss << "So far, this components supports pointcloud2 messages with at least 3 fields 'x','y' and 'z'.";
 			ss << " Only " << nb_fields << " have been found.";
             ReportError(ss);
-            if (_sub)
-                _sub->shutdown(); // stop topic subscription
+            if (m_sub)
+                m_sub->shutdown(); // stop topic subscription
             SetComponentInError();
             return;
         } else if (nb_fields > 3) {
@@ -1220,14 +1222,14 @@ void MAPSros_topic_subscriber::ROSPointCloud2ReceivedCallback(const sensor_msgs:
 	out_fields_info->VectorSize() = nb_fields*3;
 
     int nb_points = ros_point_cloud2->data.size() / ros_point_cloud2->point_step;
-    if (nb_points > _nb_points) {
+    if (nb_points > m_nb_points) {
 		MAPSStreamedString ss;
-        ss << "Amount of points (" << nb_points << ") exceeds maximum number of points (" << _nb_points << "). Truncating. If property max_nb_points is set to -1, it means that number of points has increased since first sample. Consider increasing max_nb_points.";
+        ss << "Amount of points (" << nb_points << ") exceeds maximum number of points (" << m_nb_points << "). Truncating. If property max_nb_points is set to -1, it means that number of points has increased since first sample. Consider increasing max_nb_points.";
 		ReportWarning(ss);
-        nb_points = _nb_points;
+        nb_points = m_nb_points;
 	}
     MAPSFloat32* data_out = &out_data->Float32();
-    if (_point_step == 12) {
+    if (m_point_step == 12) {
         MAPS::Memcpy(data_out,&(ros_point_cloud2->data[0]),nb_points * 4 * 3);
     } else {
         MAPSFloat32* data_in = (MAPSFloat32*) &(ros_point_cloud2->data[0]);
@@ -1261,28 +1263,28 @@ void MAPSros_topic_subscriber::ROSJoyReceivedCallback(const sensor_msgs::Joy::Co
 {
     try {
     MAPSTimestamp t;
-	if (false == _transfer_ros_timestamp)
+	if (false == m_transfer_ros_timestamp)
 		t = MAPS::CurrentTime();
 	else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_joy->header.stamp);
 
-	if (_first_time) {
-		_first_time = false;
-		_nb_joy_axes = ros_joy->axes.size();
-		_nb_joy_buttons = ros_joy->buttons.size();
-		Output(0).AllocOutputBuffer(_nb_joy_axes);
-		Output(1).AllocOutputBuffer(_nb_joy_buttons);	
+	if (m_first_time) {
+		m_first_time = false;
+		m_nb_joy_axes = ros_joy->axes.size();
+		m_nb_joy_buttons = ros_joy->buttons.size();
+		Output(0).AllocOutputBuffer(m_nb_joy_axes);
+		Output(1).AllocOutputBuffer(m_nb_joy_buttons);	
 	}
 
 	MAPSIOElt* out_axes, *out_buttons;
 	out_axes = StartWriting(Output(0));
-	for(int i=0;i<_nb_joy_axes;i++)
+	for(int i=0;i<m_nb_joy_axes;i++)
 		out_axes->Float32(i) = ros_joy->axes.at(i);
 	out_axes->Timestamp() = t;
 	StopWriting(out_axes);
 
 	out_buttons = StartWriting(Output(1));
-	for(int i=0;i<_nb_joy_buttons;i++)
+	for(int i=0;i<m_nb_joy_buttons;i++)
 		out_buttons->Integer32(i) = ros_joy->buttons.at(i);
 	out_buttons->Timestamp() = t;
 	StopWriting(out_buttons);
@@ -1297,7 +1299,7 @@ void MAPSros_topic_subscriber::ROSImuReceivedCallback(const sensor_msgs::Imu::Co
 {
     try {
     MAPSTimestamp t;
-	if (false == _transfer_ros_timestamp)
+	if (false == m_transfer_ros_timestamp)
 		t = MAPS::CurrentTime();
 	else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_imu->header.stamp);
@@ -1375,7 +1377,7 @@ void MAPSros_topic_subscriber::ROSPoseStampedReceivedCallback(const geometry_msg
 {
     try {
     MAPSTimestamp t;
-	if (false == _transfer_ros_timestamp)
+	if (false == m_transfer_ros_timestamp)
 		t = MAPS::CurrentTime();
 	else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(posestamped->header.stamp);
@@ -1404,7 +1406,7 @@ void MAPSros_topic_subscriber::ROSRangeReceivedCallback(const sensor_msgs::Range
 {
     try {
     MAPSTimestamp t;
-	if (false == _transfer_ros_timestamp)
+	if (false == m_transfer_ros_timestamp)
 		t = MAPS::CurrentTime();
 	else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_range->header.stamp);
@@ -1432,7 +1434,7 @@ void MAPSros_topic_subscriber::ROSNavSatFixReceivedCallback(const sensor_msgs::N
 {
     try {
     MAPSTimestamp t;
-    if (false == _transfer_ros_timestamp)
+    if (false == m_transfer_ros_timestamp)
         t = MAPS::CurrentTime();
     else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_navsatfix->header.stamp);
@@ -1494,7 +1496,7 @@ void MAPSros_topic_subscriber::ROSTwistStampedReceivedCallback(const geometry_ms
 {
     try {
     MAPSTimestamp t;
-    if (false == _transfer_ros_timestamp)
+    if (false == m_transfer_ros_timestamp)
         t = MAPS::CurrentTime();
     else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(twist->header.stamp);
@@ -1519,7 +1521,7 @@ void MAPSros_topic_subscriber::ROSOdometryReceivedCallback(const nav_msgs::Odome
 {
     try {
     MAPSTimestamp t;
-    if (false == _transfer_ros_timestamp)
+    if (false == m_transfer_ros_timestamp)
         t = MAPS::CurrentTime();
     else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(odometry->header.stamp);
@@ -1572,13 +1574,13 @@ void MAPSros_topic_subscriber::ROSVisuMarkerReceivedCallback(const visualization
     try {
         // write timestamp
         MAPSTimestamp marker_ts;
-        if (false == _transfer_ros_timestamp)
+        if (false == m_transfer_ros_timestamp)
             marker_ts = MAPS::CurrentTime();
         else
             marker_ts = MAPSRosUtils::ROSTimeToMAPSTimestamp(callback_marker->header.stamp);
 
-        if (_first_time) {
-            _first_time = false;
+        if (m_first_time) {
+            m_first_time = false;
 
             Output(MARKER_OUTPUT_NB_ARROW).AllocOutputBuffer(MARKER_OUTPUT_SIZE_MAX_ARROW);
             Output(MARKER_OUTPUT_NB_CUBE).AllocOutputBuffer(MARKER_OUTPUT_SIZE_MAX_CUBE);
@@ -1593,8 +1595,8 @@ void MAPSros_topic_subscriber::ROSVisuMarkerReceivedCallback(const visualization
             Output(MARKER_OUTPUT_NB_MESH_RESOURCE).AllocOutputBuffer(1);
             Output(MARKER_OUTPUT_NB_TRIANGLE_LIST).AllocOutputBuffer(MARKER_OUTPUT_SIZE_MAX_TRIANGLE_LIST);
         }
-        int concerned_output = _markers_cache.apply_action(callback_marker);
-        auto v = _markers_cache.get_markers_by_output(concerned_output);
+        int concerned_output = m_markers_cache.apply_action(callback_marker);
+        auto v = m_markers_cache.get_markers_by_output(concerned_output);
 
         //for each type run the vector, then StartWriting it in one time
         MarkersWriteByType(v, callback_marker->type, concerned_output, marker_ts);
@@ -1753,7 +1755,7 @@ void MAPSros_topic_subscriber::ROSCANFrameReceivedCallback(const can_msgs::Frame
 {
     try {
     MAPSTimestamp t;
-    if (false == _transfer_ros_timestamp)
+    if (false == m_transfer_ros_timestamp)
         t = MAPS::CurrentTime();
     else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(frame->header.stamp);
@@ -1782,7 +1784,7 @@ void MAPSros_topic_subscriber::ROSCANFrameReceivedCallback(const can_msgs::Frame
     }
 }
 
-void MAPSros_topic_subscriber::OutputMarkerOnlyFill(MAPSRealObject& obj, const visualization_msgs::Marker::ConstPtr& marker, int id)
+void MAPSros_topic_subscriber::OutputMarkerOnlyFill(MAPSRealObject& obj, const visualization_msgs::Marker::ConstPtr& marker, int)
 {
     obj.kind = MAPSRealObject::Custom;
     obj.id = marker->id; // id
@@ -1825,15 +1827,14 @@ void MAPSros_topic_subscriber::Core()
 
 void MAPSros_topic_subscriber::Death()
 {
-    if (_sub) {
-        _sub->shutdown();
-        MAPS_SAFE_DELETE(_sub);
+    if (m_sub) 
+    {
+        m_sub->shutdown();
+        MAPS_SAFE_DELETE(m_sub);
     }
-    if (_n) {
-        (*_ros)->release_ros_node();
-        (*_ros)->release();
-         _n = nullptr;
-         _ros = nullptr;
+    if (m_n) 
+    {
+         m_n = nullptr; //The ROS node will be killed/released by the RTMaps ROS Bridge CoreFunction.
     }
-    _markers_cache.clear();
+    m_markers_cache.clear();
 }

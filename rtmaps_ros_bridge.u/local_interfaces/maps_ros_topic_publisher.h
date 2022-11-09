@@ -36,8 +36,8 @@
 
 // Includes maps sdk library header
 #include "maps.hpp"
-#include "maps_ros_defines.h"
 #include "maps_ros_utils.h"
+#include "maps_ros_defines.h"
 
 class AbstractIOEltToPointCloud2;
 template <typename OUT_TYPE, typename IN_TYPE> class IOEltToPointCloud2;
@@ -120,41 +120,41 @@ class MAPSros_topic_publisher : public MAPSComponent
     int CreateIOsForNavTopics(bool* output_header);
 private :
 	// Place here your specific methods and attributes
-    std::shared_ptr< MAPSRosUtils* >       _ros;
-	ros::NodeHandle* 	_n;
-	ros::Publisher* 	_pub;
+ 	MAPSROSBridgeCoreFunctionInterface* m_ros_bridge_cf;
+	ros::NodeHandle* 	m_n;
+	ros::Publisher* 	m_pub;
 
-	int 				_topic_type;
-	int					_message;
+	int 				m_topic_type;
+	int					m_message;
 
-	int 				_nb_inputs;
-	MAPSIOElt*			_ioeltin;
-    MAPSInput*			_inputs[5];
-    MAPSIOElt*			_ioelts[5];
+	int 				m_nb_inputs;
+	MAPSIOElt*			m_ioeltin;
+    MAPSInput*			m_inputs[5];
+    MAPSIOElt*			m_ioelts[5];
 
-	bool				_output_header;
-	bool				_publish_rtmaps_timestamp;
-	std_msgs::Header 	_header; //!< ROS header
+	bool				m_output_header;
+	bool				m_publish_rtmaps_timestamp;
+	std_msgs::Header 	m_header; //!< ROS header
 
 	void PublishStdMsg();
 	void PublishSensorMsg();
 	void PublishGeomMsg();
     void PublishNavMsg();
 
-	sensor_msgs::CompressedImage _ros_comp_img;
-	sensor_msgs::Image 		_ros_img;
-	sensor_msgs::LaserScan 	_ros_laser_scan;
-    AbstractIOEltToPointCloud2*         _pointcloud2_channel;
-    bool                    _ros_pointcloud2_memcpy;
-    int                     _ros_pointcloud2_output_type;
-    int                     _ros_pointcloud2_nb_points_in;
-    int                     _width;
-    int                     _height;
-    sensor_msgs::PointCloud2 _ros_pointcloud2;
+	sensor_msgs::CompressedImage    m_ros_comp_img;
+	sensor_msgs::Image 		        m_ros_img;
+	sensor_msgs::LaserScan 	        m_ros_laser_scan;
+    AbstractIOEltToPointCloud2*     m_pointcloud2_channel;
+    bool                            m_ros_pointcloud2_memcpy;
+    int                             m_ros_pointcloud2_output_type;
+    int                             m_ros_pointcloud2_nb_points_in;
+    int                             m_width;
+    int                             m_height;
+    sensor_msgs::PointCloud2        m_ros_pointcloud2;
 
-	bool _first_time;
-	int _count;
-	bool _laser_supports_intens;
+	bool    m_first_time;
+	int     m_count;
+	bool    m_laser_supports_intens;
 };
 
 #endif

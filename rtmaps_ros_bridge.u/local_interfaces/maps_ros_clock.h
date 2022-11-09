@@ -45,14 +45,16 @@ class MAPSros_clock : public MAPSComponent, public MAPSBaseClock
 {
 	// Use standard header definition macro
 	MAPS_COMPONENT_HEADER_CODE_WITHOUT_CONSTRUCTOR(MAPSros_clock)
-	MAPSros_clock(const char *componentName, MAPSComponentDefinition& md):MAPSComponent(componentName,md), MAPSBaseClock(componentName) {_clockDisabled=false; _clockHasShutdown=true;}
+	MAPSros_clock(const char *componentName, MAPSComponentDefinition& md):MAPSComponent(componentName,md), MAPSBaseClock(componentName) {m_clock_disabled=false; m_clock_has_shutdown=true;}
+	virtual ~MAPSros_clock() {}
 	void Set(MAPSProperty& p, MAPSInt64 value);
 private :
 	// Place here your specific methods and attributes
-    std::shared_ptr< MAPSRosUtils* > _ros;
-	bool _clockDisabled;
-	bool _clockHasShutdown;
-	MAPSMutex m_MyTimeMonitor;
+	MAPSROSBridgeCoreFunctionInterface* m_ros_bridge_cf;
+	ros::NodeHandle*  	m_ros_node;
+	bool 				m_clock_disabled;
+	bool 				m_clock_has_shutdown;
+	MAPSMutex 			m_time_monitor;
 
 	void InitClock();
 	void RunClock();

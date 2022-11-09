@@ -103,7 +103,8 @@ MAPS_COMPONENT_DEFINITION(MAPSros_topic_publisher,"ros_topic_publisher","2.2.1",
 MAPSros_topic_publisher::MAPSros_topic_publisher(const char* name, MAPSComponentDefinition& cd) :
 MAPSComponent(name,cd) {
 	MAPSEnumStruct topic_types;
-	for (int i=0; i< sizeof(s_topic_types)/sizeof(const char*); i++) {
+	for (unsigned int i=0; i< sizeof(s_topic_types)/sizeof(const char*); i++) 
+	{
 		topic_types.enumValues->Append() = s_topic_types[i];
 	}
 	DirectSet(Property("topic_type"),topic_types);
@@ -111,32 +112,38 @@ MAPSComponent(name,cd) {
 
 void MAPSros_topic_publisher::Dynamic()
 {
-	_topic_type = (int)GetIntegerProperty("topic_type");
+	m_topic_type = (int)GetIntegerProperty("topic_type");
 	int selected_message = (int)GetIntegerProperty("message");
-	if (Property("topic_type").PropertyChanged()) {
+	if (Property("topic_type").PropertyChanged())
+	 {
 		Property("topic_type").AcknowledgePropertyChanged();
 		selected_message = 0;
 	}
 	MAPSEnumStruct messages;
 
-	switch (_topic_type) {
+	switch (m_topic_type) 
+	{
 	case TOPIC_TYPE_STD:
-		for (int i=0; i < sizeof(s_std_msgs)/sizeof(const char*); i++) {
+		for (unsigned int i=0; i < sizeof(s_std_msgs)/sizeof(const char*); i++) 
+		{
 			messages.enumValues->Append() = s_std_msgs[i];
 		}
 		break;
 	case TOPIC_TYPE_SENSOR:
-		for (int i=0; i < sizeof(s_sensor_msgs)/sizeof(const char*); i++) {
+		for (unsigned int i=0; i < sizeof(s_sensor_msgs)/sizeof(const char*); i++) 
+		{
 			messages.enumValues->Append() = s_sensor_msgs[i];
 		}
 		break;
 	case TOPIC_TYPE_GEOM:
-		for (int i=0; i < sizeof(s_geometry_msgs)/sizeof(const char*); i++) {
+		for (unsigned int i=0; i < sizeof(s_geometry_msgs)/sizeof(const char*); i++) 
+		{
 			messages.enumValues->Append() = s_geometry_msgs[i];
 		}
 		break;
     case TOPIC_TYPE_NAV:
-        for (int i=0; i < sizeof(s_nav_msgs)/sizeof(const char*); i++) {
+        for (unsigned int i=0; i < sizeof(s_nav_msgs)/sizeof(const char*); i++) 
+		{
             messages.enumValues->Append() = s_nav_msgs[i];
         }
         break;
@@ -149,37 +156,39 @@ void MAPSros_topic_publisher::Dynamic()
 		selected_message = 0;
 	messages.selectedEnum = selected_message;
 	DirectSet(Property("message"),messages);
-	_message = selected_message;
+	m_message = selected_message;
 
-	_output_header = false;
-	switch(_topic_type) {
+	m_output_header = false;
+	switch(m_topic_type) {
 	case TOPIC_TYPE_STD:
-		_nb_inputs = CreateIOsForStdTopics(&_output_header);
+		m_nb_inputs = CreateIOsForStdTopics(&m_output_header);
 		break;
 	case TOPIC_TYPE_SENSOR:
-		_nb_inputs = CreateIOsForSensorTopics(&_output_header);
+		m_nb_inputs = CreateIOsForSensorTopics(&m_output_header);
 		break;
 	case TOPIC_TYPE_GEOM:
-		_nb_inputs = CreateIOsForGeomTopics(&_output_header);
+		m_nb_inputs = CreateIOsForGeomTopics(&m_output_header);
 		break;
     case TOPIC_TYPE_NAV:
-        _nb_inputs = CreateIOsForNavTopics(&_output_header);
+        m_nb_inputs = CreateIOsForNavTopics(&m_output_header);
         break;
 	}
 
-	if (_output_header) {
+	if (m_output_header) 
+	{
 		NewProperty("published_timestamps");
 		int pub_ts = (int)GetIntegerProperty("published_timestamps");
 		if (pub_ts == 0)
-			_publish_rtmaps_timestamp = true;
+			m_publish_rtmaps_timestamp = true;
 		else
-			_publish_rtmaps_timestamp = false;
+			m_publish_rtmaps_timestamp = false;
 	}
 }
 
 int MAPSros_topic_publisher::CreateIOsForStdTopics(bool* output_header)
 {
-	switch(_message) {
+	switch(m_message) 
+	{
 	case STD_MSG_INT32:
 		NewInput("input_int32");
 		break;
@@ -218,7 +227,8 @@ int MAPSros_topic_publisher::CreateIOsForSensorTopics(bool* output_header)
 	if (output_header)
 		*output_header = false;
 	int nb_inputs = 1;
-	switch(_message) {
+	switch(m_message) 
+	{
 	case SENSOR_MSG_COMPRESSED_IMAGE:
 		NewInput("input_mapsimage","compressed_image");
 		if (output_header)
@@ -241,9 +251,10 @@ int MAPSros_topic_publisher::CreateIOsForSensorTopics(bool* output_header)
 		NewProperty("laser_max_range");
 		NewProperty("laser_supports_intensities");
 
-		_laser_supports_intens = GetBoolProperty("laser_supports_intensities");
+		m_laser_supports_intens = GetBoolProperty("laser_supports_intensities");
 		NewInput("input_float64","input_laser_scan_ranges");
-		if (_laser_supports_intens) {
+		if (m_laser_supports_intens) 
+		{
 			nb_inputs = 2;
 			NewInput("input_float64","input_laser_scan_intensities");
 		}
@@ -291,7 +302,8 @@ int MAPSros_topic_publisher::CreateIOsForGeomTopics(bool* output_header)
 	if (output_header)
 		*output_header = false;
 	int nb_inputs = 1;
-	switch(_message) {
+	switch(m_message) 
+	{
 		case GEOM_MSG_POINT:
 			NewInput("input_float64","input_point");
 		break;
@@ -315,7 +327,8 @@ int MAPSros_topic_publisher::CreateIOsForNavTopics(bool* output_header)
     if (output_header)
         *output_header = false;
     int nb_inputs = 1;
-    switch(_message) {
+    switch(m_message) 
+	{
         case NAV_MSG_ODOMETRY:
         if (output_header)
             *output_header = true;
@@ -334,56 +347,56 @@ int MAPSros_topic_publisher::CreateIOsForNavTopics(bool* output_header)
 }
 void MAPSros_topic_publisher::Birth()
 {
-	_first_time = true;
-	_n = NULL;
-	_pub = NULL;
-    _pointcloud2_channel = NULL;
+	m_first_time = true;
+	m_n = NULL;
+	m_pub = NULL;
+    m_pointcloud2_channel = NULL;
 	MAPSString topic_name = GetStringProperty("topic_name");
-
-	try {
-        _ros = MAPSRosUtils::get_singleton();
-        if (_ros == NULL) {
-            Error("Could not initialize ROS.");
-        }
-        _n = (*_ros)->get_ros_node();//new ros::NodeHandle();
-		if (_n == NULL)
+	try 
+	{
+		m_n = MAPSRosUtils::GetROSNode();
+		if (m_n == NULL)
 			Error("Could not create NodeHandle.");
-		_pub = new ros::Publisher();
-		if (_pub == NULL)
+		m_pub = new ros::Publisher();
+		if (m_pub == NULL)
 			Error("Could not create Publisher.");
-	} catch (ros::Exception e) {
+	} 
+	catch (ros::Exception const& e ) 
+	{
 		ReportError(e.what());
 	}
-	switch(_topic_type) {
+	switch(m_topic_type) 
+	{
 	case TOPIC_TYPE_STD:
 	{
-		switch(_message) {
+		switch(m_message) 
+		{
 		case STD_MSG_INT32:
-			*_pub = _n->advertise<std_msgs::Int32>((const char*)topic_name,100);
+			*m_pub = m_n->advertise<std_msgs::Int32>((const char*)topic_name,100);
 			break;
 		case STD_MSG_INT32_ARRAY :
-			*_pub = _n->advertise<std_msgs::Int32MultiArray>((const char*)topic_name,100);
+			*m_pub = m_n->advertise<std_msgs::Int32MultiArray>((const char*)topic_name,100);
 			break;
 		case STD_MSG_INT64 :
-			*_pub = _n->advertise<std_msgs::Int64>((const char*)topic_name,100);
+			*m_pub = m_n->advertise<std_msgs::Int64>((const char*)topic_name,100);
 			break;
 		case STD_MSG_INT64_ARRAY :
-			*_pub = _n->advertise<std_msgs::Int64MultiArray>((const char*)topic_name,100);
+			*m_pub = m_n->advertise<std_msgs::Int64MultiArray>((const char*)topic_name,100);
 			break;
 		case STD_MSG_FLOAT32 :
-			*_pub = _n->advertise<std_msgs::Float32>((const char*)topic_name,100);
+			*m_pub = m_n->advertise<std_msgs::Float32>((const char*)topic_name,100);
 			break;
 		case STD_MSG_FLOAT32_ARRAY :
-			*_pub = _n->advertise<std_msgs::Float32MultiArray>((const char*)topic_name,100);
+			*m_pub = m_n->advertise<std_msgs::Float32MultiArray>((const char*)topic_name,100);
 			break;
 		case STD_MSG_FLOAT64 :
-			*_pub = _n->advertise<std_msgs::Float64>((const char*)topic_name,100);
+			*m_pub = m_n->advertise<std_msgs::Float64>((const char*)topic_name,100);
 			break;
 		case STD_MSG_FLOAT64_ARRAY :
-			*_pub = _n->advertise<std_msgs::Float64MultiArray>((const char*)topic_name,100);
+			*m_pub = m_n->advertise<std_msgs::Float64MultiArray>((const char*)topic_name,100);
 			break;
 		case STD_MSG_TEXT:
-			*_pub = _n->advertise<std_msgs::String>((const char*)topic_name,1000);
+			*m_pub = m_n->advertise<std_msgs::String>((const char*)topic_name,1000);
 			break;
 		default:
 			Error("Selected topic is not supported yet.");
@@ -391,48 +404,51 @@ void MAPSros_topic_publisher::Birth()
 	}
 		break;
 	case TOPIC_TYPE_SENSOR:
-		switch(_message) {
+		switch(m_message) 
+		{
 		case SENSOR_MSG_COMPRESSED_IMAGE:
-			*_pub = _n->advertise<sensor_msgs::CompressedImage>((const char*)topic_name,10);
+			*m_pub = m_n->advertise<sensor_msgs::CompressedImage>((const char*)topic_name,10);
 			break;
 		case SENSOR_MSG_IMAGE:
-			*_pub = _n->advertise<sensor_msgs::Image>((const char*)topic_name,10);
+			*m_pub = m_n->advertise<sensor_msgs::Image>((const char*)topic_name,10);
 			break;
 		case SENSOR_MSG_LASER_SCAN:
-			*_pub = _n->advertise<sensor_msgs::LaserScan>((const char*)topic_name,16);
+			*m_pub = m_n->advertise<sensor_msgs::LaserScan>((const char*)topic_name,16);
 			break;
         case SENSOR_MSG_POINT_CLOUD2:
-            *_pub = _n->advertise<sensor_msgs::PointCloud2>((const char*)topic_name,4);
+            *m_pub = m_n->advertise<sensor_msgs::PointCloud2>((const char*)topic_name,4);
             break;
         case SENSOR_MSG_NAV_SAT_FIX:
-            *_pub = _n->advertise<sensor_msgs::NavSatFix>((const char*)topic_name,16);
+            *m_pub = m_n->advertise<sensor_msgs::NavSatFix>((const char*)topic_name,16);
             break;
         case SENSOR_MSG_IMU:
-            *_pub = _n->advertise<sensor_msgs::Imu>((const char*)topic_name,16);
+            *m_pub = m_n->advertise<sensor_msgs::Imu>((const char*)topic_name,16);
             break;
 		default:
 			Error("Selected topic is not supported yet.");
 		}
 		break;
 	case TOPIC_TYPE_GEOM:
-		switch(_message) {
+		switch(m_message) 
+		{
 		case GEOM_MSG_POINT:
-			*_pub = _n->advertise<geometry_msgs::Point>((const char*)topic_name,100);
+			*m_pub = m_n->advertise<geometry_msgs::Point>((const char*)topic_name,100);
 			break;
 		case GEOM_MSG_TWIST:
-			*_pub = _n->advertise<geometry_msgs::Twist>((const char*)topic_name,100);
+			*m_pub = m_n->advertise<geometry_msgs::Twist>((const char*)topic_name,100);
 			break;
         case GEOM_MSG_TWIST_STAMPED:
-            *_pub = _n->advertise<geometry_msgs::TwistStamped>((const char*)topic_name,100);
+            *m_pub = m_n->advertise<geometry_msgs::TwistStamped>((const char*)topic_name,100);
             break;
 		default:
 			Error("Selected topic is not supported yet.");
 		}
 		break;
     case TOPIC_TYPE_NAV:
-        switch(_message) {
+        switch(m_message) 
+		{
         case NAV_MSG_ODOMETRY:
-            *_pub = _n->advertise<nav_msgs::Odometry>((const char*)topic_name,64);
+            *m_pub = m_n->advertise<nav_msgs::Odometry>((const char*)topic_name,64);
             break;
         default:
             Error("Selected topic is not supported yet.");
@@ -443,38 +459,44 @@ void MAPSros_topic_publisher::Birth()
 		Error("Selected topic is not supported yet.");
 	}
 
-	_count = 0;
+	m_count = 0;
 
-    for (int i=0; i<_nb_inputs; i++) {
-        _inputs[i] = &Input(i);
+    for (int i=0; i<m_nb_inputs; i++) 
+	{
+        m_inputs[i] = &Input(i);
 	}
 }
 
 void MAPSros_topic_publisher::Core()
 {
 	MAPSTimestamp t;
-	if (_nb_inputs == 1) {
-		_ioeltin = StartReading(Input(0));
-		if (_ioeltin == NULL)
+	if (m_nb_inputs == 1) 
+	{
+		m_ioeltin = StartReading(Input(0));
+		if (m_ioeltin == NULL)
 			return;
-		t = _ioeltin->Timestamp();
-	} else {
-		t = SynchroStartReading(_nb_inputs,_inputs,_ioelts);
+		t = m_ioeltin->Timestamp();
+	} 
+	else 
+	{
+		t = SynchroStartReading(m_nb_inputs,m_inputs,m_ioelts);
 		if (t < 0)
 			return;
 	}
 
-	if (_output_header) {
+	if (m_output_header) 
+	{
         MAPSString frame_id = (const char*)GetStringProperty("frame_id");
-        _header.frame_id = frame_id.Len() > 0 ? (const char*)frame_id : (const char*)this->Name();
-		if (_publish_rtmaps_timestamp)
-            _header.stamp = MAPSRosUtils::MAPSTimestampToROSTime(t);
+        m_header.frame_id = frame_id.Len() > 0 ? (const char*)frame_id : (const char*)this->Name();
+		if (m_publish_rtmaps_timestamp)
+            m_header.stamp = MAPSRosUtils::MAPSTimestampToROSTime(t);
 		else
-			_header.stamp = ros::Time::now();
+			m_header.stamp = ros::Time::now();
 	}
 
 
-	switch(_topic_type) {
+	switch(m_topic_type) 
+	{
 	case TOPIC_TYPE_STD:
 		PublishStdMsg();
 		break;
@@ -489,34 +511,36 @@ void MAPSros_topic_publisher::Core()
         break;
 	}
 
-	_count++;
+	m_count++;
 }
 
 void MAPSros_topic_publisher::PublishStdMsg()
 {
-	switch(_message) {
+	switch(m_message) 
+	{
 	case STD_MSG_TEXT:
 	{
 		std_msgs::String msg;
-		msg.data = (const char*)_ioeltin->TextAscii();
-		_pub->publish(msg);
+		msg.data = (const char*)m_ioeltin->TextAscii();
+		m_pub->publish(msg);
 	}
 		break;
 	case STD_MSG_INT32:
 	{
 		std_msgs::Int32 msg;
-		msg.data = _ioeltin->Integer32();
-		_pub->publish(msg);
+		msg.data = m_ioeltin->Integer32();
+		m_pub->publish(msg);
 	}
 		break;
 	case STD_MSG_INT32_ARRAY:
 	{
 		std_msgs::Int32MultiArray msg;
-		int vectorsize_in = _ioeltin->VectorSize();
+		int vectorsize_in = m_ioeltin->VectorSize();
 
 		msg.data.resize(vectorsize_in);
-		for (int i=0; i<vectorsize_in; i++) {
-			msg.data[i] = _ioeltin->Integer32(i);
+		for (int i=0; i<vectorsize_in; i++) 
+		{
+			msg.data[i] = m_ioeltin->Integer32(i);
 		}
 
 		msg.layout.data_offset=0;
@@ -525,24 +549,25 @@ void MAPSros_topic_publisher::PublishStdMsg()
 		msg.layout.dim[0].size=vectorsize_in;
 		msg.layout.dim[0].stride=vectorsize_in*sizeof(int32_t);
 
-		_pub->publish(msg);
+		m_pub->publish(msg);
 	}
 	break;
 	case STD_MSG_INT64:
 	{
 		std_msgs::Int64 msg;
-		msg.data = _ioeltin->Integer64();
-		_pub->publish(msg);
+		msg.data = m_ioeltin->Integer64();
+		m_pub->publish(msg);
 	}
 		break;
 	case STD_MSG_INT64_ARRAY:
 	{
 		std_msgs::Int64MultiArray msg;
-		int vectorsize_in = _ioeltin->VectorSize();
+		int vectorsize_in = m_ioeltin->VectorSize();
 
 		msg.data.resize(vectorsize_in);
-		for (int i=0; i<vectorsize_in; i++) {
-			msg.data[i] = _ioeltin->Integer64(i);
+		for (int i=0; i<vectorsize_in; i++) 
+		{
+			msg.data[i] = m_ioeltin->Integer64(i);
 		}
 
 		msg.layout.data_offset=0;
@@ -551,24 +576,25 @@ void MAPSros_topic_publisher::PublishStdMsg()
 		msg.layout.dim[0].size=vectorsize_in;
 		msg.layout.dim[0].stride=vectorsize_in*sizeof(int32_t);
 
-		_pub->publish(msg);
+		m_pub->publish(msg);
 	}
 	break;
 	case STD_MSG_FLOAT32:
 	{
 		std_msgs::Float32 msg;
-		msg.data = _ioeltin->Float32();
-		_pub->publish(msg);
+		msg.data = m_ioeltin->Float32();
+		m_pub->publish(msg);
 	}
 		break;
 	case STD_MSG_FLOAT32_ARRAY:
 	{
 		std_msgs::Float32MultiArray msg;
-		int vectorsize_in = _ioeltin->VectorSize();
+		int vectorsize_in = m_ioeltin->VectorSize();
 
 		msg.data.resize(vectorsize_in);
-		for (int i=0; i<vectorsize_in; i++) {
-			msg.data[i] = _ioeltin->Float32(i);
+		for (int i=0; i<vectorsize_in; i++) 
+		{
+			msg.data[i] = m_ioeltin->Float32(i);
 		}
 
 		msg.layout.data_offset=0;
@@ -577,24 +603,24 @@ void MAPSros_topic_publisher::PublishStdMsg()
 		msg.layout.dim[0].size=vectorsize_in;
 		msg.layout.dim[0].stride=vectorsize_in*sizeof(int32_t);
 
-		_pub->publish(msg);
+		m_pub->publish(msg);
 	}
 	break;
 	case STD_MSG_FLOAT64:
 	{
 		std_msgs::Int64 msg;
-		msg.data = _ioeltin->Float64();
-		_pub->publish(msg);
+		msg.data = m_ioeltin->Float64();
+		m_pub->publish(msg);
 	}
 		break;
 	case STD_MSG_FLOAT64_ARRAY:
 	{
 		std_msgs::Float64MultiArray msg;
-		int vectorsize_in = _ioeltin->VectorSize();
+		int vectorsize_in = m_ioeltin->VectorSize();
 
 		msg.data.resize(vectorsize_in);
 		for (int i=0; i<vectorsize_in; i++) {
-			msg.data[i] = _ioeltin->Float64(i);
+			msg.data[i] = m_ioeltin->Float64(i);
 		}
 
 		msg.layout.data_offset=0;
@@ -603,7 +629,7 @@ void MAPSros_topic_publisher::PublishStdMsg()
 		msg.layout.dim[0].size=vectorsize_in;
 		msg.layout.dim[0].stride=vectorsize_in*sizeof(int32_t);
 
-		_pub->publish(msg);
+		m_pub->publish(msg);
 	}
 	break;
 	}
@@ -611,145 +637,162 @@ void MAPSros_topic_publisher::PublishStdMsg()
 
 void MAPSros_topic_publisher::PublishSensorMsg()
 {
-	switch(_message) {
+	switch(m_message) 
+	{
 		case SENSOR_MSG_COMPRESSED_IMAGE :
 		{
-			MAPSImage& image_in = _ioeltin->MAPSImage();
-			if (_first_time) {
-				_first_time = false;
+			MAPSImage& image_in = m_ioeltin->MAPSImage();
+			if (m_first_time) 
+			{
+				m_first_time = false;
 				if(*(MAPSUInt32*)image_in.imageCoding != MAPS_IMAGECODING_JPEG &&
 				   *(MAPSUInt32*)image_in.imageCoding != MAPS_IMAGECODING_PNG) {
 						Error("Unsupported format for compressed image. ROS supports only jpeg and png images.");
 					}
 					switch(*(MAPSUInt32*)image_in.imageCoding) {
 					case MAPS_IMAGECODING_JPEG:
-						_ros_comp_img.format = "jpeg";
+						m_ros_comp_img.format = "jpeg";
 						break;
 					case MAPS_IMAGECODING_PNG:
-						_ros_comp_img.format = "png";
+						m_ros_comp_img.format = "png";
 						break;
 					default:
 						Error("Unsupported image format.");
 					}
 			}
-			_ros_comp_img.data.resize(image_in.imageSize);
-			_ros_comp_img.header = _header;
-			MAPS::Memcpy((char*)&_ros_comp_img.data[0],image_in.imageData,image_in.imageSize);
-			_pub->publish(_ros_comp_img);
+			m_ros_comp_img.data.resize(image_in.imageSize);
+			m_ros_comp_img.header = m_header;
+			MAPS::Memcpy((char*)&m_ros_comp_img.data[0],image_in.imageData,image_in.imageSize);
+			m_pub->publish(m_ros_comp_img);
 		}
 		break;
 		case SENSOR_MSG_IMAGE :
 		{
-			IplImage& image_in = _ioeltin->IplImage();
-			if (_first_time) {
-				_first_time = false;
-				_ros_img.height = image_in.height;
-				_ros_img.width = image_in.width;
-				_ros_img.is_bigendian = false;
-				switch(*(MAPSUInt32*)image_in.channelSeq) {
+			IplImage& image_in = m_ioeltin->IplImage();
+			if (m_first_time) 
+			{
+				m_first_time = false;
+				m_ros_img.height = image_in.height;
+				m_ros_img.width = image_in.width;
+				m_ros_img.is_bigendian = false;
+				switch(*(MAPSUInt32*)image_in.channelSeq) 
+				{
 				case MAPS_CHANNELSEQ_BGR:
-					_ros_img.encoding = "bgr8";
+					m_ros_img.encoding = "bgr8";
 					break;
 				case MAPS_CHANNELSEQ_RGB:
-					_ros_img.encoding = "rgb8";
+					m_ros_img.encoding = "rgb8";
 					break;
 				case MAPS_CHANNELSEQ_GRAY:
-					_ros_img.encoding = "mono8";
+					m_ros_img.encoding = "mono8";
 					break;
 				case MAPS_CHANNELSEQ_RGBA:
-					_ros_img.encoding = "rgba8";
+					m_ros_img.encoding = "rgba8";
 					break;
 				case MAPS_CHANNELSEQ_BGRA:
-					_ros_img.encoding = "bgra8";
+					m_ros_img.encoding = "bgra8";
 					break;
 				default:
 					Error("Unsupported image format");
 				}
-				_ros_img.step = image_in.widthStep;
-				_ros_img.data.resize(image_in.imageSize);
+				m_ros_img.step = image_in.widthStep;
+				m_ros_img.data.resize(image_in.imageSize);
 			}
-			_ros_img.header = _header;
-			MAPS::Memcpy((char*)&_ros_img.data[0],image_in.imageData,image_in.imageSize);
-			_pub->publish(_ros_img);
+			m_ros_img.header = m_header;
+			MAPS::Memcpy((char*)&m_ros_img.data[0],image_in.imageData,image_in.imageSize);
+			m_pub->publish(m_ros_img);
 		}
 			break;
 		case SENSOR_MSG_LASER_SCAN:
 		{
-			_ros_laser_scan.header = _header;
-			if (_first_time) {
-				_first_time = false;
-				_ros_laser_scan.angle_min = GetFloatProperty("laser_min_angle")*MAPS_PI/180.0;
-				_ros_laser_scan.angle_max = GetFloatProperty("laser_max_angle")*MAPS_PI/180.0;
-				_ros_laser_scan.angle_increment = GetFloatProperty("laser_angle_increment")*MAPS_PI/180.0;
-				_ros_laser_scan.time_increment = GetFloatProperty("laser_time_increment");
-				_ros_laser_scan.scan_time = GetFloatProperty("laser_scan_time");
-				_ros_laser_scan.range_min = GetFloatProperty("laser_min_range");
-				_ros_laser_scan.range_max = GetFloatProperty("laser_max_range");
-				if (_nb_inputs == 1) {
-					_ros_laser_scan.ranges.resize(_ioeltin->BufferSize());
-				} else {
-					_ros_laser_scan.ranges.resize(_ioelts[0]->BufferSize());
-					_ros_laser_scan.intensities.resize(_ioelts[1]->BufferSize());
+			m_ros_laser_scan.header = m_header;
+			if (m_first_time) 
+			{
+				m_first_time = false;
+				m_ros_laser_scan.angle_min = GetFloatProperty("laser_min_angle")*MAPS_PI/180.0;
+				m_ros_laser_scan.angle_max = GetFloatProperty("laser_max_angle")*MAPS_PI/180.0;
+				m_ros_laser_scan.angle_increment = GetFloatProperty("laser_angle_increment")*MAPS_PI/180.0;
+				m_ros_laser_scan.time_increment = GetFloatProperty("laser_time_increment");
+				m_ros_laser_scan.scan_time = GetFloatProperty("laser_scan_time");
+				m_ros_laser_scan.range_min = GetFloatProperty("laser_min_range");
+				m_ros_laser_scan.range_max = GetFloatProperty("laser_max_range");
+				if (m_nb_inputs == 1) 
+				{
+					m_ros_laser_scan.ranges.resize(m_ioeltin->BufferSize());
+				} 
+				else 
+				{
+					m_ros_laser_scan.ranges.resize(m_ioelts[0]->BufferSize());
+					m_ros_laser_scan.intensities.resize(m_ioelts[1]->BufferSize());
 				}
 			}
 
-			if (_nb_inputs == 1) {
-				int vectorsize_in = _ioeltin->VectorSize();
-				_ros_laser_scan.ranges.resize(vectorsize_in);
-				MAPSFloat* data_in = &_ioeltin->Float64();
-				for (int i=0; i<vectorsize_in; i++) {
-					_ros_laser_scan.ranges[i] = *(data_in++);
+			if (m_nb_inputs == 1) 
+			{
+				int vectorsize_in = m_ioeltin->VectorSize();
+				m_ros_laser_scan.ranges.resize(vectorsize_in);
+				MAPSFloat64* data_in = &m_ioeltin->Float64();
+				for (int i=0; i<vectorsize_in; i++) 
+				{
+					m_ros_laser_scan.ranges[i] = *(data_in++);
 				}
-			} else {
-				int vectorsize_in = _ioelts[0]->VectorSize();
-				if (_ioelts[1]->VectorSize() != vectorsize_in) {
+			} 
+			else 
+			{
+				int vectorsize_in = m_ioelts[0]->VectorSize();
+				if (m_ioelts[1]->VectorSize() != vectorsize_in) 
+				{
 					ReportWarning("Different number of data samples on ranges and intensities vector. Discarding...");
 					break;
 				}
-				_ros_laser_scan.ranges.resize(vectorsize_in);
-				_ros_laser_scan.intensities.resize(vectorsize_in);
-				MAPSFloat* data_in_ranges = &_ioelts[0]->Float64();
-				MAPSFloat* data_in_intens = &_ioelts[1]->Float64();
-				for (int i=0; i<vectorsize_in; i++) {
-					_ros_laser_scan.ranges[i] = *(data_in_ranges++);
-					_ros_laser_scan.intensities[i] = *(data_in_intens++);
+				m_ros_laser_scan.ranges.resize(vectorsize_in);
+				m_ros_laser_scan.intensities.resize(vectorsize_in);
+				MAPSFloat64* data_in_ranges = &m_ioelts[0]->Float64();
+				MAPSFloat64* data_in_intens = &m_ioelts[1]->Float64();
+				for (int i=0; i<vectorsize_in; i++) 
+				{
+					m_ros_laser_scan.ranges[i] = *(data_in_ranges++);
+					m_ros_laser_scan.intensities[i] = *(data_in_intens++);
 				}
 			}
 
-			_pub->publish(_ros_laser_scan);
+			m_pub->publish(m_ros_laser_scan);
 		}
 		break;
         case  SENSOR_MSG_POINT_CLOUD2:
         {
-            _ros_pointcloud2.header = _header;
-            if (_first_time) {
-                _first_time = false;
-                _ros_pointcloud2_output_type = (int)GetIntegerProperty("pointcloud2_datatype");
-                _ros_pointcloud2.is_dense = GetBoolProperty("pointcloud2_is_dense");
-                _ros_pointcloud2.is_bigendian = false;
-                _ros_pointcloud2.fields.resize(3);
-                _ros_pointcloud2.fields[0].name = "x";
-                _ros_pointcloud2.fields[1].name = "y";
-                _ros_pointcloud2.fields[2].name = "z";
-                _ros_pointcloud2_memcpy = false;
-                _ros_pointcloud2.fields[0].count = 1;
-                _ros_pointcloud2.fields[1].count = 1;
-                _ros_pointcloud2.fields[2].count = 1;
+            m_ros_pointcloud2.header = m_header;
+            if (m_first_time) 
+			{
+                m_first_time = false;
+                m_ros_pointcloud2_output_type = (int)GetIntegerProperty("pointcloud2_datatype");
+                m_ros_pointcloud2.is_dense = GetBoolProperty("pointcloud2_is_dense");
+                m_ros_pointcloud2.is_bigendian = false;
+                m_ros_pointcloud2.fields.resize(3);
+                m_ros_pointcloud2.fields[0].name = "x";
+                m_ros_pointcloud2.fields[1].name = "y";
+                m_ros_pointcloud2.fields[2].name = "z";
+                m_ros_pointcloud2_memcpy = false;
+                m_ros_pointcloud2.fields[0].count = 1;
+                m_ros_pointcloud2.fields[1].count = 1;
+                m_ros_pointcloud2.fields[2].count = 1;
 
-                if (MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterInteger64))
+                if (MAPS::TypeFilter(m_ioeltin->Type(),MAPS::FilterInteger64))
                     Error("64 bit integer point clouds are not supported in ROS.");
 
-                if(_ros_pointcloud2_output_type == 1 || (_ros_pointcloud2_output_type == 0 && MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterInteger32))) {
-                    _ros_pointcloud2.fields[0].offset = 0;
-                    _ros_pointcloud2.fields[1].offset = 4;
-                    _ros_pointcloud2.fields[2].offset = 8;
-                    _ros_pointcloud2.point_step = 4 * 3;
-                    _ros_pointcloud2.fields[0].datatype = 5; //Int32
-                    _ros_pointcloud2.fields[1].datatype = 5; //Int32
-                    _ros_pointcloud2.fields[2].datatype = 5; //Int32
-                    if (_ros_pointcloud2_output_type == 0 || (_ros_pointcloud2_output_type == 1 && MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterInteger32)))
-                        _ros_pointcloud2_memcpy = true;
-                    else {
+                if(m_ros_pointcloud2_output_type == 1 || (m_ros_pointcloud2_output_type == 0 && MAPS::TypeFilter(m_ioeltin->Type(),MAPS::FilterInteger32))) 
+				{
+                    m_ros_pointcloud2.fields[0].offset = 0;
+                    m_ros_pointcloud2.fields[1].offset = 4;
+                    m_ros_pointcloud2.fields[2].offset = 8;
+                    m_ros_pointcloud2.point_step = 4 * 3;
+                    m_ros_pointcloud2.fields[0].datatype = 5; //Int32
+                    m_ros_pointcloud2.fields[1].datatype = 5; //Int32
+                    m_ros_pointcloud2.fields[2].datatype = 5; //Int32
+                    if (m_ros_pointcloud2_output_type == 0 || (m_ros_pointcloud2_output_type == 1 && MAPS::TypeFilter(m_ioeltin->Type(),MAPS::FilterInteger32)))
+                        m_ros_pointcloud2_memcpy = true;
+                    else 
+					{
                         /*
                         if (MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterFloat32))
                             _pointcloud2_channel = new IOEltToPointCloud2<MAPSInt32, MAPSFloat32>();
@@ -757,17 +800,20 @@ void MAPSros_topic_publisher::PublishSensorMsg()
                             _pointcloud2_channel = new IOEltToPointCloud2<MAPSInt32, MAPSFloat64>();
                             */
                     }
-                } else if (_ros_pointcloud2_output_type == 2 || (_ros_pointcloud2_output_type == 0 && MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterFloat32))) {
-                    _ros_pointcloud2.point_step = 4 * 3;
-                    _ros_pointcloud2.fields[0].offset = 0;
-                    _ros_pointcloud2.fields[1].offset = 4;
-                    _ros_pointcloud2.fields[2].offset = 8;
-                    _ros_pointcloud2.fields[0].datatype = 7; // Float32
-                    _ros_pointcloud2.fields[1].datatype = 7; // Float32
-                    _ros_pointcloud2.fields[2].datatype = 7; // Float32
-                    if (_ros_pointcloud2_output_type == 0 || (_ros_pointcloud2_output_type == 2 && MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterFloat32)))
-                        _ros_pointcloud2_memcpy = true;
-                    else {
+                } 
+				else if (m_ros_pointcloud2_output_type == 2 || (m_ros_pointcloud2_output_type == 0 && MAPS::TypeFilter(m_ioeltin->Type(),MAPS::FilterFloat32))) 
+				{
+                    m_ros_pointcloud2.point_step = 4 * 3;
+                    m_ros_pointcloud2.fields[0].offset = 0;
+                    m_ros_pointcloud2.fields[1].offset = 4;
+                    m_ros_pointcloud2.fields[2].offset = 8;
+                    m_ros_pointcloud2.fields[0].datatype = 7; // Float32
+                    m_ros_pointcloud2.fields[1].datatype = 7; // Float32
+                    m_ros_pointcloud2.fields[2].datatype = 7; // Float32
+                    if (m_ros_pointcloud2_output_type == 0 || (m_ros_pointcloud2_output_type == 2 && MAPS::TypeFilter(m_ioeltin->Type(),MAPS::FilterFloat32)))
+                        m_ros_pointcloud2_memcpy = true;
+                    else 
+					{
                         /*
                         if (MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterInteger32))
                             _pointcloud2_channel = new IOEltToPointCloud2<MAPSFloat32, MAPSInt32>();
@@ -776,17 +822,20 @@ void MAPSros_topic_publisher::PublishSensorMsg()
                             */
                     }
 
-                } else if (_ros_pointcloud2_output_type == 3 || (_ros_pointcloud2_output_type == 0 && MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterFloat64))) {
-                    _ros_pointcloud2.point_step = 8 * 3;
-                    _ros_pointcloud2.fields[0].offset = 0;
-                    _ros_pointcloud2.fields[1].offset = 8;
-                    _ros_pointcloud2.fields[2].offset = 16;
-                    _ros_pointcloud2.fields[0].datatype = 8; // Float64
-                    _ros_pointcloud2.fields[1].datatype = 8; // Float64
-                    _ros_pointcloud2.fields[2].datatype = 8; // Float64
-                    if (_ros_pointcloud2_output_type == 0 || (_ros_pointcloud2_output_type == 3 && MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterFloat64)))
-                        _ros_pointcloud2_memcpy = true;
-                    else {
+                } 
+				else if (m_ros_pointcloud2_output_type == 3 || (m_ros_pointcloud2_output_type == 0 && MAPS::TypeFilter(m_ioeltin->Type(),MAPS::FilterFloat64))) 
+				{
+                    m_ros_pointcloud2.point_step = 8 * 3;
+                    m_ros_pointcloud2.fields[0].offset = 0;
+                    m_ros_pointcloud2.fields[1].offset = 8;
+                    m_ros_pointcloud2.fields[2].offset = 16;
+                    m_ros_pointcloud2.fields[0].datatype = 8; // Float64
+                    m_ros_pointcloud2.fields[1].datatype = 8; // Float64
+                    m_ros_pointcloud2.fields[2].datatype = 8; // Float64
+                    if (m_ros_pointcloud2_output_type == 0 || (m_ros_pointcloud2_output_type == 3 && MAPS::TypeFilter(m_ioeltin->Type(),MAPS::FilterFloat64)))
+                        m_ros_pointcloud2_memcpy = true;
+                    else 
+					{
                         /*
                         if (MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterInteger32))
                             _pointcloud2_channel = new IOEltToPointCloud2<MAPSFloat64, MAPSInt32>();
@@ -797,143 +846,166 @@ void MAPSros_topic_publisher::PublishSensorMsg()
                     }
                 }
 
-                _width = GetIntegerProperty("pointcloud2_width");
-                _height = GetIntegerProperty("pointcloud2_height");
+                m_width = GetIntegerProperty("pointcloud2_width");
+                m_height = GetIntegerProperty("pointcloud2_height");
             } // first_time
 
-            if (_ioeltin->VectorSize() % 3 != 0) {
+            if (m_ioeltin->VectorSize() % 3 != 0) 
+			{
                 Error("The input vector size is not a multiple of 3 as expected for an XYZ point cloud.");
             }
-            _ros_pointcloud2_nb_points_in = _ioeltin->VectorSize() / 3;
-            if (_width > 0 && _height > 0) {
-                if (_ros_pointcloud2_nb_points_in != _width * _height) {
+            m_ros_pointcloud2_nb_points_in = m_ioeltin->VectorSize() / 3;
+            if (m_width > 0 && m_height > 0) 
+			{
+                if (m_ros_pointcloud2_nb_points_in != m_width * m_height) 
+				{
                     MAPSStreamedString ss;
-                    ss << "The input number of points (" << _ros_pointcloud2_nb_points_in << ") does not match the dimensions of the publised PointCloud2 (" << _width << "x" << _height << ")";
+                    ss << "The input number of points (" << m_ros_pointcloud2_nb_points_in << ") does not match the dimensions of the publised PointCloud2 (" << m_width << "x" << m_height << ")";
                     Error(ss);
                 }
-                _ros_pointcloud2.width = _width;
-                _ros_pointcloud2.height = _height;
-            } else {
-                if (_width <= 0 && _height <= 0) {
-                    _ros_pointcloud2.width = _ros_pointcloud2_nb_points_in;
-                    _ros_pointcloud2.height = 1;
-                } else if (_width <= 0) {
-                    _ros_pointcloud2.height = _height;
-                    _ros_pointcloud2.width = _ros_pointcloud2_nb_points_in/_ros_pointcloud2.height;
-                } else if (_height <= 0) {
-                    _ros_pointcloud2.width = _width;
-                    _ros_pointcloud2.height = _ros_pointcloud2_nb_points_in/_ros_pointcloud2.width;
+                m_ros_pointcloud2.width = m_width;
+                m_ros_pointcloud2.height = m_height;
+            } 
+			else 
+			{
+                if (m_width <= 0 && m_height <= 0) 
+				{
+                    m_ros_pointcloud2.width = m_ros_pointcloud2_nb_points_in;
+                    m_ros_pointcloud2.height = 1;
+                } else if (m_width <= 0) {
+                    m_ros_pointcloud2.height = m_height;
+                    m_ros_pointcloud2.width = m_ros_pointcloud2_nb_points_in/m_ros_pointcloud2.height;
+                } else if (m_height <= 0) {
+                    m_ros_pointcloud2.width = m_width;
+                    m_ros_pointcloud2.height = m_ros_pointcloud2_nb_points_in/m_ros_pointcloud2.width;
                 }
             }
-            _ros_pointcloud2.row_step = _ros_pointcloud2.point_step * _ros_pointcloud2.width;
-            int data_size = _ros_pointcloud2.row_step * _ros_pointcloud2.height;
-            if (_ros_pointcloud2.data.size() != data_size) {
-                _ros_pointcloud2.data.resize(_ros_pointcloud2.row_step * _ros_pointcloud2.height);
+            m_ros_pointcloud2.row_step = m_ros_pointcloud2.point_step * m_ros_pointcloud2.width;
+            unsigned int data_size = m_ros_pointcloud2.row_step * m_ros_pointcloud2.height;
+            if (m_ros_pointcloud2.data.size() != data_size) 
+			{
+                m_ros_pointcloud2.data.resize(m_ros_pointcloud2.row_step * m_ros_pointcloud2.height);
             }
 
-            if (_ros_pointcloud2_memcpy) {
-                if (_ioeltin->IOEltUsedSizeInBytes(NULL) != _ros_pointcloud2.data.size()) {
+            if (m_ros_pointcloud2_memcpy) 
+			{
+                if (m_ioeltin->IOEltUsedSizeInBytes(NULL) != (int)m_ros_pointcloud2.data.size()) 
+				{
                     ReportError("Wrong size for received point cloud to be published to ROS. The PointCloud size should not change from one sample to another.");
                     break;
                 }
-                MAPS::Memcpy(&_ros_pointcloud2.data[0],_ioeltin->Data(),_ros_pointcloud2.data.size());
+                MAPS::Memcpy(&m_ros_pointcloud2.data[0],m_ioeltin->Data(),m_ros_pointcloud2.data.size());
 
-            } else {
+            } 
+			else 
+			{
                 /*
                 _pointcloud2_channel->configuBuffers(&_ros_pointcloud2.data[0],_ioeltin->Data(),_ros_pointcloud2_nb_points_in);
                 CopyPointCloud2Visitor visitor;
                 _pointcloud2_channel->accept(visitor);
                 */
-                if (_ros_pointcloud2_output_type == 2 && MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterInteger32) ) {
-                    MAPSInt32* data_in = &_ioeltin->Integer32();
-                    MAPSFloat32* data_out = (MAPSFloat32*)&_ros_pointcloud2.data[0];
-                    for (int i=_ros_pointcloud2_nb_points_in; i>0; i--) {
+                if (m_ros_pointcloud2_output_type == 2 && MAPS::TypeFilter(m_ioeltin->Type(),MAPS::FilterInteger32) ) 
+				{
+                    MAPSInt32* data_in = &m_ioeltin->Integer32();
+                    MAPSFloat32* data_out = (MAPSFloat32*)&m_ros_pointcloud2.data[0];
+                    for (int i=m_ros_pointcloud2_nb_points_in; i>0; i--) 
+					{
                         *(data_out++) = *(data_in++);
                     }
-                } else {
+                } 
+				else 
+				{
                     Error("The requested data type conversion is not supported yet.");
                 }
             }
-            _pub->publish(_ros_pointcloud2);
+            m_pub->publish(m_ros_pointcloud2);
         }
         break;
     case SENSOR_MSG_NAV_SAT_FIX:
-        if (_ioelts[0]->VectorSize() != 2) {
+        if (m_ioelts[0]->VectorSize() != 2) 
+		{
             MAPSStreamedString ss;
-            ss << "Unexpected vector size received on input navsatfix_status (" << _ioelts[0]->VectorSize() << "). Expecting 2: fix status and service.";
+            ss << "Unexpected vector size received on input navsatfix_status (" << m_ioelts[0]->VectorSize() << "). Expecting 2: fix status and service.";
             ReportError(ss);
             break;
         }
-        if (_ioelts[1]->VectorSize() != 3) {
+        if (m_ioelts[1]->VectorSize() != 3) 
+		{
             MAPSStreamedString ss;
-            ss << "Unexpected vector size received on input navsatfix_pos_lla (" << _ioelts[1]->VectorSize() << "). Expecting 3: latitude, longitude and altitude.";
+            ss << "Unexpected vector size received on input navsatfix_pos_lla (" << m_ioelts[1]->VectorSize() << "). Expecting 3: latitude, longitude and altitude.";
             ReportError(ss);
             break;
         }
-        if (_ioelts[2]->VectorSize() != 9) {
+        if (m_ioelts[2]->VectorSize() != 9) 
+		{
             MAPSStreamedString ss;
-            ss << "Unexpected vector size received on input navsatfix_pos_cov" << _ioelts[2]->VectorSize() << ".) Expecting 9.";
+            ss << "Unexpected vector size received on input navsatfix_pos_cov" << m_ioelts[2]->VectorSize() << ".) Expecting 9.";
             ReportError(ss);
             break;
         }
-        if (_ioelts[3]->VectorSize() != 1) {
+        if (m_ioelts[3]->VectorSize() != 1) 
+		{
             MAPSStreamedString ss;
-            ss << "Unexpected vector size received on input navsatfix_cov_type (" << _ioelts[1]->VectorSize() << "). Expecting 1.";
+            ss << "Unexpected vector size received on input navsatfix_cov_type (" << m_ioelts[1]->VectorSize() << "). Expecting 1.";
             ReportError(ss);
             break;
         }
         {
             sensor_msgs::NavSatFix msg;
-            msg.header = _header;
-            msg.status.status = _ioelts[0]->Integer32();
-            msg.status.service = _ioelts[0]->Integer32(1);
+            msg.header = m_header;
+            msg.status.status = m_ioelts[0]->Integer32();
+            msg.status.service = m_ioelts[0]->Integer32(1);
             
-            msg.latitude = _ioelts[1]->Float64();
-            msg.longitude = _ioelts[1]->Float64(1);
-            msg.altitude = _ioelts[1]->Float64(2);
+            msg.latitude = m_ioelts[1]->Float64();
+            msg.longitude = m_ioelts[1]->Float64(1);
+            msg.altitude = m_ioelts[1]->Float64(2);
             
-            for (int i=0; i<9; i++) {
-                msg.position_covariance[i] = _ioelts[2]->Float64(i);
+            for (int i=0; i<9; i++) 
+			{
+                msg.position_covariance[i] = m_ioelts[2]->Float64(i);
             }
             
-            msg.position_covariance_type = _ioelts[3]->Integer32();
+            msg.position_covariance_type = m_ioelts[3]->Integer32();
 
-            _pub->publish(msg);
+            m_pub->publish(msg);
         }
         break;
     case SENSOR_MSG_IMU:
-        if (_ioelts[0]->VectorSize() != 4) {
+        if (m_ioelts[0]->VectorSize() != 4) 
+		{
             MAPSStreamedString ss;
-            ss << "Unexpected vector size received on input orientation_quaternion (" << _ioelts[1]->VectorSize() << "). Expecting 4.";
+            ss << "Unexpected vector size received on input orientation_quaternion (" << m_ioelts[1]->VectorSize() << "). Expecting 4.";
             ReportError(ss);
             break;
         }
-        if (_ioelts[1]->VectorSize() != 3) {
+        if (m_ioelts[1]->VectorSize() != 3) 
+		{
             MAPSStreamedString ss;
-            ss << "Unexpected vector size received on input angular_velocities (" << _ioelts[1]->VectorSize() << "). Expecting 3.";
+            ss << "Unexpected vector size received on input angular_velocities (" << m_ioelts[1]->VectorSize() << "). Expecting 3.";
             ReportError(ss);
             break;
         }
-        if (_ioelts[2]->VectorSize() != 3) {
+        if (m_ioelts[2]->VectorSize() != 3) 
+		{
             MAPSStreamedString ss;
-            ss << "Unexpected vector size received on input accelerations" << _ioelts[2]->VectorSize() << ".) Expecting 3.";
+            ss << "Unexpected vector size received on input accelerations" << m_ioelts[2]->VectorSize() << ".) Expecting 3.";
             ReportError(ss);
             break;
         }
         {
             sensor_msgs::Imu msg;
-            msg.header = _header;
-            msg.orientation.x = _ioelts[0]->Float64();
-            msg.orientation.y = _ioelts[0]->Float64(1);
-            msg.orientation.z = _ioelts[0]->Float64(2);
-            msg.orientation.w = _ioelts[0]->Float64(3);
-            msg.angular_velocity.x = _ioelts[1]->Float64();
-            msg.angular_velocity.y = _ioelts[1]->Float64(1);
-            msg.angular_velocity.z = _ioelts[1]->Float64(2);
-            msg.linear_acceleration.x = _ioelts[2]->Float64();
-            msg.linear_acceleration.y = _ioelts[2]->Float64(1);
-            msg.linear_acceleration.z = _ioelts[2]->Float64(2);
-            _pub->publish(msg);
+            msg.header = m_header;
+            msg.orientation.x = m_ioelts[0]->Float64();
+            msg.orientation.y = m_ioelts[0]->Float64(1);
+            msg.orientation.z = m_ioelts[0]->Float64(2);
+            msg.orientation.w = m_ioelts[0]->Float64(3);
+            msg.angular_velocity.x = m_ioelts[1]->Float64();
+            msg.angular_velocity.y = m_ioelts[1]->Float64(1);
+            msg.angular_velocity.z = m_ioelts[1]->Float64(2);
+            msg.linear_acceleration.x = m_ioelts[2]->Float64();
+            msg.linear_acceleration.y = m_ioelts[2]->Float64(1);
+            msg.linear_acceleration.z = m_ioelts[2]->Float64(2);
+            m_pub->publish(msg);
         }
         break;
     }
@@ -941,51 +1013,55 @@ void MAPSros_topic_publisher::PublishSensorMsg()
 
 void MAPSros_topic_publisher::PublishGeomMsg()
 {
-	switch(_message) {
+	switch(m_message) 
+	{
 		case GEOM_MSG_POINT:
 		{
 			geometry_msgs::Point msg;
-			if(_ioeltin->VectorSize() != 3) {
+			if(m_ioeltin->VectorSize() != 3) 
+			{
                 ReportError("Input vector size is not as expected for a geometry_msgs::Point message. Expecting vector of 3 MAPSFloat64.");
 				return;
 			}
-			msg.x = _ioeltin->Float64(0);
-			msg.y = _ioeltin->Float64(1);
-			msg.z = _ioeltin->Float64(2);
-			_pub->publish(msg);
+			msg.x = m_ioeltin->Float64(0);
+			msg.y = m_ioeltin->Float64(1);
+			msg.z = m_ioeltin->Float64(2);
+			m_pub->publish(msg);
 		}
 		break;
 		case GEOM_MSG_TWIST:
 		{
 			geometry_msgs::Twist msg;
-			if (_ioeltin->VectorSize() != 6) {
+			if (m_ioeltin->VectorSize() != 6) 
+			{
                 ReportError("Input vector size is not as expected for a geometry_msgs::Twist message. Expecting vector of 6 MAPSFloat64.");
 				return;
 			}
-            msg.linear.x = _ioeltin->Float64(0);
-			msg.linear.y = _ioeltin->Float64(1);
-			msg.linear.z = _ioeltin->Float64(2);
-			msg.angular.x = _ioeltin->Float64(3);
-			msg.angular.y = _ioeltin->Float64(4);
-			msg.angular.z = _ioeltin->Float64(5);
-			_pub->publish(msg);
+            msg.linear.x = m_ioeltin->Float64(0);
+			msg.linear.y = m_ioeltin->Float64(1);
+			msg.linear.z = m_ioeltin->Float64(2);
+			msg.angular.x = m_ioeltin->Float64(3);
+			msg.angular.y = m_ioeltin->Float64(4);
+			msg.angular.z = m_ioeltin->Float64(5);
+			m_pub->publish(msg);
 		}
         break;
     case GEOM_MSG_TWIST_STAMPED:
         {
         geometry_msgs::TwistStamped msg;
-        if (_ioeltin->VectorSize() != 6) {
+        if (m_ioeltin->VectorSize() != 6) 
+		{
             ReportError("Input vector size is not as expected for a geometry_msgs::Twist message. Expecting vector of 6 MAPSFloat64.");
             return;
         }
-        msg.header = _header;
-        msg.twist.linear.x = _ioeltin->Float64(0);
-        msg.twist.linear.y = _ioeltin->Float64(1);
-        msg.twist.linear.z = _ioeltin->Float64(2);
-        msg.twist.angular.x = _ioeltin->Float64(3);
-        msg.twist.angular.y = _ioeltin->Float64(4);
-        msg.twist.angular.z = _ioeltin->Float64(5);
-        _pub->publish(msg);
+        msg.header = m_header;
+        msg.twist.linear.x = m_ioeltin->Float64(0);
+        msg.twist.linear.y = m_ioeltin->Float64(1);
+        msg.twist.linear.z = m_ioeltin->Float64(2);
+        msg.twist.angular.x = m_ioeltin->Float64(3);
+        msg.twist.angular.y = m_ioeltin->Float64(4);
+        msg.twist.angular.z = m_ioeltin->Float64(5);
+        m_pub->publish(msg);
         }
         break;
 	}
@@ -993,58 +1069,65 @@ void MAPSros_topic_publisher::PublishGeomMsg()
 
 void MAPSros_topic_publisher::PublishNavMsg()
 {
-    switch(_message) {
+    switch(m_message) 
+	{
         case NAV_MSG_ODOMETRY:
         {
             nav_msgs::Odometry msg;
-            msg.header = _header;
+            msg.header = m_header;
             bool error = false;
-            if (_ioelts[0]->VectorSize() != 3) {
+            if (m_ioelts[0]->VectorSize() != 3) 
+			{
                 ReportError("Input vector size on input_pose_position is not as expected. Expecting vector of 3 MAPSFloat64 (x,y,z)");
                 error =true;
             }
-            if(_ioelts[1]->VectorSize() != 4) {
+            if(m_ioelts[1]->VectorSize() != 4) 
+			{
                 ReportError("Input vector size on input_pose_orientation (quaternion) is not as expected. Expecting vector of 4 MAPSFloat64 (x,y,z,w)");
                 error =true;
             }
-            if (_ioelts[2]->VectorSize() != 36) {
+            if (m_ioelts[2]->VectorSize() != 36) 
+			{
                 ReportError("Input vector size on input input_pos_covariance is not as epxected. Expecting vector of 36 MAPSFloat64.");
                 error =true;
             }
-            if (_ioelts[3]->VectorSize() != 6) {
+            if (m_ioelts[3]->VectorSize() != 6) 
+			{
                 ReportError("Input vector size on input input_twist is not as expected. Expecting vector of 6 MAPSFloat64 (linear x,y,z and angular x,y,z");
                 error =true;
             }
-            if (_ioelts[4]->VectorSize() != 36) {
+            if (m_ioelts[4]->VectorSize() != 36) 
+			{
                 ReportError("Input vector size on input input_twist_covariance is not as expected. Expecting vector of 36 MAPSFloat64");
                 error =true;
             }
-            if (error) {
+            if (error) 
+			{
                 return;
             }
             MAPSString child_frame_id = GetStringProperty("odom_child_frame_id");
             if (child_frame_id.Len() > 0)
                 msg.child_frame_id = (const char*)child_frame_id;
-            msg.pose.pose.position.x = _ioelts[0]->Float64();
-            msg.pose.pose.position.y = _ioelts[0]->Float64(1);
-            msg.pose.pose.position.z = _ioelts[0]->Float64(2);
-            msg.pose.pose.orientation.x = _ioelts[1]->Float64(0);
-            msg.pose.pose.orientation.y = _ioelts[1]->Float64(1);
-            msg.pose.pose.orientation.z = _ioelts[1]->Float64(2);
-            msg.pose.pose.orientation.w = _ioelts[1]->Float64(3);
+            msg.pose.pose.position.x = m_ioelts[0]->Float64();
+            msg.pose.pose.position.y = m_ioelts[0]->Float64(1);
+            msg.pose.pose.position.z = m_ioelts[0]->Float64(2);
+            msg.pose.pose.orientation.x = m_ioelts[1]->Float64(0);
+            msg.pose.pose.orientation.y = m_ioelts[1]->Float64(1);
+            msg.pose.pose.orientation.z = m_ioelts[1]->Float64(2);
+            msg.pose.pose.orientation.w = m_ioelts[1]->Float64(3);
             double* cov_out = msg.pose.covariance.data();
-            double* cov_in =  &_ioelts[2]->Float64();
+            double* cov_in =  &m_ioelts[2]->Float64();
             MAPS::Memcpy(cov_out,cov_in,36*sizeof(double));
-            msg.twist.twist.linear.x = _ioelts[3]->Float64(0);
-            msg.twist.twist.linear.y = _ioelts[3]->Float64(1);
-            msg.twist.twist.linear.z = _ioelts[3]->Float64(2);
-            msg.twist.twist.angular.x = _ioelts[3]->Float64(3);
-            msg.twist.twist.angular.y = _ioelts[3]->Float64(4);
-            msg.twist.twist.angular.z = _ioelts[3]->Float64(5);
+            msg.twist.twist.linear.x = m_ioelts[3]->Float64(0);
+            msg.twist.twist.linear.y = m_ioelts[3]->Float64(1);
+            msg.twist.twist.linear.z = m_ioelts[3]->Float64(2);
+            msg.twist.twist.angular.x = m_ioelts[3]->Float64(3);
+            msg.twist.twist.angular.y = m_ioelts[3]->Float64(4);
+            msg.twist.twist.angular.z = m_ioelts[3]->Float64(5);
             cov_out = msg.twist.covariance.data();
-            cov_in = &_ioelts[4]->Float64();
+            cov_in = &m_ioelts[4]->Float64();
             MAPS::Memcpy(cov_out,cov_in,36*sizeof(double));
-            _pub->publish(msg);
+            m_pub->publish(msg);
         }
         break;
     }
@@ -1052,19 +1135,19 @@ void MAPSros_topic_publisher::PublishNavMsg()
 
 void MAPSros_topic_publisher::Death()
 {
-	if (_pub) {
-		_pub->shutdown();
-        MAPS_SAFE_DELETE(_pub);
+	if (m_pub) 
+	{
+		m_pub->shutdown();
+        MAPS_SAFE_DELETE(m_pub);
 	}
 
-	if (_n) {
-        (*_ros)->release_ros_node();
-        (*_ros)->release();
-        _n = nullptr;
-        _ros = nullptr;
-	}
+    if (m_n) 
+    {
+         m_n = nullptr; //The ROS node will be killed/released by the RTMaps ROS Bridge CoreFunction.
+    }
 
-    if (_pointcloud2_channel) {
-        MAPS_SAFE_DELETE(_pointcloud2_channel);
+    if (m_pointcloud2_channel) 
+	{
+        MAPS_SAFE_DELETE(m_pointcloud2_channel);
     }
 }

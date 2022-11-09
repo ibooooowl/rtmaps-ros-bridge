@@ -2,14 +2,34 @@
 <ComponentResources xmlns="http://schemas.intempora.com/RTMaps/2011/ComponentResources" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="" xsi:noNamespaceSchemaLocation="http://www.intempora.com/schemas/RTMaps/2011/ComponentResources.xsd">
 <Type>Component</Type>
 <IconFile>ros.png</IconFile>
-<TargetOS>Windows</TargetOS>
+<TargetOS>OS-independent</TargetOS>
 <Lang lang="ENG">
 <GroupName>ROS Bridge</GroupName>
 <Documentation>
 <Component>
 <Alias>ROS Clock</Alias>
 <Description>
-<span><![CDATA[Allows to synchronize the RTMaps clock on the ROS clock. Each time someone requests the current time in RTMaps (a component, the VCR or so...) the current time request will be transfered to ROS.]]></span>
+<span><![CDATA[<p>Allows to synchronize the RTMaps clock on the ROS clock. Each time someone requests the current time in RTMaps (a component, the VCR or so...) the current time request will be transfered to ROS.</p>
+
+<h3>Synchronizing to the ROS simulation time when playing back data from ROS</h3>
+
+<p>Note that when playing back data from a ROS bag file in the ROS environment and subscribing to these topics in RTMaps, it is necessary (in case you want to keep the original data samples timestamps) to configure ROS for using the simulation time and not the wall time. In this case, you need to activate the "use_sim_time" parameter in the ROS environment, and use argument "--clock" in the <code>rosbag play cmd</code>.</p>
+
+<p>The ROS playback has to be started before the RTMaps components really start executing. If you don't want to miss data at the start of the playback, then  start the RTMaps diagram execution after having set the <code>use_sim_time</code> parameter in ROS.<br/>
+RTMaps will detect that this parameter is set, so it will wait until the simulation time is properly published before really starting its diagram execution (until some timeout configured in this component <code>"ros_use_sim_time_init_timeout"</code> property). That will happen only after the rosbag play cmd is issued to start the ROS playback.</p>
+<p>So:</p>
+<blockquote>
+<p>
+<ul>
+
+<li><code>rosparam set use_sim_time true</code></li>
+<li>...</li>
+<li>[Start the execution of your RTMaps diagram - at this point RTMaps will detect the <code>"use_sim_time"</code> parameter is set in ROS and will wait until the ROS playback has started before it initializes its own clock against ROS simulation time. RTMaps may look frozen during this period. In case  the ROS playback does not start within this period (specified in property  <code>"ros_use_sim_time_init_timeout"</code>, the component will issue an error message and the RTMaps clock will be initialized against wall time which might cause issues later on if a Recorder is on the diagram.]</li>
+<li><code>rosbag play --clock yourbagfile.bag</code></li>
+<li>[The RTMaps diagram execution will then start for good.]</li>
+</ul>
+</p>
+</blockquote>]]></span>
 </Description>
 </Component>
 <Property MAPSName="max_timespeed">
@@ -19,6 +39,32 @@
 </Description>
 <DefaultValue>100</DefaultValue>
 </Property>
+<Property MAPSName="ros_time_publication_period">
+<Alias>ROS time publication period</Alias>
+<Description>
+<span><![CDATA[Defines the period in microseconds at which the ROS time will be published on the "ros_time" output, whether the ROS Clock component is selected as the RTMaps main clock or not.<br/>
+Value -1 means never.]]></span>
+</Description>
+<DefaultValue>-1 (never)</DefaultValue>
+</Property>
+<Property MAPSName="ros_use_sim_time_init_timeout">
+<Alias>ROS use_sim_time init timeout</Alias>
+<Description>
+<span><![CDATA[<p>See details in the General information block here-above in case you subscribe to ROS data that is playbed back in ROS and want to re-use the ROS data samples timestamps with the RTMaps time coordinated with the ROS simulation time. This is necessary for instance when re-recording the ROS data streams in RTMaps.</p>
+<p>
+Note that this property is ignored if paremeter "use_sim_time" is not set (or even not set to "true") in ROS.</p>]]></span>
+</Description>
+<DefaultValue>10s</DefaultValue>
+</Property>
+<Output MAPSName="ros_time">
+<Alias>ROS time</Alias>
+<Description>
+<span><![CDATA[<p>Periodically provides the current ROS time (in microseconds since the origin of UTC in the form of a 64 bits integer) reported by ROS (using ros::time::now()), whether the RTMaps clock in synchronized on the ROS clock or not.</p>
+<p>
+This output will publish the ROS time periodically only if property ros_time_publication_period is set to a positive value (not -1 "infinite").
+</p>]]></span>
+</Description>
+</Output>
 </Documentation>
 </Lang>
 </ComponentResources>

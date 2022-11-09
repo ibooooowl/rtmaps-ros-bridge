@@ -7,7 +7,8 @@ $(error Please use make at least version 3.81)
 endif
 
 # Add C++ sources here
-sources  =  maps_ros_topic_subscriber.cpp maps_ros_topic_publisher.cpp maps_ros_array_layout_infos_splitter.cpp maps_ros_utils.cpp maps_ros_clock.cpp
+#sources  =  maps_ros_topic_subscriber.cpp maps_ros_topic_publisher.cpp maps_ros_array_layout_infos_splitter.cpp maps_ros_utils.cpp maps_ros_clock.cpp
+sources  =  maps_ros_utils.cpp maps_ros_clock.cpp maps_ros_topic_publisher.cpp maps_ros_topic_subscriber.cpp maps_ros_array_layout_infos_splitter.cpp
 
 # Add C sources here
 csources = 
@@ -37,7 +38,8 @@ endif
 
 # To add options to the compiler:
 # CFLAGS   += my specific C flags
-# CXXFLAGS += my specific C++ flags
+CXXFLAGS += -I../rtmaps_ros_bridge_core_function/public_interfaces
+CPPFLAGS += -I../rtmaps_ros_bridge_core_function/public_interfaces
 
 CXXFLAGS += $(shell pkg-config --cflags roscpp)
 CXXFLAGS += $(shell pkg-config --cflags sensor_msgs)

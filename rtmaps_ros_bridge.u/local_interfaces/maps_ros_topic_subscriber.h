@@ -71,16 +71,19 @@
 
 
 // Accumulate markers by namespace and id
-class MarkersCache {
+class MarkersCache 
+{
 public:
     MarkersCache() { }
     typedef visualization_msgs::Marker::ConstPtr MarkerConstPtr;
 
-    int apply_action(const MarkerConstPtr marker) {
+    int apply_action(const MarkerConstPtr marker) 
+    {
         int concerned_output = GetMarkerOutputByType(marker);
-        switch (marker->action) {
+        switch (marker->action) 
+        {
             case visualization_msgs::Marker::DELETEALL:
-                for (auto& c : _markers_cache)
+                for (auto& c : m_markers_cache)
                     c.clear();
                 break;
             case visualization_msgs::Marker::DELETE:
@@ -95,34 +98,42 @@ public:
         }
         return concerned_output;
     }
-    void add(int concerned_output, const MarkerConstPtr& m) {
-        auto& map = _markers_cache[concerned_output];
+    void add(int concerned_output, const MarkerConstPtr& m) 
+    {
+        auto& map = m_markers_cache[concerned_output];
         map[get_key(m)] = boost::make_shared< visualization_msgs::Marker >(*m);
     }
-    void remove(int concerned_output, const MarkerConstPtr& m) {
-        auto& map = _markers_cache[concerned_output];
+    void remove(int concerned_output, const MarkerConstPtr& m) 
+    {
+        auto& map = m_markers_cache[concerned_output];
         map.erase(get_key(m));
     }
-    std::string get_key(const MarkerConstPtr& m) {
+    std::string get_key(const MarkerConstPtr& m) 
+    {
         std::string ret = m->ns + "##" + std::to_string(m->id);
         return ret;
     }
-    std::vector< MarkerConstPtr > get_markers_by_output(int concerned_output) {
+    std::vector< MarkerConstPtr > get_markers_by_output(int concerned_output) 
+    {
         std::vector< MarkerConstPtr > ret;
-        auto& map = _markers_cache[concerned_output];
-        for (auto& e : map) {
+        auto& map = m_markers_cache[concerned_output];
+        for (auto& e : map) 
+        {
             ret.push_back(e.second);
         }
         return ret;
     }
-    void clear() {
-        for (auto& e : _markers_cache)
+    void clear() 
+    {
+        for (auto& e : m_markers_cache)
             e.clear();
     }
-    int GetMarkerOutputByType(const visualization_msgs::Marker::ConstPtr& marker) {
+    int GetMarkerOutputByType(const visualization_msgs::Marker::ConstPtr& marker) 
+    {
         // get concerned output
         int concerned_output = 0;
-        switch (marker->type) {
+        switch (marker->type) 
+        {
             case visualization_msgs::Marker::ARROW :
                 concerned_output = MARKER_OUTPUT_NB_ARROW;
                 break;
@@ -163,7 +174,7 @@ public:
     }
 
 private:
-    std::map< std::string, visualization_msgs::Marker::ConstPtr > _markers_cache[MARKER_OUTPUT_COUNT];
+    std::map< std::string, visualization_msgs::Marker::ConstPtr > m_markers_cache[MARKER_OUTPUT_COUNT];
 };
 
 // Declares a new MAPSComponent child class
@@ -174,41 +185,40 @@ class MAPSros_topic_subscriber : public MAPSComponent
 	MAPSros_topic_subscriber(const char* name, MAPSComponentDefinition& cd);
 	void Dynamic();
 
-	void CreateIOsForStdTopics(bool* _ros_header_avail);
-	void CreateIOsForSensorTopics(bool* _ros_header_avail);
-	void CreateIOsForGeomTopics(bool* _ros_header_avail);
-    void CreateIOsForNavTopics(bool* _ros_header_avail);
-    void CreateIOsForVisuTopics(bool* _ros_header_avail);
-    void CreateIOsForCANTopics(bool* _ros_header_avail);
+	void CreateIOsForStdTopics(bool* ros_header_avail);
+	void CreateIOsForSensorTopics(bool* ros_header_avail);
+	void CreateIOsForGeomTopics(bool* ros_header_avail);
+    void CreateIOsForNavTopics(bool* ros_header_avail);
+    void CreateIOsForVisuTopics(bool* ros_header_avail);
+    void CreateIOsForCANTopics(bool* ros_header_avail);
     void AllocateOutputsForVisuTopics();
 
 	// Place here your specific methods and attributes
-    std::shared_ptr< MAPSRosUtils* > _ros;
-	ros::NodeHandle* _n;
-	ros::Subscriber* _sub;
+	ros::NodeHandle* m_n;
+	ros::Subscriber* m_sub;
     //ros::CallbackQueue _cb_queue;
 
-	bool _first_time;
-	int _topic_type;
-	int	_message;
-	int _buffsize_out;
-	bool _ros_header_avail;
-	bool _transfer_ros_timestamp;
+	bool m_first_time;
+	int m_topic_type;
+	int	m_message;
+	int m_buffsize_out;
+	bool m_ros_header_avail;
+	bool m_transfer_ros_timestamp;
 
-	int _nb_laser_scan_points;
-	int _nb_laser_intens_data;
-	bool _discard_out_of_range;
+	int m_nb_laser_scan_points;
+	int m_nb_laser_intens_data;
+	bool m_discard_out_of_range;
 
-	int _nb_points;
-	int _nb_channels;
-	int _nb_joy_axes;
-	int _nb_joy_buttons;	
+	int m_nb_points;
+	int m_nb_channels;
+	int m_nb_joy_axes;
+	int m_nb_joy_buttons;	
 
-	int _nb_fields;
-    int _point_step;
+	int m_nb_fields;
+    int m_point_step;
 
     // Markers Cache: array of cached markers per output
-    MarkersCache _markers_cache;
+    MarkersCache m_markers_cache;
 
 	void ROSStringReceivedCallback(const std_msgs::StringConstPtr& message);
 	void ROSInt32ReceivedCallback(const std_msgs::Int32ConstPtr& msg);

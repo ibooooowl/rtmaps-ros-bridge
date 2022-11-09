@@ -21,6 +21,24 @@ fi
 temp_dir=./rtmaps-ros-bridge-temp
 soft_dest=$temp_dir/opt/rtmaps
 
+export RTMAPS_SDKDIR=/opt/rtmaps
+
+#compile the RTMaps ROS Bridge Core Function
+mkdir -p ../rtmaps_ros_bridge_core_function.u/build
+cd ../rtmaps_ros_bridge_core_function.u/build
+cmake ..
+make
+
+cd ../..
+
+mkdir -p rtmaps_ros_bridge.u/build
+cd rtmaps_ros_bridge.u/build
+cmake ..
+make
+
+ cd ../../deb_installer
+ 
+
 # Create the temp skeleton directory
 mkdir -p $temp_dir
 cp -lR rtmaps-ros-bridge/* $temp_dir/
@@ -29,7 +47,9 @@ mkdir -p $soft_dest/packages
 mkdir -p $soft_dest/doc/studio_reference/components
 mkdir -p $soft_dest/doc/studio_reference/resources
 
-cp -l ../packages/${OS,,}${OS_VER//./}_${ARCH}/rtmaps_ros_bridge.pck $soft_dest/packages/
+#cp -l ../packages/${OS,,}${OS_VER//./}_${ARCH}/rtmaps_ros_bridge.pck $soft_dest/packages/
+cp -l ../rtmaps_ros_bridge.u/build/rtmaps_ros_bridge.pck $soft_dest/packages
+cp -l ../rtmaps_ros_bridge_core_function.u/build/rtmaps_ros_bridge_core_function.pck $soft_dest/packages
 cp -lR ../rtmaps_ros_bridge.u/doc/* $soft_dest/doc/
 
 ### Delete useless files
