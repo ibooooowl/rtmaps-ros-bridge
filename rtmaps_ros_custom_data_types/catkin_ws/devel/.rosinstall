@@ -1,2 +1,2 @@
 - setup-file:
-    local-name: /home/intempora/rtmaps-ros-bridge/rtmaps_ros_custom_data_types/catkin_ws/devel/setup.sh
+    local-name: /home/nicolas/rtmaps-ros-bridge/rtmaps_ros_custom_data_types/catkin_ws/devel/setup.sh

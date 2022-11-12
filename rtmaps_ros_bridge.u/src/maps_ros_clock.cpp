@@ -68,7 +68,8 @@ MAPS_COMPONENT_DEFINITION(MAPSros_clock,"ros_clock","1.1.0",128,
 
 void MAPSros_clock::Set(MAPSProperty& p, MAPSInt64 value)
 {
-	if (&p == &Property("max_timespeed")) {
+	if (&p == &Property("max_timespeed")) 
+	{
 
 	}
 	MAPSComponent::Set(p,value);

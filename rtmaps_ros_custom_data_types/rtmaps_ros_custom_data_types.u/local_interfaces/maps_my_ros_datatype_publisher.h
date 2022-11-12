@@ -47,18 +47,18 @@ class MAPSmy_ros_datatype_publisher : public MAPSComponent
     MAPS_COMPONENT_STANDARD_HEADER_CODE(MAPSmy_ros_datatype_publisher)
 private :
 	// Place here your specific methods and attributes
-    MAPSRosUtils*       _ros;
-	ros::NodeHandle* 	_n;
-	ros::Publisher* 	_pub;
+ 	MAPSROSBridgeCoreFunctionInterface* m_ros_bridge_cf;
+	ros::NodeHandle* 	m_n;
+	ros::Publisher* 	m_pub;
 
 
-    MAPSIOElt*          _ioeltin;
+    MAPSIOElt*          m_ioeltin;
 
-    bool                _first_time;
-    int                 _count;
-	bool				_publish_rtmaps_timestamp;
-	std_msgs::Header 	_header; //!< ROS header
-    my_data_types::my_data_type _my_data_type;
+    bool                m_first_time;
+    int                 m_count;
+	bool				m_publish_rtmaps_timestamp;
+	std_msgs::Header 	m_header; //!< ROS header
+    my_data_types::my_data_type m_my_data_type;
 
     void PublishMyMsg();
 

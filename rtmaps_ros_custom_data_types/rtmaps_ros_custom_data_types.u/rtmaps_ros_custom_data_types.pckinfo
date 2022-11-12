@@ -1,6 +1,8 @@
 # Package information
-VERSION=1.0
-DESCRIPTION=User package
+VERSION=1.1.0
+DESCRIPTION=ROS bridge component examples for supporting user-defined ROS datatypes.
 
 # LOG
-# 1.0: initial release
+# 1.1.0: Makes use of the RTMaps Core Function to manage the ROS node which allows to load both the standard ROS bridge package and this
+#        package for custom data types at the same time in RTMaps.
+# 1.0: initial releases

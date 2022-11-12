@@ -49,15 +49,11 @@ class MAPSmy_ros_datatype_subscriber : public MAPSComponent
 
 private :
 	// Place here your specific methods and attributes
-    MAPSRosUtils* _ros;
-    ros::NodeHandle* _n;
-    ros::Subscriber* _sub;
+    ros::NodeHandle* 	m_n;
+    ros::Subscriber* 	m_sub;
 
-	bool _first_time;
-	int	_message;
-	int _buffsize_out;
-	bool _ros_header_avail;
-	bool _transfer_ros_timestamp;
+	bool 	m_first_time;
+	bool 	m_transfer_ros_timestamp;
 
 
     void ROSDataReceivedCallback(const my_data_types::my_data_typeConstPtr& message);

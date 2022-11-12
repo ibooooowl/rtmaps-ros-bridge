@@ -151,7 +151,8 @@ MAPSros_topic_subscriber::MAPSros_topic_subscriber(const char* name, MAPSCompone
 MAPSComponent(name,cd)
 {
 	MAPSEnumStruct topic_types;
-    for (unsigned int i=0; i< sizeof(s_topic_types)/sizeof(const char*); i++) {
+    for (unsigned int i=0; i< sizeof(s_topic_types)/sizeof(const char*); i++) 
+    {
 		topic_types.enumValues->Append() = s_topic_types[i];
 	}
 	DirectSet(Property("topic_type"),topic_types);
@@ -162,50 +163,58 @@ void MAPSros_topic_subscriber::Dynamic()
 	m_topic_type = (int)GetIntegerProperty("topic_type");
 	int selected_message = (int)GetIntegerProperty("message");
     bool use_default_message_idx = false;
-	if (Property("topic_type").PropertyChanged()) {
+	if (Property("topic_type").PropertyChanged()) 
+    {
 		Property("topic_type").AcknowledgePropertyChanged();
         use_default_message_idx = true;
 	}
 	MAPSEnumStruct messages;
 
-	switch (m_topic_type) {
+	switch (m_topic_type) 
+    {
 	case TOPIC_TYPE_STD:
-        for (unsigned int i=0; i < sizeof(s_std_msgs)/sizeof(const char*); i++) {
+        for (unsigned int i=0; i < sizeof(s_std_msgs)/sizeof(const char*); i++) 
+        {
 			messages.enumValues->Append() = s_std_msgs[i];
 		}
         if (use_default_message_idx)
             selected_message = 0;
 		break;
 	case TOPIC_TYPE_SENSOR:
-        for (unsigned int i=0; i < sizeof(s_sensor_msgs)/sizeof(const char*); i++) {
+        for (unsigned int i=0; i < sizeof(s_sensor_msgs)/sizeof(const char*); i++) 
+        {
 			messages.enumValues->Append() = s_sensor_msgs[i];
 		}
         if (use_default_message_idx)
             selected_message = SENSOR_MSG_POINT_CLOUD2;
         break;
 	case TOPIC_TYPE_GEOM:
-        for (unsigned int i=0; i < sizeof(s_geometry_msgs)/sizeof(const char*); i++) {
+        for (unsigned int i=0; i < sizeof(s_geometry_msgs)/sizeof(const char*); i++) 
+        {
 			messages.enumValues->Append() = s_geometry_msgs[i];
 		}
         if (use_default_message_idx)
             selected_message = 0;
         break;
     case TOPIC_TYPE_NAV:
-        for (unsigned int i=0; i < sizeof(s_nav_msgs)/sizeof(const char*); i++) {
+        for (unsigned int i=0; i < sizeof(s_nav_msgs)/sizeof(const char*); i++) 
+        {
             messages.enumValues->Append() = s_nav_msgs[i];
         }
         if (use_default_message_idx)
             selected_message = 0;
         break;
     case TOPIC_TYPE_VISU:
-        for (unsigned int i=0; i < sizeof(s_visu_msgs)/sizeof(const char*); i++) {
+        for (unsigned int i=0; i < sizeof(s_visu_msgs)/sizeof(const char*); i++) 
+        {
             messages.enumValues->Append() = s_visu_msgs[i];
         }
         if (use_default_message_idx)
             selected_message = 0;
         break;
     case TOPIC_TYPE_CAN:
-        for (unsigned int i=0; i < sizeof(s_can_msgs)/sizeof(const char*); i++) {
+        for (unsigned int i=0; i < sizeof(s_can_msgs)/sizeof(const char*); i++) 
+        {
             messages.enumValues->Append() = s_can_msgs[i];
         }
         if (use_default_message_idx)
@@ -225,7 +234,8 @@ void MAPSros_topic_subscriber::Dynamic()
 
 	m_ros_header_avail = false;
 
-	switch(m_topic_type) {
+	switch(m_topic_type) 
+    {
 	case TOPIC_TYPE_STD:
 		CreateIOsForStdTopics(&m_ros_header_avail);
 		break;
@@ -254,7 +264,8 @@ void MAPSros_topic_subscriber::Dynamic()
 void MAPSros_topic_subscriber::CreateIOsForStdTopics(bool* ros_header_avail)
 {
 	*ros_header_avail = false;
-	switch(m_message) {
+	switch(m_message) 
+    {
 	case STD_MSG_TEXT :
 		NewOutput("output_text");
 		NewProperty("max_text_length");
@@ -300,7 +311,8 @@ void MAPSros_topic_subscriber::CreateIOsForStdTopics(bool* ros_header_avail)
 void MAPSros_topic_subscriber::CreateIOsForSensorTopics(bool* ros_header_avail)
 {
 	*ros_header_avail = false;
-	switch(m_message) {
+	switch(m_message) 
+    {
 	case SENSOR_MSG_IMAGE :
 		NewOutput("output_image");
 		*ros_header_avail = true;
@@ -363,7 +375,8 @@ void MAPSros_topic_subscriber::CreateIOsForSensorTopics(bool* ros_header_avail)
 void MAPSros_topic_subscriber::CreateIOsForGeomTopics(bool* ros_header_avail)
 {
 	*ros_header_avail = false;
-	switch(m_message) {
+	switch(m_message) 
+    {
 	case GEOM_MSG_POINT :
 		NewOutput("output_float64_array","output_point");
 		break;
@@ -391,7 +404,8 @@ void MAPSros_topic_subscriber::CreateIOsForGeomTopics(bool* ros_header_avail)
 void MAPSros_topic_subscriber::CreateIOsForNavTopics(bool* ros_header_avail)
 {
     *ros_header_avail = false;
-    switch(m_message) {
+    switch(m_message) 
+    {
     case NAV_MSG_ODOMETRY :
         NewOutput("output_float64_array","output_pose_position");
         NewOutput("output_float64_array","output_pose_orientation");
@@ -408,7 +422,8 @@ void MAPSros_topic_subscriber::CreateIOsForNavTopics(bool* ros_header_avail)
 void MAPSros_topic_subscriber::CreateIOsForVisuTopics(bool* ros_header_avail)
 {
     *ros_header_avail = false;
-    switch(m_message) {
+    switch(m_message) 
+    {
         case VISU_MSG_MARKER :
         case VISU_MSG_MARKER_ARRAY :
             NewOutput("output_marker_arrow");
@@ -593,7 +608,8 @@ void MAPSros_topic_subscriber::Birth()
 		}
 		break;
     case TOPIC_TYPE_NAV:
-        switch(m_message) {
+        switch(m_message) 
+        {
         case NAV_MSG_ODOMETRY:
             Output(0).AllocOutputBuffer(3); //Pose point
             Output(1).AllocOutputBuffer(4); //Pose quaternion
@@ -608,7 +624,8 @@ void MAPSros_topic_subscriber::Birth()
         }
         break;
     case TOPIC_TYPE_VISU:
-        switch(m_message) {
+        switch(m_message) 
+        {
         case VISU_MSG_MARKER:
             *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSVisuMarkerReceivedCallback,this);
             break;
@@ -629,7 +646,8 @@ void MAPSros_topic_subscriber::Birth()
         break;
 	}
 
-	if (m_sub == NULL) {
+	if (m_sub == NULL) 
+    {
 		MAPSStreamedString ss;
 		ss << "Could not subscribe to topic " << topic_name << " (type: " << GetStringProperty("topic_type") << "/" << GetStringProperty("message");
 		Error(ss);
@@ -639,11 +657,13 @@ void MAPSros_topic_subscriber::Birth()
 
 void MAPSros_topic_subscriber::ROSStringReceivedCallback(const std_msgs::StringConstPtr& message)
 {
-    try {
+    try 
+    {
     MAPSIOElt* ioeltout = StartWriting(Output(0));
     char* data_out = ioeltout->TextAscii();
 	int txt_len = message->data.length();
-	if (txt_len > m_buffsize_out) {
+	if (txt_len > m_buffsize_out) 
+    {
 		txt_len = m_buffsize_out;
 		MAPSStreamedString ss;
 		ss << "Received message too long (length = " << txt_len << "). You should increase the max_text_length property. Truncating...";
@@ -655,7 +675,9 @@ void MAPSros_topic_subscriber::ROSStringReceivedCallback(const std_msgs::StringC
 
 	ioeltout->VectorSize() = txt_len;
 	StopWriting(ioeltout);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -665,17 +687,21 @@ void MAPSros_topic_subscriber::ROSStringReceivedCallback(const std_msgs::StringC
 void MAPSros_topic_subscriber::SetComponentInError()
 {
     // filter out RTMAPS exceptions because ROS1 can not catch them.
-    try {
+    try 
+    {
         Error("setting component in error.");
-    } catch(...) {}
+    } 
+    catch(...) {}
 
     CommitSuicide();
 }
 
 void MAPSros_topic_subscriber::ROSImageReceivedCallback(const sensor_msgs::Image::ConstPtr& ros_image)
 {
-    try {
-        if (m_first_time) {
+    try 
+    {
+        if (m_first_time) 
+        {
             m_first_time = false;
             MAPSUInt32 chanseq, depth = 8;
             if (ros_image->encoding == "rgb8")
@@ -684,14 +710,17 @@ void MAPSros_topic_subscriber::ROSImageReceivedCallback(const sensor_msgs::Image
                 chanseq = MAPS_CHANNELSEQ_BGR;
             else if (ros_image->encoding == "mono8")
                 chanseq = MAPS_CHANNELSEQ_GRAY;
-            else if (ros_image->encoding == "mono16") {
+            else if (ros_image->encoding == "mono16") 
+            {
                 chanseq = MAPS_CHANNELSEQ_GRAY;
                 depth = 16;
-            } else if (ros_image->encoding == "rgba8")
+            } 
+            else if (ros_image->encoding == "rgba8")
                 chanseq = MAPS_CHANNELSEQ_RGBA;
             else if (ros_image->encoding == "bgra8")
                 chanseq = MAPS_CHANNELSEQ_BGRA;
-            else {
+            else 
+            {
                 if (m_sub)
                     m_sub->shutdown(); // stop topic subscription
                 MAPSStreamedString ss;
@@ -709,11 +738,14 @@ void MAPSros_topic_subscriber::ROSImageReceivedCallback(const sensor_msgs::Image
         int size = MIN((unsigned int) image_out.imageSize, ros_image->data.size());
         MAPS::Memcpy(image_out.imageData, (char *) &ros_image->data[0], size);
 
-        if (m_transfer_ros_timestamp) {
+        if (m_transfer_ros_timestamp) 
+        {
             ioeltout->Timestamp() = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_image->header.stamp);
         }
         StopWriting(ioeltout);
-    } catch(int error) {
+    } 
+    catch(int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -722,18 +754,21 @@ void MAPSros_topic_subscriber::ROSImageReceivedCallback(const sensor_msgs::Image
 
 void MAPSros_topic_subscriber::ROSCompressedImageReceivedCallback(const sensor_msgs::CompressedImage::ConstPtr& ros_image)
 {
-    try {
+    try 
+    {
         int32_t width = GetIntegerProperty("compressed_image_width");
         int32_t height = GetIntegerProperty("compressed_image_height");
 
-        if (m_first_time) {
+        if (m_first_time)
+        {
             m_first_time = false;
             MAPSUInt32 encoding = MAPS_IMAGECODING_UNKNOWN;
             if (ros_image->format.find("jpeg")  != std::string::npos)
                 encoding = MAPS_IMAGECODING_JPEG;
             else if (ros_image->format.find("png") != std::string::npos)
                 encoding = MAPS_IMAGECODING_PNG;
-            else {
+            else 
+            {
                 if (m_sub)
                     m_sub->shutdown(); // stop topic subscription
                 MAPSStreamedString ss;
@@ -757,11 +792,14 @@ void MAPSros_topic_subscriber::ROSCompressedImageReceivedCallback(const sensor_m
         MAPSImage &image_out = ioeltout->MAPSImage();
         MAPS::Memcpy(image_out.imageData, (char *) &ros_image->data[0], size);
         image_out.imageSize = (int32_t)ros_image->data.size();
-        if (m_transfer_ros_timestamp) {
+        if (m_transfer_ros_timestamp) 
+        {
             ioeltout->Timestamp() = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_image->header.stamp);
         }
         StopWriting(ioeltout);
-    } catch(int error) {
+    } 
+    catch(int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -770,11 +808,14 @@ void MAPSros_topic_subscriber::ROSCompressedImageReceivedCallback(const sensor_m
 
 void MAPSros_topic_subscriber::ROSInt32ReceivedCallback(const std_msgs::Int32ConstPtr& msg)
 {
-    try {
+    try 
+    {
     MAPSIOElt* ioeltout = StartWriting(Output(0));
 	ioeltout->Integer32() = msg->data;
 	StopWriting(ioeltout);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -784,19 +825,22 @@ void MAPSros_topic_subscriber::ROSInt32ReceivedCallback(const std_msgs::Int32Con
 
 void MAPSros_topic_subscriber::ROSInt32ArrayReceivedCallback(const std_msgs::Int32MultiArrayConstPtr& msg)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t = MAPS::CurrentTime();
 
 	MAPSIOElt* ioeltout = StartWriting(Output(0));
 	int vectorsize_out = msg->data.size();
 
-	if (vectorsize_out > m_buffsize_out)  {
+	if (vectorsize_out > m_buffsize_out)  
+    {
 		MAPSStreamedString ss;
 		ss << "Received array is too big (size = " << vectorsize_out << "). Increase the max array size property. Truncating...";
 		ReportWarning(ss);
 		vectorsize_out = m_buffsize_out;
 	}
-	for (int i=0; i<vectorsize_out;i++) {
+	for (int i=0; i<vectorsize_out;i++) 
+    {
 		ioeltout->Integer32(i) = msg->data[i];
 	}
 	ioeltout->Timestamp() = t;
@@ -805,7 +849,9 @@ void MAPSros_topic_subscriber::ROSInt32ArrayReceivedCallback(const std_msgs::Int
 
 	const std_msgs::MultiArrayLayout* layout_ptr = &(msg->layout);
 	OutputArrayLayout(layout_ptr,t);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -814,13 +860,16 @@ void MAPSros_topic_subscriber::ROSInt32ArrayReceivedCallback(const std_msgs::Int
 
 void MAPSros_topic_subscriber::ROSInt64ReceivedCallback(const std_msgs::Int64ConstPtr& msg)
 {
-    try {
+    try 
+    {
     MAPSIOElt* ioeltout = StartWriting(Output(0));
 
 	ioeltout->Integer64() = msg->data;
 
 	StopWriting(ioeltout);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -828,19 +877,22 @@ void MAPSros_topic_subscriber::ROSInt64ReceivedCallback(const std_msgs::Int64Con
 }
 void MAPSros_topic_subscriber::ROSInt64ArrayReceivedCallback(const std_msgs::Int64MultiArrayConstPtr& msg)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t = MAPS::CurrentTime();
 
 	MAPSIOElt* ioeltout = StartWriting(Output(0));
 	int vectorsize_out = msg->data.size();
 
-	if (vectorsize_out > m_buffsize_out)  {
+	if (vectorsize_out > m_buffsize_out)  
+    {
 		MAPSStreamedString ss;
 		ss << "Received array is too big (size = " << vectorsize_out << "). Increase the max array size property. Truncating...";
 		ReportWarning(ss);
 		vectorsize_out = m_buffsize_out;
 	}
-	for (int i=0; i<vectorsize_out;i++) {
+	for (int i=0; i<vectorsize_out;i++) 
+    {
 		ioeltout->Integer64(i) = msg->data[i];
 	}
 	ioeltout->Timestamp() = t;
@@ -849,7 +901,9 @@ void MAPSros_topic_subscriber::ROSInt64ArrayReceivedCallback(const std_msgs::Int
 
 	const std_msgs::MultiArrayLayout* layout_ptr = &(msg->layout);
 	OutputArrayLayout(layout_ptr,t);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -871,19 +925,22 @@ void MAPSros_topic_subscriber::ROSFloat32ReceivedCallback(const std_msgs::Float3
 
 void MAPSros_topic_subscriber::ROSFloat32ArrayReceivedCallback(const std_msgs::Float32MultiArrayConstPtr& msg)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t = MAPS::CurrentTime();
 
 	MAPSIOElt* ioeltout = StartWriting(Output(0));
 	int vectorsize_out = msg->data.size();
 
-	if (vectorsize_out > m_buffsize_out)  {
+	if (vectorsize_out > m_buffsize_out)  
+    {
 		MAPSStreamedString ss;
 		ss << "Received array is too big (size = " << vectorsize_out << "). Increase the max array size property. Truncating...";
 		ReportWarning(ss);
 		vectorsize_out = m_buffsize_out;
 	}
-	for (int i=0; i<vectorsize_out;i++) {
+	for (int i=0; i<vectorsize_out;i++) 
+    {
 		ioeltout->Float32(i) = msg->data[i];
 	}
 	ioeltout->Timestamp() = t;
@@ -892,7 +949,9 @@ void MAPSros_topic_subscriber::ROSFloat32ArrayReceivedCallback(const std_msgs::F
 
 	const std_msgs::MultiArrayLayout* layout_ptr = &(msg->layout);
 	OutputArrayLayout(layout_ptr,t);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -900,11 +959,14 @@ void MAPSros_topic_subscriber::ROSFloat32ArrayReceivedCallback(const std_msgs::F
 }
 void MAPSros_topic_subscriber::ROSFloat64ReceivedCallback(const std_msgs::Float64ConstPtr& msg)
 {
-    try {
+    try 
+    {
     MAPSIOElt* ioeltout = StartWriting(Output(0));
 	ioeltout->Float64() = msg->data;
 	StopWriting(ioeltout);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -913,19 +975,22 @@ void MAPSros_topic_subscriber::ROSFloat64ReceivedCallback(const std_msgs::Float6
 
 void MAPSros_topic_subscriber::ROSFloat64ArrayReceivedCallback(const std_msgs::Float64MultiArrayConstPtr& msg)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t = MAPS::CurrentTime();
 
 	MAPSIOElt* ioeltout = StartWriting(Output(0));
 	int vectorsize_out = msg->data.size();
 
-	if (vectorsize_out > m_buffsize_out)  {
+	if (vectorsize_out > m_buffsize_out)  
+    {
 		MAPSStreamedString ss;
 		ss << "Received array is too big (size = " << vectorsize_out << "). Increase the max array size property. Truncating...";
 		ReportWarning(ss);
 		vectorsize_out = m_buffsize_out;
 	}
-	for (int i=0; i<vectorsize_out;i++) {
+	for (int i=0; i<vectorsize_out;i++) 
+    {
 		ioeltout->Float64(i) = msg->data[i];
 	}
 	ioeltout->Timestamp() = t;
@@ -934,7 +999,9 @@ void MAPSros_topic_subscriber::ROSFloat64ArrayReceivedCallback(const std_msgs::F
 
 	const std_msgs::MultiArrayLayout* layout_ptr = &(msg->layout);
 	OutputArrayLayout(layout_ptr,t);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -943,12 +1010,14 @@ void MAPSros_topic_subscriber::ROSFloat64ArrayReceivedCallback(const std_msgs::F
 
 void MAPSros_topic_subscriber::OutputArrayLayout(const std_msgs::MultiArrayLayout* ros_layout, MAPSTimestamp t)
 {
-    try {
+    try 
+    {
     MAPSIOElt* ioeltout_layout = StartWriting(Output(1));
 	ROSArrayLayout* maps_layout = (ROSArrayLayout*)ioeltout_layout->Data();
 
 	int nb_dims = ros_layout->dim.size();
-	if (nb_dims > MAX_ARRAY_LAYOUT_DIMENSIONS) {
+	if (nb_dims > MAX_ARRAY_LAYOUT_DIMENSIONS) 
+    {
 		MAPSStreamedString ss;
 		ss << "Received array has too many dimensions (" << nb_dims <<"). This component supports " << MAX_ARRAY_LAYOUT_DIMENSIONS << " dimensions max on array_layout output.Truncating array_layout info output.";
 		ReportWarning(ss);
@@ -956,7 +1025,8 @@ void MAPSros_topic_subscriber::OutputArrayLayout(const std_msgs::MultiArrayLayou
 	}
 	maps_layout->nb_dims = nb_dims;
 	maps_layout->data_offset = ros_layout->data_offset;
-	for (int i=0; i<nb_dims; i++) {
+	for (int i=0; i<nb_dims; i++) 
+    {
 		MAPS::Memcpy(maps_layout->dim[i].label,ros_layout->dim[i].label.c_str(),ros_layout->dim[i].label.length());
 		maps_layout->dim[i].label[ros_layout->dim[i].label.length()] = '\0';
 		maps_layout->dim[i].size = ros_layout->dim[i].size;
@@ -966,7 +1036,9 @@ void MAPSros_topic_subscriber::OutputArrayLayout(const std_msgs::MultiArrayLayou
 	ioeltout_layout->Timestamp() = t;
 	ioeltout_layout->VectorSize() = sizeof(ROSArrayLayout);
 	StopWriting(ioeltout_layout);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -975,33 +1047,38 @@ void MAPSros_topic_subscriber::OutputArrayLayout(const std_msgs::MultiArrayLayou
 
 void MAPSros_topic_subscriber::ROSLaserScanReceivedCallback(const sensor_msgs::LaserScan::ConstPtr& ros_laser_scan)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t;
 	if (false == m_transfer_ros_timestamp)
 		t = MAPS::CurrentTime();
 	else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_laser_scan->header.stamp);
 
-	if (m_first_time) {
+	if (m_first_time) 
+    {
 		m_first_time = false;
 		m_nb_laser_scan_points = ros_laser_scan->ranges.size();
 		m_nb_laser_intens_data = ros_laser_scan->intensities.size();
 		Output(0).AllocOutputBuffer(m_nb_laser_scan_points);
-		if (m_nb_laser_intens_data > 0) {
+		if (m_nb_laser_intens_data > 0) 
+        {
 			Output(1).AllocOutputBuffer(m_nb_laser_intens_data);
 		}
 	}
 
 	MAPSIOElt* out_ranges = NULL, *out_intens = NULL, *out_infos = NULL;
 	out_ranges = StartWriting(Output(0));
-	if (m_nb_laser_intens_data) {
+	if (m_nb_laser_intens_data) 
+    {
 		out_intens = StartWriting(Output(1));
 	}
 	out_infos = StartWriting(Output(2));
     MAPSFloat64* ranges_data = &out_ranges->Float64();
 
 	int nb_points = ros_laser_scan->ranges.size();
-	if (nb_points > m_nb_laser_scan_points) {
+	if (nb_points > m_nb_laser_scan_points) 
+    {
 		MAPSStreamedString ss;
 		ss << "Number of scan points has increased. Problem. Truncating.";
 		ReportWarning(ss);
@@ -1013,14 +1090,17 @@ void MAPSros_topic_subscriber::ROSLaserScanReceivedCallback(const sensor_msgs::L
 		intens_data = &out_intens->Float64();
 	int vectorsize_out = 0;
     MAPSFloat64 range;
-	for (int i=0; i<nb_points; i++) {
+	for (int i=0; i<nb_points; i++) 
+    {
 		range = ros_laser_scan->ranges[i];
-		if (m_discard_out_of_range) {
+		if (m_discard_out_of_range) 
+        {
 			if (range < ros_laser_scan->range_min || range > ros_laser_scan->range_max)
 				continue;
 		}
 		*(ranges_data++) = ros_laser_scan->ranges[i];
-		if (m_nb_laser_intens_data) {
+		if (m_nb_laser_intens_data) 
+        {
 			*(intens_data++) = ros_laser_scan->intensities[i];
 		}
 		vectorsize_out++;
@@ -1034,22 +1114,27 @@ void MAPSros_topic_subscriber::ROSLaserScanReceivedCallback(const sensor_msgs::L
 	out_infos->Float64(6) = ros_laser_scan->range_max;
 
 	out_ranges->VectorSize() = vectorsize_out;
-	if (m_nb_laser_intens_data) {
+	if (m_nb_laser_intens_data) 
+    {
 		out_intens->VectorSize() = vectorsize_out;
 	}
 
 	out_infos->Timestamp() = t;
 	out_ranges->Timestamp() = t;
-	if (m_nb_laser_intens_data) {
+	if (m_nb_laser_intens_data) 
+    {
 		out_intens->Timestamp() = t;
 	}
 
 	StopWriting(out_infos);
-	if (m_nb_laser_intens_data) {
+	if (m_nb_laser_intens_data) 
+    {
 		StopWriting(out_intens);
 	}
 	StopWriting(out_ranges);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1058,20 +1143,23 @@ void MAPSros_topic_subscriber::ROSLaserScanReceivedCallback(const sensor_msgs::L
 
 void MAPSros_topic_subscriber::ROSPointCloudReceivedCallback(const sensor_msgs::PointCloud::ConstPtr& ros_point_cloud)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t;
 	if (false == m_transfer_ros_timestamp)
 		t = MAPS::CurrentTime();
 	else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_point_cloud->header.stamp);
 
-	if (m_first_time) {
+	if (m_first_time) 
+    {
 		m_first_time = false;
 		m_nb_points = ros_point_cloud->points.size();
 		m_nb_channels = ros_point_cloud->channels.size();
 
 		Output(0).AllocOutputBuffer(m_nb_points*3);
-		if (m_nb_channels > 0) {
+		if (m_nb_channels > 0) 
+        {
 			Output(1).AllocOutputBuffer(m_nb_channels);
 			Output(2).AllocOutputBuffer(m_nb_points);
 		}
@@ -1079,21 +1167,24 @@ void MAPSros_topic_subscriber::ROSPointCloudReceivedCallback(const sensor_msgs::
 
 	MAPSIOElt* out_points_xyz = NULL, *out_nb_channels = NULL, *out_distances = NULL;
 	out_points_xyz = StartWriting(Output(0));
-	if (m_nb_channels) {
+	if (m_nb_channels) 
+    {
 		out_nb_channels = StartWriting(Output(1));
 		out_distances = StartWriting(Output(2));
 	}
 	MAPSFloat32* xyz_points = &out_points_xyz->Float32();
 
 	int nb_points = ros_point_cloud->points.size();
-	if (nb_points > m_nb_points) {
+	if (nb_points > m_nb_points) 
+    {
 		MAPSStreamedString ss;
 		ss << "Number of scan points has increased. Problem. Truncating.";
 		ReportWarning(ss);
 		nb_points = m_nb_points;
 	}
 
-	for (int i=0; i<nb_points; i++) {
+	for (int i=0; i<nb_points; i++) 
+    {
 		*(xyz_points++) = ros_point_cloud->points[i].x;
 		*(xyz_points++) = ros_point_cloud->points[i].y;
 		*(xyz_points++) = ros_point_cloud->points[i].z;
@@ -1102,11 +1193,13 @@ void MAPSros_topic_subscriber::ROSPointCloudReceivedCallback(const sensor_msgs::
 
 	MAPSFloat32* channels_data = NULL;
 	MAPSInt32* channels_sizes = NULL;
-	if (m_nb_channels) {
+	if (m_nb_channels) 
+    {
 		channels_sizes = &out_nb_channels->Integer32();
 		channels_data = &out_distances->Float32();
 	}
-	for (int i=0; i<m_nb_channels; i++) {
+	for (int i=0; i<m_nb_channels; i++) 
+    {
 		int nb_ranges_on_channel = ros_point_cloud->channels[i].values.size();
 		*(channels_sizes++) = nb_ranges_on_channel;
 		for (int j=0; j<nb_ranges_on_channel; j++) {
@@ -1114,7 +1207,8 @@ void MAPSros_topic_subscriber::ROSPointCloudReceivedCallback(const sensor_msgs::
 		}
 	}
 
-	if (m_nb_channels) {
+	if (m_nb_channels) 
+    {
 		out_nb_channels->VectorSize() = m_nb_channels;
 		out_distances->VectorSize() = nb_points;
 		out_nb_channels->Timestamp() = t;
@@ -1124,7 +1218,9 @@ void MAPSros_topic_subscriber::ROSPointCloudReceivedCallback(const sensor_msgs::
 	}
 	out_points_xyz->Timestamp() = t;
 	StopWriting(out_points_xyz);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1133,25 +1229,30 @@ void MAPSros_topic_subscriber::ROSPointCloudReceivedCallback(const sensor_msgs::
 
 void MAPSros_topic_subscriber::ROSPointCloud2ReceivedCallback(const sensor_msgs::PointCloud2::ConstPtr& ros_point_cloud2)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t;
 	if (false == m_transfer_ros_timestamp)
 		t = MAPS::CurrentTime();
 	else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_point_cloud2->header.stamp);
 
-	if (m_first_time) {
+	if (m_first_time) 
+    {
 		m_first_time = false;
 		m_nb_fields = ros_point_cloud2->fields.size();
         m_point_step = ros_point_cloud2->point_step;
 		m_nb_points = ros_point_cloud2->data.size()/ros_point_cloud2->point_step;
         int max_nb_points = (int)GetIntegerProperty("max_nb_points");
-		if (m_nb_fields > 0) {
+		if (m_nb_fields > 0) 
+        {
 			Output(1).AllocOutputBuffer(m_nb_fields*256); //255 chars max per field name.
 			Output(2).AllocOutputBuffer(m_nb_fields*3); //(offset, datatype, count)
 		}
-        if (max_nb_points > 0) {
-            if (m_nb_points > max_nb_points) {
+        if (max_nb_points > 0) 
+        {
+            if (m_nb_points > max_nb_points) 
+            {
                 MAPSStreamedString ss;
                 ss << "Number of points if first packet (" << m_nb_points << ") is higher than max_nb_points property (" << max_nb_points << "). Using number of points in first packet received.";
                 ReportWarning(ss);
@@ -1164,7 +1265,8 @@ void MAPSros_topic_subscriber::ROSPointCloud2ReceivedCallback(const sensor_msgs:
 
 	MAPSIOElt* out_info = NULL, *out_field_names = NULL, *out_fields_info = NULL, *out_data = NULL;
 	out_info = StartWriting(Output(0));
-	if (m_nb_fields) {
+	if (m_nb_fields) 
+    {
 		out_field_names = StartWriting(Output(1));
 		out_fields_info = StartWriting(Output(2));
 	}
@@ -1178,14 +1280,17 @@ void MAPSros_topic_subscriber::ROSPointCloud2ReceivedCallback(const sensor_msgs:
 	out_info->Integer32(5) = ros_point_cloud2->is_dense ? 1 : 0;
 
 	int nb_fields = ros_point_cloud2->fields.size();
-	if (nb_fields > m_nb_fields) {
+	if (nb_fields > m_nb_fields) 
+    {
 		MAPSStreamedString ss;
 		ss << "Number of fields has increased. Problem. Truncating.";
 		ReportWarning(ss);
 		nb_fields = m_nb_fields;
 	}
-	if (nb_fields != 3) {
-		if (nb_fields < 3) {
+	if (nb_fields != 3) 
+    {
+		if (nb_fields < 3) 
+        {
 			MAPSStreamedString ss;
 			ss << "So far, this components supports pointcloud2 messages with at least 3 fields 'x','y' and 'z'.";
 			ss << " Only " << nb_fields << " have been found.";
@@ -1194,18 +1299,22 @@ void MAPSros_topic_subscriber::ROSPointCloud2ReceivedCallback(const sensor_msgs:
                 m_sub->shutdown(); // stop topic subscription
             SetComponentInError();
             return;
-        } else if (nb_fields > 3) {
+        } 
+        else if (nb_fields > 3) 
+        {
             MAPSStreamedString ss;
             ss << "Found more than 3 fields int pointcloud2 message. Only x,y,z fields will be taken into account on the point cloud output.";
             ReportWarning(ss);
         }
 	}
 	MAPSString field_names;
-	for (int i=0; i<nb_fields; i++) {
+	for (int i=0; i<nb_fields; i++) 
+    {
 		field_names += (const char*)ros_point_cloud2->fields[i].name.c_str();
 		field_names += "|";
 	}
-	if (field_names.Len() >= 255*nb_fields) {
+	if (field_names.Len() >= 255*nb_fields) 
+    {
 		MAPSStreamedString ss;
 		ss << "Field names too long. Problem. Truncating.";
 		ReportWarning(ss);
@@ -1214,7 +1323,8 @@ void MAPSros_topic_subscriber::ROSPointCloud2ReceivedCallback(const sensor_msgs:
 	MAPS::Strcpy(out_field_names->TextAscii(),(const char*)field_names);
 	out_field_names->VectorSize() = field_names.Len();
 
-	for (int i=0; i<nb_fields; i++) {
+	for (int i=0; i<nb_fields; i++) 
+    {
 		out_fields_info->Integer32(3*i) = ros_point_cloud2->fields[i].offset;
 		out_fields_info->Integer32(3*i+1) = ros_point_cloud2->fields[i].datatype;
 		out_fields_info->Integer32(3*i+2) = ros_point_cloud2->fields[i].count;
@@ -1222,18 +1332,23 @@ void MAPSros_topic_subscriber::ROSPointCloud2ReceivedCallback(const sensor_msgs:
 	out_fields_info->VectorSize() = nb_fields*3;
 
     int nb_points = ros_point_cloud2->data.size() / ros_point_cloud2->point_step;
-    if (nb_points > m_nb_points) {
+    if (nb_points > m_nb_points) 
+    {
 		MAPSStreamedString ss;
         ss << "Amount of points (" << nb_points << ") exceeds maximum number of points (" << m_nb_points << "). Truncating. If property max_nb_points is set to -1, it means that number of points has increased since first sample. Consider increasing max_nb_points.";
 		ReportWarning(ss);
         nb_points = m_nb_points;
 	}
     MAPSFloat32* data_out = &out_data->Float32();
-    if (m_point_step == 12) {
+    if (m_point_step == 12) 
+    {
         MAPS::Memcpy(data_out,&(ros_point_cloud2->data[0]),nb_points * 4 * 3);
-    } else {
+    } 
+    else 
+    {
         MAPSFloat32* data_in = (MAPSFloat32*) &(ros_point_cloud2->data[0]);
-        for (int i=nb_points; i>0; --i) {
+        for (int i=nb_points; i>0; --i) 
+        {
             *(data_out++) = *(data_in++);
             *(data_out++) = *(data_in++);
             *(data_out++) = *(data_in++);
@@ -1252,7 +1367,9 @@ void MAPSros_topic_subscriber::ROSPointCloud2ReceivedCallback(const sensor_msgs:
 	StopWriting(out_fields_info,nb_fields==0);
 	StopWriting(out_field_names,nb_fields==0);
 	StopWriting(out_info);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1268,7 +1385,8 @@ void MAPSros_topic_subscriber::ROSJoyReceivedCallback(const sensor_msgs::Joy::Co
 	else
         t = MAPSRosUtils::ROSTimeToMAPSTimestamp(ros_joy->header.stamp);
 
-	if (m_first_time) {
+	if (m_first_time) 
+    {
 		m_first_time = false;
 		m_nb_joy_axes = ros_joy->axes.size();
 		m_nb_joy_buttons = ros_joy->buttons.size();
@@ -1288,7 +1406,9 @@ void MAPSros_topic_subscriber::ROSJoyReceivedCallback(const sensor_msgs::Joy::Co
 		out_buttons->Integer32(i) = ros_joy->buttons.at(i);
 	out_buttons->Timestamp() = t;
 	StopWriting(out_buttons);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1297,7 +1417,8 @@ void MAPSros_topic_subscriber::ROSJoyReceivedCallback(const sensor_msgs::Joy::Co
 
 void MAPSros_topic_subscriber::ROSImuReceivedCallback(const sensor_msgs::Imu::ConstPtr& ros_imu)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t;
 	if (false == m_transfer_ros_timestamp)
 		t = MAPS::CurrentTime();
@@ -1327,7 +1448,9 @@ void MAPSros_topic_subscriber::ROSImuReceivedCallback(const sensor_msgs::Imu::Co
 	StopWriting(out_acc);
 	StopWriting(out_gyro);
 	StopWriting(out_orientation);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1336,13 +1459,16 @@ void MAPSros_topic_subscriber::ROSImuReceivedCallback(const sensor_msgs::Imu::Co
 
 void MAPSros_topic_subscriber::ROSPointReceivedCallback(const geometry_msgs::Point::ConstPtr& point)
 {
-    try {
+    try 
+    {
     MAPSIOElt* ioeltout = StartWriting(Output(0));
 	ioeltout->Float64(0) = point->x;
 	ioeltout->Float64(1) = point->y;
 	ioeltout->Float64(2) = point->z;
 	StopWriting(ioeltout);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1351,7 +1477,8 @@ void MAPSros_topic_subscriber::ROSPointReceivedCallback(const geometry_msgs::Poi
 
 void MAPSros_topic_subscriber::ROSPoseReceivedCallback(const geometry_msgs::Pose::ConstPtr& pose)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t = MAPS::CurrentTime();
 	MAPSIOElt* ioeltout = StartWriting(Output(0));
 	ioeltout->Float64(0) = pose->position.x;
@@ -1366,7 +1493,9 @@ void MAPSros_topic_subscriber::ROSPoseReceivedCallback(const geometry_msgs::Pose
 	ioeltout2->Float64(3) = pose->orientation.w;
 	ioeltout2->Timestamp() = t;
 	StopWriting(ioeltout2);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1375,7 +1504,8 @@ void MAPSros_topic_subscriber::ROSPoseReceivedCallback(const geometry_msgs::Pose
 
 void MAPSros_topic_subscriber::ROSPoseStampedReceivedCallback(const geometry_msgs::PoseStamped::ConstPtr& posestamped)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t;
 	if (false == m_transfer_ros_timestamp)
 		t = MAPS::CurrentTime();
@@ -1395,7 +1525,9 @@ void MAPSros_topic_subscriber::ROSPoseStampedReceivedCallback(const geometry_msg
 	ioeltout2->Float64(3) = posestamped->pose.orientation.w;
 	ioeltout2->Timestamp() = t;
 	StopWriting(ioeltout2);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1404,7 +1536,8 @@ void MAPSros_topic_subscriber::ROSPoseStampedReceivedCallback(const geometry_msg
 
 void MAPSros_topic_subscriber::ROSRangeReceivedCallback(const sensor_msgs::Range::ConstPtr& ros_range)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t;
 	if (false == m_transfer_ros_timestamp)
 		t = MAPS::CurrentTime();
@@ -1423,7 +1556,9 @@ void MAPSros_topic_subscriber::ROSRangeReceivedCallback(const sensor_msgs::Range
 	ioeltout->Float64(3) = ros_range->max_range;
 	ioeltout->Timestamp() = t;
 	StopWriting(ioeltout);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1432,7 +1567,8 @@ void MAPSros_topic_subscriber::ROSRangeReceivedCallback(const sensor_msgs::Range
 
 void MAPSros_topic_subscriber::ROSNavSatFixReceivedCallback(const sensor_msgs::NavSatFix::ConstPtr& ros_navsatfix)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t;
     if (false == m_transfer_ros_timestamp)
         t = MAPS::CurrentTime();
@@ -1451,7 +1587,8 @@ void MAPSros_topic_subscriber::ROSNavSatFixReceivedCallback(const sensor_msgs::N
     ioeltout_pos_lla->Float64(1) = ros_navsatfix->longitude;
     ioeltout_pos_lla->Float64(2) = ros_navsatfix->altitude;
 
-    for (int i=0; i<9; i++) {
+    for (int i=0; i<9; i++) 
+    {
         ioeltout_pos_cov->Float64(i) = ros_navsatfix->position_covariance[i];
     }
 
@@ -1466,7 +1603,9 @@ void MAPSros_topic_subscriber::ROSNavSatFixReceivedCallback(const sensor_msgs::N
     StopWriting(ioeltout_pos_cov_type);
     StopWriting(ioeltout_pos_lla);
     StopWriting(ioeltout_status);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1476,7 +1615,8 @@ void MAPSros_topic_subscriber::ROSNavSatFixReceivedCallback(const sensor_msgs::N
 
 void MAPSros_topic_subscriber::ROSTwistReceivedCallback(const geometry_msgs::Twist::ConstPtr& twist)
 {
-    try {
+    try 
+    {
     MAPSIOElt* ioeltout = StartWriting(Output(0));
 	ioeltout->Float64(0) = twist->linear.x;
 	ioeltout->Float64(1) = twist->linear.y;
@@ -1485,7 +1625,9 @@ void MAPSros_topic_subscriber::ROSTwistReceivedCallback(const geometry_msgs::Twi
 	ioeltout->Float64(4) = twist->angular.y;
 	ioeltout->Float64(5) = twist->angular.z;
 	StopWriting(ioeltout);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1494,7 +1636,8 @@ void MAPSros_topic_subscriber::ROSTwistReceivedCallback(const geometry_msgs::Twi
 
 void MAPSros_topic_subscriber::ROSTwistStampedReceivedCallback(const geometry_msgs::TwistStamped::ConstPtr& twist)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t;
     if (false == m_transfer_ros_timestamp)
         t = MAPS::CurrentTime();
@@ -1510,7 +1653,9 @@ void MAPSros_topic_subscriber::ROSTwistStampedReceivedCallback(const geometry_ms
     ioeltout->Float64(5) = twist->twist.angular.z;
     ioeltout->Timestamp() = t;
     StopWriting(ioeltout);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1519,7 +1664,8 @@ void MAPSros_topic_subscriber::ROSTwistStampedReceivedCallback(const geometry_ms
 
 void MAPSros_topic_subscriber::ROSOdometryReceivedCallback(const nav_msgs::Odometry::ConstPtr &odometry)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t;
     if (false == m_transfer_ros_timestamp)
         t = MAPS::CurrentTime();
@@ -1539,7 +1685,8 @@ void MAPSros_topic_subscriber::ROSOdometryReceivedCallback(const nav_msgs::Odome
     ioeltout_quat->Float64(2) = odometry->pose.pose.orientation.z;
     ioeltout_quat->Float64(3) = odometry->pose.pose.orientation.w;
     MAPSFloat64* pos_cov_out = &ioeltout_pose_cov->Float64();
-    for (int i=0; i<36; i++)  {
+    for (int i=0; i<36; i++)  
+    {
         *(pos_cov_out++) = odometry->pose.covariance.at(i);
     }
     ioeltout_twist->Float64(0) = odometry->twist.twist.linear.x;
@@ -1549,7 +1696,8 @@ void MAPSros_topic_subscriber::ROSOdometryReceivedCallback(const nav_msgs::Odome
     ioeltout_twist->Float64(4) = odometry->twist.twist.angular.y;
     ioeltout_twist->Float64(5) = odometry->twist.twist.angular.z;
     MAPSFloat64* twist_cov_out = &ioeltout_twist_cov->Float64();
-    for (int i=0; i<36; i++) {
+    for (int i=0; i<36; i++) 
+    {
         *(twist_cov_out++) = odometry->twist.covariance.at(i);
     }
     ioeltout_point->Timestamp()=t;
@@ -1562,7 +1710,9 @@ void MAPSros_topic_subscriber::ROSOdometryReceivedCallback(const nav_msgs::Odome
     StopWriting(ioeltout_pose_cov);
     StopWriting(ioeltout_twist);
     StopWriting(ioeltout_twist_cov);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1571,7 +1721,8 @@ void MAPSros_topic_subscriber::ROSOdometryReceivedCallback(const nav_msgs::Odome
 
 void MAPSros_topic_subscriber::ROSVisuMarkerReceivedCallback(const visualization_msgs::Marker::ConstPtr& callback_marker)
 {
-    try {
+    try 
+    {
         // write timestamp
         MAPSTimestamp marker_ts;
         if (false == m_transfer_ros_timestamp)
@@ -1579,7 +1730,8 @@ void MAPSros_topic_subscriber::ROSVisuMarkerReceivedCallback(const visualization
         else
             marker_ts = MAPSRosUtils::ROSTimeToMAPSTimestamp(callback_marker->header.stamp);
 
-        if (m_first_time) {
+        if (m_first_time) 
+        {
             m_first_time = false;
 
             Output(MARKER_OUTPUT_NB_ARROW).AllocOutputBuffer(MARKER_OUTPUT_SIZE_MAX_ARROW);
@@ -1600,7 +1752,9 @@ void MAPSros_topic_subscriber::ROSVisuMarkerReceivedCallback(const visualization
 
         //for each type run the vector, then StartWriting it in one time
         MarkersWriteByType(v, callback_marker->type, concerned_output, marker_ts);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -1610,27 +1764,32 @@ void MAPSros_topic_subscriber::ROSVisuMarkerReceivedCallback(const visualization
 void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msgs::Marker::ConstPtr >& markers, int32_t marker_type, int concerned_output, MAPSTimestamp marker_ts) {
     MAPSIOElt *outElt = StartWriting(Output(concerned_output));
 
-    switch (marker_type) {
+    switch (marker_type) 
+    {
         case visualization_msgs::Marker::ARROW :
         case visualization_msgs::Marker::CUBE :
         case visualization_msgs::Marker::SPHERE :
-        case visualization_msgs::Marker::CYLINDER : {
+        case visualization_msgs::Marker::CYLINDER : 
+        {
             // TODO: check buffersize as for POINTS?
             outElt->VectorSize() = MAPSInt32(markers.size());
             int i = 0;
-            for (auto &marker : markers) {
+            for (auto &marker : markers) 
+            {
                 MAPSRealObject &obj = outElt->RealObject(i);
                 OutputMarkerOnlyFill(obj, marker);
                 i++;
             }
             break;
         }
-        case visualization_msgs::Marker::POINTS : {
+        case visualization_msgs::Marker::POINTS : 
+        {
             int vector_size = 0; // first set output VectorSize
             for (auto& m : markers)
                 vector_size += m->points.size();
 
-            if (outElt->BufferSize() < vector_size) {
+            if (outElt->BufferSize() < vector_size) 
+            {
                 StopWriting(outElt);
                 MAPSStreamedString ss;
                 ss << "Too many points in marker: " << vector_size
@@ -1640,8 +1799,10 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
             }
             outElt->VectorSize() = vector_size;
             int i = 0;
-            for (auto& marker : markers) {
-                for (auto p : marker->points) {
+            for (auto& marker : markers) 
+            {
+                for (auto p : marker->points) 
+                {
                     MAPSRealObject &obj = outElt->RealObject(i);
                     OutputMarkerOnlyFill(obj, marker, i);
                     obj.x = p.x;
@@ -1653,12 +1814,14 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
             }
             break;
         }
-        case visualization_msgs::Marker::LINE_STRIP : {
+        case visualization_msgs::Marker::LINE_STRIP : 
+        {
             int vector_size = 0; // first set output VectorSize
             for (auto& m : markers)
                 vector_size += m->points.size() * 3;
 
-            if (outElt->BufferSize() < vector_size) {
+            if (outElt->BufferSize() < vector_size) 
+            {
                 StopWriting(outElt);
                 MAPSStreamedString ss;
                 ss << "Too many points in line strip marker: " << vector_size
@@ -1669,8 +1832,10 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
             }
             outElt->VectorSize() = vector_size;
             int i = 0;
-            for (auto& marker : markers) {
-                for (auto p : marker->points) {
+            for (auto& marker : markers) 
+            {
+                for (auto p : marker->points) 
+                {
                     outElt->Float64(i + 0) = p.x;
                     outElt->Float64(i + 1) = p.y;
                     outElt->Float64(i + 2) = p.z;
@@ -1679,12 +1844,14 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
             }
             break;
         }
-        case visualization_msgs::Marker::LINE_LIST : {
+        case visualization_msgs::Marker::LINE_LIST : 
+        {
             int vector_size = 0; // first set output VectorSize
             for (auto& m : markers)
                 vector_size += m->points.size() * 3;
 
-            if (outElt->BufferSize() < vector_size) {
+            if (outElt->BufferSize() < vector_size) 
+            {
                 StopWriting(outElt);
                 MAPSStreamedString ss;
                 ss << "Too many points in line list marker: " << vector_size
@@ -1695,8 +1862,10 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
             }
             outElt->VectorSize() = vector_size;
             int i = 0;
-            for (auto& marker : markers) {
-                for (auto p : marker->points) {
+            for (auto& marker : markers) 
+            {
+                for (auto p : marker->points) 
+                {
                     outElt->Float64(i + 0) = p.x;
                     outElt->Float64(i + 1) = p.y;
                     outElt->Float64(i + 2) = p.z;
@@ -1713,11 +1882,13 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
             break;
         case visualization_msgs::Marker::MESH_RESOURCE :
             break;
-        case visualization_msgs::Marker::TRIANGLE_LIST : {
+        case visualization_msgs::Marker::TRIANGLE_LIST : 
+        {
             int vector_size = 0; // first set output VectorSize
             for (auto &m : markers)
                 vector_size += m->points.size() * 3;
-            if (outElt->BufferSize() < vector_size) {
+            if (outElt->BufferSize() < vector_size) 
+            {
                 StopWriting(outElt);
                 MAPSStreamedString ss;
                 ss << "Too many points in triangle list marker: " << vector_size
@@ -1727,8 +1898,10 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
             }
             outElt->VectorSize() = vector_size;
             int i = 0;
-            for (auto &marker : markers) {
-                for (auto p : marker->points) {
+            for (auto &marker : markers) 
+            {
+                for (auto p : marker->points) 
+                {
                     MAPSRealObject &obj = outElt->RealObject(i);
                     OutputMarkerOnlyFill(obj, marker, i);
                     obj.x = p.x;
@@ -1740,7 +1913,8 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
             }
             break;
         }
-        default: {
+        default: 
+        {
             MAPSStreamedString ss;
             ss << "ROS Marker type unknown: " << marker_type;
             ReportWarning(ss);
@@ -1753,7 +1927,8 @@ void MAPSros_topic_subscriber::MarkersWriteByType(std::vector< visualization_msg
 
 void MAPSros_topic_subscriber::ROSCANFrameReceivedCallback(const can_msgs::Frame::ConstPtr& frame)
 {
-    try {
+    try 
+    {
     MAPSTimestamp t;
     if (false == m_transfer_ros_timestamp)
         t = MAPS::CurrentTime();
@@ -1772,7 +1947,9 @@ void MAPSros_topic_subscriber::ROSCANFrameReceivedCallback(const can_msgs::Frame
     ioeltout->Timestamp()=t;
     StopWriting(ioeltout);
 
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         else
@@ -1810,7 +1987,8 @@ void MAPSros_topic_subscriber::OutputMarkerOnlyFill(MAPSRealObject& obj, const v
 
 void MAPSros_topic_subscriber::ROSVisuMarkerArrayReceivedCallback(const visualization_msgs::MarkerArray::ConstPtr& markers)
 {
-    for (auto m : markers->markers) {
+    for (auto m : markers->markers) 
+    {
         auto p = boost::make_shared< const visualization_msgs::Marker >(m);
         ROSVisuMarkerReceivedCallback(p);
     }
@@ -1819,10 +1997,6 @@ void MAPSros_topic_subscriber::ROSVisuMarkerArrayReceivedCallback(const visualiz
 void MAPSros_topic_subscriber::Core()
 {
     Wait4Event(isDyingEvent);
-//    ros::WallDuration timeout(0.1f);
-//    while (_n->ok() && !IsDying()) {
-//        _cb_queue.callAvailable(timeout);
-//    }
 }
 
 void MAPSros_topic_subscriber::Death()

@@ -101,7 +101,8 @@ MAPS_COMPONENT_DEFINITION(MAPSros_topic_publisher,"ros_topic_publisher","2.2.1",
 
 
 MAPSros_topic_publisher::MAPSros_topic_publisher(const char* name, MAPSComponentDefinition& cd) :
-MAPSComponent(name,cd) {
+MAPSComponent(name,cd) 
+{
 	MAPSEnumStruct topic_types;
 	for (unsigned int i=0; i< sizeof(s_topic_types)/sizeof(const char*); i++) 
 	{
@@ -794,9 +795,9 @@ void MAPSros_topic_publisher::PublishSensorMsg()
                     else 
 					{
                         /*
-                        if (MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterFloat32))
+                        if (MAPS::TypeFilter(m_ioeltin->Type(),MAPS::FilterFloat32))
                             _pointcloud2_channel = new IOEltToPointCloud2<MAPSInt32, MAPSFloat32>();
-                        else if (MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterFloat64))
+                        else if (MAPS::TypeFilter(m_ioeltin->Type(),MAPS::FilterFloat64))
                             _pointcloud2_channel = new IOEltToPointCloud2<MAPSInt32, MAPSFloat64>();
                             */
                     }
@@ -815,9 +816,9 @@ void MAPSros_topic_publisher::PublishSensorMsg()
                     else 
 					{
                         /*
-                        if (MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterInteger32))
+                        if (MAPS::TypeFilter(m_ioeltin->Type(),MAPS::FilterInteger32))
                             _pointcloud2_channel = new IOEltToPointCloud2<MAPSFloat32, MAPSInt32>();
-                        else if (MAPS::TypeFilter(_ioeltin->Type(), MAPS::FilterFloat64))
+                        else if (MAPS::TypeFilter(m_ioeltin->Type(), MAPS::FilterFloat64))
                             _pointcloud2_channel = new IOEltToPointCloud2<MAPSFloat32,MAPSFloat64> ();
                             */
                     }
@@ -837,9 +838,9 @@ void MAPSros_topic_publisher::PublishSensorMsg()
                     else 
 					{
                         /*
-                        if (MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterInteger32))
+                        if (MAPS::TypeFilter(m_ioeltin->Type(),MAPS::FilterInteger32))
                             _pointcloud2_channel = new IOEltToPointCloud2<MAPSFloat64, MAPSInt32>();
-                        else if (MAPS::TypeFilter(_ioeltin->Type(),MAPS::FilterFloat32))
+                        else if (MAPS::TypeFilter(m_ioeltin->Type(),MAPS::FilterFloat32))
                             _pointcloud2_channel = new IOEltToPointCloud2<MAPSFloat64,MAPSFloat32>();
                             */
 
@@ -900,7 +901,7 @@ void MAPSros_topic_publisher::PublishSensorMsg()
 			else 
 			{
                 /*
-                _pointcloud2_channel->configuBuffers(&_ros_pointcloud2.data[0],_ioeltin->Data(),_ros_pointcloud2_nb_points_in);
+                _pointcloud2_channel->configuBuffers(&_ros_pointcloud2.data[0],m_ioeltin->Data(),_ros_pointcloud2_nb_points_in);
                 CopyPointCloud2Visitor visitor;
                 _pointcloud2_channel->accept(visitor);
                 */

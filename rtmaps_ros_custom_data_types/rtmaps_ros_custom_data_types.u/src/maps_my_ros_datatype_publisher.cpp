@@ -71,35 +71,32 @@ MAPS_COMPONENT_DEFINITION(MAPSmy_ros_datatype_publisher,"my_ros_datatype_publish
 
 void MAPSmy_ros_datatype_publisher::Birth()
 {
-	_first_time = true;
-	_n = NULL;
-	_pub = NULL;
-
-    MAPSString topic_name = GetStringProperty("topic_name");
-    int pub_ts = (int)GetIntegerProperty("published_timestamps");
-    if (pub_ts == 0)
-        _publish_rtmaps_timestamp = true;
-    else
-        _publish_rtmaps_timestamp = false;
-
-	try {
-        _ros = MAPSRosUtils::get();
-        if (_ros == NULL) {
-            Error("Could not initialize ROS.");
-        }
-        _n = _ros->get_ros_node();//new ros::NodeHandle();
-		if (_n == NULL)
+	m_first_time = true;
+	m_n = nullptr;
+	m_pub = nullptr;
+	MAPSString topic_name = GetStringProperty("topic_name");
+	try 
+	{
+		m_n = MAPSRosUtils::GetROSNode();
+		if (m_n == nullptr)
 			Error("Could not create NodeHandle.");
-		_pub = new ros::Publisher();
-		if (_pub == NULL)
+		m_pub = new ros::Publisher();
+		if (m_pub == nullptr)
 			Error("Could not create Publisher.");
-	} catch (ros::Exception e) {
+	} 
+	catch (ros::Exception const& e ) 
+	{
 		ReportError(e.what());
 	}
+		int pub_ts = (int)GetIntegerProperty("published_timestamps");
+		if (pub_ts == 0)
+			m_publish_rtmaps_timestamp = true;
+		else
+			m_publish_rtmaps_timestamp = false;
 
-    *_pub = _n->advertise<my_data_types::my_data_type>((const char*)topic_name,100);
+    *m_pub = m_n->advertise<my_data_types::my_data_type>((const char*)topic_name,100);
 
-	_count = 0;
+	m_count = 0;
 
 
 }
@@ -107,45 +104,45 @@ void MAPSmy_ros_datatype_publisher::Birth()
 void MAPSmy_ros_datatype_publisher::Core()
 {
 	MAPSTimestamp t;
-    _ioeltin = StartReading(Input(0));
-    if (_ioeltin == NULL)
+    m_ioeltin = StartReading(Input(0));
+    if (m_ioeltin == NULL)
         return;
-    t = _ioeltin->Timestamp();
+    t = m_ioeltin->Timestamp();
 
     MAPSString frame_id = (const char*)GetStringProperty("frame_id");
-    _header.frame_id = frame_id.Len() > 0 ? (const char*)frame_id : (const char*)this->Name();
-    if (_publish_rtmaps_timestamp)
-        _header.stamp = MAPSRosUtils::MAPSTimestampToROSTime(t);
+    m_header.frame_id = frame_id.Len() > 0 ? (const char*)frame_id : (const char*)this->Name();
+    if (m_publish_rtmaps_timestamp)
+        m_header.stamp = MAPSRosUtils::MAPSTimestampToROSTime(t);
     else
-        _header.stamp = ros::Time::now();
+        m_header.stamp = ros::Time::now();
 
     PublishMyMsg();
 
-    _count++;
+    m_count++;
 }
 
 void MAPSmy_ros_datatype_publisher::PublishMyMsg()
 {
 
     my_data_types::my_data_type msg;
-    msg.id = _ioeltin->Integer32();
-    msg.header = _header;
+    msg.id = m_ioeltin->Integer32();
+    msg.header = m_header;
 
-    _pub->publish(msg);
+    m_pub->publish(msg);
 
 }
 
 void MAPSmy_ros_datatype_publisher::Death()
 {
-	if (_pub) {
-		_pub->shutdown();
-        MAPS_SAFE_DELETE(_pub);
+	if (m_pub) 
+	{
+		m_pub->shutdown();
+        MAPS_SAFE_DELETE(m_pub);
 	}
 
-	if (_n) {
-        _ros->release_ros_node();
-        _ros->release();
-        _n = NULL;
-        _ros = NULL;
-	}
+    if (m_n) 
+    {
+         m_n = nullptr; //The ROS node will be killed/released by the RTMaps ROS Bridge CoreFunction.
+    }
+
 }

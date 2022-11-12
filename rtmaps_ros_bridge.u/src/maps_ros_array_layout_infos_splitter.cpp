@@ -81,7 +81,8 @@ void MAPSros_array_layout_infos_splitter::Core()
 
 	int nb_dims = layout->nb_dims;
 	MAPSStreamedString ss;
-	for (int i=0; i<nb_dims; i++) {
+	for (int i=0; i<nb_dims; i++) 
+	{
 		ss << layout->dim[i].label << ";";
 		out_sizes->Integer32(i) = layout->dim[i].size;
 		out_strides->Integer32(i) = layout->dim[i].stride;

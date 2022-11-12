@@ -70,32 +70,30 @@ MAPS_COMPONENT_DEFINITION(MAPSmy_ros_datatype_subscriber,"my_ros_datatype_subscr
 //Initialization: Birth() will be called once at diagram execution startup.			  
 void MAPSmy_ros_datatype_subscriber::Birth()
 {
-    _first_time = true;
-    _transfer_ros_timestamp = GetBoolProperty("transfer_ROS_timestamps");
+	m_first_time = true;
+	m_transfer_ros_timestamp = GetBoolProperty("transfer_ROS_timestamps");
 
-    _n = NULL;
-    _sub = NULL;
+    m_n = NULL;
+    m_sub = NULL;
 
-    _ros = MAPSRosUtils::get();
-    if (_ros == NULL)
-        Error("Could not init ROS");
-    _n =  _ros->get_ros_node();
-    if (_n == NULL)
+    m_n = MAPSRosUtils::GetROSNode();
+    if (m_n == NULL)
         Error("Could not create ROS node handle.");
 
 
-    _sub = new ros::Subscriber();
-    if (_sub == NULL)
-        Error("Could not create ROS Subscriber.");
+    m_sub = new ros::Subscriber();
+	if (m_sub == NULL)
+		Error("Could not create ROS Subscriber.");
 
 
     int queue_size = (int)GetIntegerProperty("subscribe_queue_size");
 
-    MAPSString topic_name = GetStringProperty("topic_name");
+	MAPSString topic_name = GetStringProperty("topic_name");
 
-    *_sub = _n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSmy_ros_datatype_subscriber::ROSDataReceivedCallback,this);
+    *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSmy_ros_datatype_subscriber::ROSDataReceivedCallback,this);
 
-	if (_sub == NULL) {
+	if (m_sub == NULL) 
+    {
 		MAPSStreamedString ss;
         ss << "Could not subscribe to topic " << topic_name;
 		Error(ss);
@@ -105,18 +103,24 @@ void MAPSmy_ros_datatype_subscriber::Birth()
 
 void MAPSmy_ros_datatype_subscriber::ROSDataReceivedCallback(const my_data_types::my_data_typeConstPtr& message)
 {
-    try {
+    try 
+    {
         MAPSTimestamp t = MAPS::CurrentTime();
 
         MAPSIOElt* ioeltout = StartWriting(Output(0));
         ioeltout->Integer32() = message->id;
-        if (_transfer_ros_timestamp) {
+        if (m_transfer_ros_timestamp) 
+        {
             ioeltout->Timestamp() = MAPSRosUtils::ROSTimeToMAPSTimestamp(message->header.stamp);
-        } else {
+        } 
+        else 
+        {
             ioeltout->Timestamp() = t;
         }
         StopWriting(ioeltout);
-    } catch (int error) {
+    } 
+    catch (int error) 
+    {
         if (error == MAPS::ModuleDied)
             return;
         throw error;
@@ -132,14 +136,13 @@ void MAPSmy_ros_datatype_subscriber::Core()
 //De-initialization: Death() will be called once at diagram execution shutdown.
 void MAPSmy_ros_datatype_subscriber::Death()
 {
-    if (_sub) {
-        _sub->shutdown();
-        MAPS_SAFE_DELETE(_sub);
+    if (m_sub) 
+    {
+        m_sub->shutdown();
+        MAPS_SAFE_DELETE(m_sub);
     }
-    if (_n) {
-         _ros->release_ros_node();
-         _ros->release();
-         _n = NULL;
-         _ros = NULL;
+    if (m_n) 
+    {
+         m_n = nullptr; //The ROS node will be killed/released by the RTMaps ROS Bridge CoreFunction.
     }
 }

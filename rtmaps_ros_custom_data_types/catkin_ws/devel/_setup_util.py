@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # Software License Agreement (BSD License)
@@ -33,9 +33,10 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-'''This file generates shell code for the setup.SHELL scripts to set environment variables'''
+"""This file generates shell code for the setup.SHELL scripts to set environment variables."""
 
 from __future__ import print_function
+
 import argparse
 import copy
 import errno
@@ -49,75 +50,81 @@ system = platform.system()
 IS_DARWIN = (system == 'Darwin')
 IS_WINDOWS = (system == 'Windows')
 
+PATH_TO_ADD_SUFFIX = ['bin']
+if IS_WINDOWS:
+    # while catkin recommends putting dll's into bin, 3rd party packages often put dll's into lib
+    # since Windows finds dll's via the PATH variable, prepend it with path to lib
+    PATH_TO_ADD_SUFFIX.extend([['lib', os.path.join('lib', 'x86_64-linux-gnu')]])
+
 # subfolder of workspace prepended to CMAKE_PREFIX_PATH
 ENV_VAR_SUBFOLDERS = {
     'CMAKE_PREFIX_PATH': '',
-    'CPATH': 'include',
     'LD_LIBRARY_PATH' if not IS_DARWIN else 'DYLD_LIBRARY_PATH': ['lib', os.path.join('lib', 'x86_64-linux-gnu')],
-    'PATH': 'bin',
+    'PATH': PATH_TO_ADD_SUFFIX,
     'PKG_CONFIG_PATH': [os.path.join('lib', 'pkgconfig'), os.path.join('lib', 'x86_64-linux-gnu', 'pkgconfig')],
-    'PYTHONPATH': 'lib/python2.7/dist-packages',
+    'PYTHONPATH': 'lib/python3/dist-packages',
 }
 
 
 def rollback_env_variables(environ, env_var_subfolders):
-    '''
-    Generate shell code to reset environment variables
+    """
+    Generate shell code to reset environment variables.
+
     by unrolling modifications based on all workspaces in CMAKE_PREFIX_PATH.
     This does not cover modifications performed by environment hooks.
-    '''
+    """
     lines = []
     unmodified_environ = copy.copy(environ)
     for key in sorted(env_var_subfolders.keys()):
         subfolders = env_var_subfolders[key]
         if not isinstance(subfolders, list):
             subfolders = [subfolders]
-        for subfolder in subfolders:
-            value = _rollback_env_variable(unmodified_environ, key, subfolder)
-            if value is not None:
-                environ[key] = value
-                lines.append(assignment(key, value))
+        value = _rollback_env_variable(unmodified_environ, key, subfolders)
+        if value is not None:
+            environ[key] = value
+            lines.append(assignment(key, value))
     if lines:
         lines.insert(0, comment('reset environment variables by unrolling modifications based on all workspaces in CMAKE_PREFIX_PATH'))
     return lines
 
 
-def _rollback_env_variable(environ, name, subfolder):
-    '''
+def _rollback_env_variable(environ, name, subfolders):
+    """
     For each catkin workspace in CMAKE_PREFIX_PATH remove the first entry from env[NAME] matching workspace + subfolder.
 
-    :param subfolder: str '' or subfoldername that may start with '/'
+    :param subfolders: list of str '' or subfoldername that may start with '/'
     :returns: the updated value of the environment variable.
-    '''
+    """
     value = environ[name] if name in environ else ''
     env_paths = [path for path in value.split(os.pathsep) if path]
     value_modified = False
-    if subfolder:
-        if subfolder.startswith(os.path.sep) or (os.path.altsep and subfolder.startswith(os.path.altsep)):
-            subfolder = subfolder[1:]
-        if subfolder.endswith(os.path.sep) or (os.path.altsep and subfolder.endswith(os.path.altsep)):
-            subfolder = subfolder[:-1]
-    for ws_path in _get_workspaces(environ, include_fuerte=True, include_non_existing=True):
-        path_to_find = os.path.join(ws_path, subfolder) if subfolder else ws_path
-        path_to_remove = None
-        for env_path in env_paths:
-            env_path_clean = env_path[:-1] if env_path and env_path[-1] in [os.path.sep, os.path.altsep] else env_path
-            if env_path_clean == path_to_find:
-                path_to_remove = env_path
-                break
-        if path_to_remove:
-            env_paths.remove(path_to_remove)
-            value_modified = True
+    for subfolder in subfolders:
+        if subfolder:
+            if subfolder.startswith(os.path.sep) or (os.path.altsep and subfolder.startswith(os.path.altsep)):
+                subfolder = subfolder[1:]
+            if subfolder.endswith(os.path.sep) or (os.path.altsep and subfolder.endswith(os.path.altsep)):
+                subfolder = subfolder[:-1]
+        for ws_path in _get_workspaces(environ, include_fuerte=True, include_non_existing=True):
+            path_to_find = os.path.join(ws_path, subfolder) if subfolder else ws_path
+            path_to_remove = None
+            for env_path in env_paths:
+                env_path_clean = env_path[:-1] if env_path and env_path[-1] in [os.path.sep, os.path.altsep] else env_path
+                if env_path_clean == path_to_find:
+                    path_to_remove = env_path
+                    break
+            if path_to_remove:
+                env_paths.remove(path_to_remove)
+                value_modified = True
     new_value = os.pathsep.join(env_paths)
     return new_value if value_modified else None
 
 
 def _get_workspaces(environ, include_fuerte=False, include_non_existing=False):
-    '''
+    """
     Based on CMAKE_PREFIX_PATH return all catkin workspaces.
 
     :param include_fuerte: The flag if paths starting with '/opt/ros/fuerte' should be considered workspaces, ``bool``
-    '''
+    """
     # get all cmake prefix paths
     env_name = 'CMAKE_PREFIX_PATH'
     value = environ[env_name] if env_name in environ else ''
@@ -128,10 +135,7 @@ def _get_workspaces(environ, include_fuerte=False, include_non_existing=False):
 
 
 def prepend_env_variables(environ, env_var_subfolders, workspaces):
-    '''
-    Generate shell code to prepend environment variables
-    for the all workspaces.
-    '''
+    """Generate shell code to prepend environment variables for the all workspaces."""
     lines = []
     lines.append(comment('prepend folders of workspaces to environment variables'))
 
@@ -140,7 +144,7 @@ def prepend_env_variables(environ, env_var_subfolders, workspaces):
     prefix = _prefix_env_variable(environ, 'CMAKE_PREFIX_PATH', paths, '')
     lines.append(prepend(environ, 'CMAKE_PREFIX_PATH', prefix))
 
-    for key in sorted([key for key in env_var_subfolders.keys() if key != 'CMAKE_PREFIX_PATH']):
+    for key in sorted(key for key in env_var_subfolders.keys() if key != 'CMAKE_PREFIX_PATH'):
         subfolder = env_var_subfolders[key]
         prefix = _prefix_env_variable(environ, key, paths, subfolder)
         lines.append(prepend(environ, key, prefix))
@@ -148,9 +152,11 @@ def prepend_env_variables(environ, env_var_subfolders, workspaces):
 
 
 def _prefix_env_variable(environ, name, paths, subfolders):
-    '''
-    Return the prefix to prepend to the environment variable NAME, adding any path in NEW_PATHS_STR without creating duplicate or empty items.
-    '''
+    """
+    Return the prefix to prepend to the environment variable NAME.
+
+    Adding any path in NEW_PATHS_STR without creating duplicate or empty items.
+    """
     value = environ[name] if name in environ else ''
     environ_paths = [path for path in value.split(os.pathsep) if path]
     checked_paths = []
@@ -161,6 +167,9 @@ def _prefix_env_variable(environ, name, paths, subfolders):
             path_tmp = path
             if subfolder:
                 path_tmp = os.path.join(path_tmp, subfolder)
+            # skip nonexistent paths
+            if not os.path.exists(path_tmp):
+                continue
             # exclude any path already in env and any path we already added
             if path_tmp not in environ_paths and path_tmp not in checked_paths:
                 checked_paths.append(path_tmp)
@@ -194,10 +203,7 @@ def prepend(environ, key, prefix):
 
 
 def find_env_hooks(environ, cmake_prefix_path):
-    '''
-    Generate shell code with found environment hooks
-    for the all workspaces.
-    '''
+    """Generate shell code with found environment hooks for the all workspaces."""
     lines = []
     lines.append(comment('found environment hooks in workspaces'))
 
@@ -248,6 +254,7 @@ def find_env_hooks(environ, cmake_prefix_path):
 def _parse_arguments(args=None):
     parser = argparse.ArgumentParser(description='Generates code blocks for the setup.SHELL script.')
     parser.add_argument('--extend', action='store_true', help='Skip unsetting previous environment variables to extend context')
+    parser.add_argument('--local', action='store_true', help='Only consider this prefix path and ignore other prefix path in the environment')
     return parser.parse_known_args(args=args)[0]
 
 
@@ -259,10 +266,19 @@ if __name__ == '__main__':
             print(e, file=sys.stderr)
             sys.exit(1)
 
-        # environment at generation time
-        CMAKE_PREFIX_PATH = '/home/intempora/rtmaps-ros-bridge/rtmaps_ros_custom_data_types/catkin_ws/devel;/opt/ros/indigo'.split(';')
+        if not args.local:
+            # environment at generation time
+            CMAKE_PREFIX_PATH = r'/opt/ros/noetic'.split(';')
+        else:
+            # don't consider any other prefix path than this one
+            CMAKE_PREFIX_PATH = []
         # prepend current workspace if not already part of CPP
         base_path = os.path.dirname(__file__)
+        # CMAKE_PREFIX_PATH uses forward slash on all platforms, but __file__ is platform dependent
+        # base_path on Windows contains backward slashes, need to be converted to forward slashes before comparison
+        if os.path.sep != '/':
+            base_path = base_path.replace(os.path.sep, '/')
+
         if base_path not in CMAKE_PREFIX_PATH:
             CMAKE_PREFIX_PATH.insert(0, base_path)
         CMAKE_PREFIX_PATH = os.pathsep.join(CMAKE_PREFIX_PATH)
@@ -278,7 +294,7 @@ if __name__ == '__main__':
         # need to explicitly flush the output
         sys.stdout.flush()
     except IOError as e:
-        # and catch potantial "broken pipe" if stdout is not writable
+        # and catch potential "broken pipe" if stdout is not writable
         # which can happen when piping the output to a file but the disk is full
         if e.errno == errno.EPIPE:
             print(e, file=sys.stderr)
