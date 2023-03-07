@@ -91,8 +91,10 @@ MAPS_END_ACTIONS_DEFINITION
 //Version 2.1: changed way ROS node are managed (using singleton). No more error message that CompressedImage is not supported by default. Fixed data type issue for float64 publishing PointCloud2.
 //Version 2.2: added support for TwistStamped msg.
 //Version 2.2.1: corrected ROS time to RTMaps time conversion.
+//Version 2.2.2: fixed float64 scalars publishing.
+
 // Use the macros to declare this component (ros_topic_publisher) behaviour
-MAPS_COMPONENT_DEFINITION(MAPSros_topic_publisher,"ros_topic_publisher","2.2.1",128,
+MAPS_COMPONENT_DEFINITION(MAPSros_topic_publisher,"ros_topic_publisher","2.2.2",128,
 			  MAPS::Threaded,MAPS::Threaded,
 			  0, // Nb of inputs. Leave -1 to use the number of declared input definitions
 			  -1, // Nb of outputs. Leave -1 to use the number of declared output definitions
@@ -609,7 +611,7 @@ void MAPSros_topic_publisher::PublishStdMsg()
 	break;
 	case STD_MSG_FLOAT64:
 	{
-		std_msgs::Int64 msg;
+		std_msgs::Float64 msg;
 		msg.data = m_ioeltin->Float64();
 		m_pub->publish(msg);
 	}
