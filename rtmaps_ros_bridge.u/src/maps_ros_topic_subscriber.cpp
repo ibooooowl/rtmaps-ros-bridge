@@ -2185,8 +2185,8 @@ void MAPSros_topic_subscriber::ROSRmpBatteryReceivedCallback(const rmp_msgs::Bat
         ioeltout_min_propulsion_charge_state->Float32() = battery->min_propulsion_charge_state;
         ioeltout_aux_battery_voltage->Float32() = battery->aux_battery_voltage;
         ioeltout_aux_battery_current->Float32() = battery->aux_battery_current;
-        ioeltout_aux_abb_system_status->Stream32() = &battery->abb_system_status;
-        ioeltout_aux_battery_status->Stream32() = &battery->aux_battery_status;
+        *(ioeltout_aux_abb_system_status->Stream32()) = battery->abb_system_status;
+        *(ioeltout_aux_battery_status->Stream32()) = battery->aux_battery_status;
 
         ioeltout_charge_state->Timestamp()=t;
         ioeltout_temperature->Timestamp()=t;
