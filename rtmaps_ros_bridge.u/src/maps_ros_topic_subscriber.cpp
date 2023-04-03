@@ -525,7 +525,6 @@ void MAPSros_topic_subscriber::CreateIOsForRmpTopics(bool* ros_header_avail)
         default:
             ReportError("This topic is not supported yet.");
     }
-    NewOutput("can_frames");
 }
 
 void MAPSros_topic_subscriber::Birth()
