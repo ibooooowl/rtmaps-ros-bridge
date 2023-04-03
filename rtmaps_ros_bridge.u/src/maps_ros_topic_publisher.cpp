@@ -331,8 +331,8 @@ int MAPSros_topic_publisher::CreateIOsForGeomTopics(bool* output_header)
             NewInput("input_float64","input_twist");
             if (output_header)
                 *output_header = true;
-            break;
             DirectSet(Property("topic_name"),"/rmp440le/base/vel_cmd");
+            break;
 		default:
 			ReportError("This topic is not supported yet.");
 	}
