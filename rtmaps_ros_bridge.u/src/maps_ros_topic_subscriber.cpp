@@ -167,6 +167,7 @@ MAPS_END_ACTIONS_DEFINITION
 //Version 2.5 : added support for TwistStamped msg
 //Version 2.5.1: corrected ros time to RTMaps time conversion
 // Use the macros to declare this component (ros_topic_subscriber) behaviour
+//MAPS_COMPONENT_DEFINITION(component,name,version,priority,kind,defaultBehaviour,nbOfInputs,nbOfOutputs,nbOfProperties,nbOfActions)
 MAPS_COMPONENT_DEFINITION(MAPSros_topic_subscriber,"ros_topic_subscriber","2.5.2",128,
 			  MAPS::Threaded,MAPS::Threaded,
 			  -1, // Nb of inputs. Leave -1 to use the number of declared input definitions
@@ -249,7 +250,7 @@ void MAPSros_topic_subscriber::Dynamic()
             selected_message = 0;
         break;
     case TOPIC_TYPE_RMP:
-        for (unsigned int i=0; i < 3; i++)
+        for (unsigned int i=0; i < 2; i++)
         {
             messages.enumValues->Append() = s_rmp_msgs[i];
         }
@@ -372,13 +373,15 @@ void MAPSros_topic_subscriber::CreateIOsForSensorTopics(bool* ros_header_avail)
 	case SENSOR_MSG_JOY :
 		NewOutput("output_joy_axes");
 		NewOutput("output_joy_buttons");
+        DirectSet(Property("topic_name"),"/rmp440le/joy");
 		*ros_header_avail = true;
 		break;
 	case SENSOR_MSG_IMU :
 		NewOutput("orientation_quaternion");
 		NewOutput("angular_velocities");
 		NewOutput("accelerations");
-		*ros_header_avail = true;
+        //DirectSet(Property("topic_name"),"/rmp440le/inertial");
+        *ros_header_avail = true;
 		break;
 	case SENSOR_MSG_POINT_CLOUD:
 		NewOutput("output_point_cloud");
@@ -433,6 +436,7 @@ void MAPSros_topic_subscriber::CreateIOsForGeomTopics(bool* ros_header_avail)
 		break;
     case GEOM_MSG_TWIST_STAMPED:
         NewOutput("output_twist");
+        DirectSet(Property("topic_name"),"/rmp440le/base/vel_cmd");
         *ros_header_avail = true;
         break;
 	default:
@@ -452,6 +456,7 @@ void MAPSros_topic_subscriber::CreateIOsForNavTopics(bool* ros_header_avail)
         NewOutput("output_twist");
         NewOutput("output_covariance","output_twist_covariance");
         *ros_header_avail = true;
+        DirectSet(Property("topic_name"),"/rmp440le/odom");
         break;
     default:
         ReportError("This topic is not supported yet.");
@@ -503,6 +508,7 @@ void MAPSros_topic_subscriber::CreateIOsForRmpTopics(bool* ros_header_avail)
             NewOutput("output_motor_status_mcu_total_energy");
             NewOutput("output_motor_status_max_current");
             NewOutput("output_motor_status_min_current_limit");
+            DirectSet(Property("topic_name"),"/rmp440le/motor_status");
             break;
         case RMP_MSG_BATTERY:
             NewOutput("output_battery_charge_state");
@@ -512,10 +518,12 @@ void MAPSros_topic_subscriber::CreateIOsForRmpTopics(bool* ros_header_avail)
             NewOutput("output_battery_aux_battery_current");
             NewOutput("output_battery_abb_system_status");
             NewOutput("output_battery_aux_battery_status");
+            DirectSet(Property("topic_name"),"/rmp440le/battery");
             break;
-        case RMP_MSG_FAULT_STATUS:
-            NewOutput("output_fault_status");
-            break;
+//        case RMP_MSG_FAULT_STATUS:
+//            NewOutput("output_fault_status");
+//            DirectSet(Property("topic_name"),"/rmp440le/fault_status");
+//            break;
 //        case RMP_MSG_BOOL_STAMPED:
 //            NewOutput("output_bool");
 //            break;
@@ -730,9 +738,9 @@ void MAPSros_topic_subscriber::Birth()
             case RMP_MSG_BATTERY:
                 *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSRmpBatteryReceivedCallback,this);
                 break;
-            case RMP_MSG_FAULT_STATUS:
-                *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSRmpFaultStatusReceivedCallback,this);
-                break;
+//            case RMP_MSG_FAULT_STATUS:
+//                *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSRmpFaultStatusReceivedCallback,this);
+//                break;
 //            case RMP_MSG_BOOL_STAMPED:
 //                *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSRMPBoolStampedReceivedCallback,this);
 //                break;
@@ -2177,8 +2185,8 @@ void MAPSros_topic_subscriber::ROSRmpBatteryReceivedCallback(const rmp_msgs::Bat
         ioeltout_min_propulsion_charge_state->Float32() = battery->min_propulsion_charge_state;
         ioeltout_aux_battery_voltage->Float32() = battery->aux_battery_voltage;
         ioeltout_aux_battery_current->Float32() = battery->aux_battery_current;
-        ioeltout_aux_abb_system_status->Integer32() = battery->abb_system_status;
-        ioeltout_aux_battery_status->Integer32() = battery->aux_battery_status;
+        ioeltout_aux_abb_system_status->Stream32() = &battery->abb_system_status;
+        ioeltout_aux_battery_status->Stream32() = &battery->aux_battery_status;
 
         ioeltout_charge_state->Timestamp()=t;
         ioeltout_temperature->Timestamp()=t;
@@ -2203,45 +2211,38 @@ void MAPSros_topic_subscriber::ROSRmpBatteryReceivedCallback(const rmp_msgs::Bat
         throw error;
     }
 }
-void MAPSros_topic_subscriber::ROSRmpFaultStatusReceivedCallback(const rmp_msgs::FaultStatus::ConstPtr& fault_status)
-{
-    try
-    {
-        MAPSTimestamp t;
-        if (false == m_transfer_ros_timestamp)
-            t = MAPS::CurrentTime();
-        else
-            t = MAPSRosUtils::ROSTimeToMAPSTimestamp(fault_status->header.stamp);
+//void MAPSros_topic_subscriber::ROSRmpFaultStatusReceivedCallback(const rmp_msgs::FaultStatus::ConstPtr& fault_status)
+//{
+//    try
+//    {
+//        MAPSTimestamp t;
+//        if (false == m_transfer_ros_timestamp)
+//            t = MAPS::CurrentTime();
+//        else
+//            t = MAPSRosUtils::ROSTimeToMAPSTimestamp(fault_status->header.stamp);
+//
+//        MAPSIOElt* ioeltout_fault_list = StartWriting(Output(0));
+//        int count_fault_out = 1;
+//        StringVector* data_out = (StringVector*) ioeltout_fault_list->Data();
+//
+//
+//        int vectorsize_out = fault_status->fault_list.size();
+//        for (int i=0; i<vectorsize_out;i++)
+//        {
+//             data_out->string_list.push_back(fault_status->fault_list[i]);
+//        }
+//        ioeltout_fault_list->VectorSize() = count_fault_out *sizeof(StringVector);
+//        ioeltout_fault_list->Timestamp() = t;
+//        StopWriting(ioeltout_fault_list);
+//    }
+//    catch (int error)
+//    {
+//        if (error == MAPS::ModuleDied)
+//            return;
+//        throw error;
+//    }
+//}
 
-        MAPSIOElt* ioeltout_fault_list = StartWriting(Output(0));
-
-
-        int vectorsize_out = fault_status->fault_list.size();
-
-
-        char* data_out = ioeltout_fault_list->TextAscii();
-        int txt_len_total=0;
-        for (int i=0; i<vectorsize_out;i++)
-        {
-            int txt_len = fault_status->fault_list[i].size();
-
-            MAPS::Memcpy(data_out,fault_status->fault_list[i].c_str(),txt_len);
-            txt_len_total+=txt_len;
-
-        }
-        ioeltout_fault_list->TextAscii()[txt_len_total] = '\0';
-
-        ioeltout_fault_list->VectorSize() = txt_len_total;
-        ioeltout_fault_list->Timestamp() = t;
-        StopWriting(ioeltout_fault_list);
-    }
-    catch (int error)
-    {
-        if (error == MAPS::ModuleDied)
-            return;
-        throw error;
-    }
-}
 void MAPSros_topic_subscriber::ROSRmpMotorStatusReceivedCallback(const rmp_msgs::MotorStatus::ConstPtr& motor_status)
 {
     try

@@ -43,6 +43,9 @@
 
 #include <sstream>
 #include <map>
+#include <cstdio>
+#include <cstring>
+#include <vector>
 
 #define MARKER_OUTPUT_COUNT                 12
 
@@ -267,4 +270,9 @@ class MAPSros_topic_subscriber : public MAPSComponent
     int UpdateMarkerCache(const visualization_msgs::Marker::ConstPtr& marker);
     void MarkersWriteByType(std::vector< visualization_msgs::Marker::ConstPtr >& markers, int32_t marker_type, int concerned_output, MAPSTimestamp marker_ts);
 };
+
+//class StringVector{
+//public:
+//    std::vector<std::string> string_list;
+//};
 #endif

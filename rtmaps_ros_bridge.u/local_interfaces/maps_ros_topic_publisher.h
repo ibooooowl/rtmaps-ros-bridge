@@ -38,6 +38,9 @@
 #include "maps.hpp"
 #include "maps_ros_utils.h"
 #include "maps_ros_defines.h"
+#include <cstdio>
+#include <cstring>
+#include <vector>
 class AbstractIOEltToPointCloud2;
 template <typename OUT_TYPE, typename IN_TYPE> class IOEltToPointCloud2;
 
@@ -157,5 +160,7 @@ private :
 	int     m_count;
 	bool    m_laser_supports_intens;
 };
+
+
 
 #endif

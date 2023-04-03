@@ -332,6 +332,7 @@ int MAPSros_topic_publisher::CreateIOsForGeomTopics(bool* output_header)
             if (output_header)
                 *output_header = true;
             break;
+            DirectSet(Property("topic_name"),"/rmp440le/base/vel_cmd");
 		default:
 			ReportError("This topic is not supported yet.");
 	}
@@ -374,11 +375,13 @@ int MAPSros_topic_publisher::CreateIOsForRmpTopics(bool* output_header)
             if (output_header)
                 *output_header = true;
             NewInput("input_uint8","input_deadman");
+            DirectSet(Property("topic_name"),"/rmp440le/deadman");
             break;
         case RMP_MSG_AUDIO_COMMAND:
             if (output_header)
                 *output_header = true;
             NewInput("input_uint32","input_audio_command");
+            DirectSet(Property("topic_name"),"/rmp440le/audio_cmd");
             break;
         default:
             ReportError("This topic type is not supported yet for IO creation.");
@@ -1207,7 +1210,7 @@ void MAPSros_topic_publisher::PublishRmpMsg()
         {
             rmp_msgs::AudioCommand audio_command;
             audio_command.header = m_header;
-            audio_command.command = m_ioeltin->Integer32();
+            audio_command.command = *(m_ioeltin->Stream32());
             m_pub->publish(audio_command);
         }
             break;
