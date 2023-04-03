@@ -122,7 +122,10 @@ void MAPSros_topic_publisher::Dynamic()
 	if (Property("topic_type").PropertyChanged())
 	 {
 		Property("topic_type").AcknowledgePropertyChanged();
-		selected_message = 0;
+
+        selected_message = 0;
+
+
 	}
 	MAPSEnumStruct messages;
 
@@ -160,7 +163,7 @@ void MAPSros_topic_publisher::Dynamic()
         break;
 	default :
 		messages.enumValues->Append() = "None";
-		ReportError("This topic type is not supported yet.");
+		ReportError("This topic type is not supported yet..");
 		break;
 	}
 	if (selected_message >= messages.enumValues->Size())
@@ -365,7 +368,7 @@ int MAPSros_topic_publisher::CreateIOsForRmpTopics(bool* output_header)
     if (output_header)
         *output_header = false;
     int nb_inputs = 1;
-    switch(m_message)
+    switch(m_message+3)
     {
         case RMP_MSG_BOOL_STAMPED:
             if (output_header)
@@ -378,7 +381,7 @@ int MAPSros_topic_publisher::CreateIOsForRmpTopics(bool* output_header)
             NewInput("input_uint32","input_audio_command");
             break;
         default:
-            ReportError("This topic type is not supported yet.");
+            ReportError("This topic type is not supported yet for IO creation.");
     }
     return nb_inputs;
 }
