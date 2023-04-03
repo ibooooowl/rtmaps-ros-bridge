@@ -38,7 +38,6 @@
 #include "maps.hpp"
 #include "maps_ros_utils.h"
 #include "maps_ros_defines.h"
-
 class AbstractIOEltToPointCloud2;
 template <typename OUT_TYPE, typename IN_TYPE> class IOEltToPointCloud2;
 
@@ -118,6 +117,7 @@ class MAPSros_topic_publisher : public MAPSComponent
 	int CreateIOsForSensorTopics(bool* output_header);
 	int CreateIOsForGeomTopics(bool* output_header);
     int CreateIOsForNavTopics(bool* output_header);
+    int CreateIOsForRmpTopics(bool* output_header);
 private :
 	// Place here your specific methods and attributes
  	MAPSROSBridgeCoreFunctionInterface* m_ros_bridge_cf;
@@ -140,6 +140,7 @@ private :
 	void PublishSensorMsg();
 	void PublishGeomMsg();
     void PublishNavMsg();
+    void PublishRmpMsg();
 
 	sensor_msgs::CompressedImage    m_ros_comp_img;
 	sensor_msgs::Image 		        m_ros_img;

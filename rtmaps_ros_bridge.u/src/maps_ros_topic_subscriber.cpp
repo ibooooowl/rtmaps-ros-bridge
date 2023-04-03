@@ -98,6 +98,34 @@ MAPS_BEGIN_OUTPUTS_DEFINITION(MAPSros_topic_subscriber)
     MAPS_OUTPUT("output_marker_text_view_facing", MAPS::RealObject,NULL,NULL,0)
     MAPS_OUTPUT("output_marker_mesh_resource", MAPS::RealObject,NULL,NULL,0)
     MAPS_OUTPUT("output_marker_triangle_list", MAPS::Float64,NULL,NULL,0)
+
+    // RMP Battery Messages
+    MAPS_OUTPUT("output_battery_charge_state",MAPS::Float32,NULL,NULL,5)
+    MAPS_OUTPUT("output_battery_temperature",MAPS::Float32,NULL,NULL,5)
+    MAPS_OUTPUT("output_battery_min_propulsion_charge_state",MAPS::Float32,NULL,NULL,1)
+    MAPS_OUTPUT("output_battery_aux_battery_voltage",MAPS::Float32,NULL,NULL,1)
+    MAPS_OUTPUT("output_battery_aux_battery_current",MAPS::Float32,NULL,NULL,1)
+    MAPS_OUTPUT("output_battery_abb_system_status",MAPS::UnsignedInteger32,NULL,NULL,1)
+    MAPS_OUTPUT("output_battery_aux_battery_status",MAPS::UnsignedInteger32,NULL,NULL,1)
+
+    // RMP Motor Status Messages
+    MAPS_OUTPUT("output_motor_status_current",MAPS::Float32,NULL,NULL,4)
+    MAPS_OUTPUT("output_motor_status_current_limit",MAPS::Float32,NULL,NULL,4)
+    MAPS_OUTPUT("output_motor_status_mcu_inst_power",MAPS::Float32,NULL,NULL,4)
+    MAPS_OUTPUT("output_motor_status_mcu_total_energy",MAPS::Float32,NULL,NULL,4)
+    MAPS_OUTPUT("output_motor_status_max_current",MAPS::Float32,NULL,NULL,1)
+    MAPS_OUTPUT("output_motor_status_min_current_limit",MAPS::Float32,NULL,NULL,1)
+
+    // RMP Fault Status Messages
+    MAPS_OUTPUT("output_fault_status",MAPS::TextAscii,NULL,NULL,0)
+
+    // RMP Audio Command Messages
+    MAPS_OUTPUT("output_audio_command_command",MAPS::UnsignedInteger32,NULL,NULL,1)
+
+    // RMP Bool Messages
+    MAPS_OUTPUT("output_bool",MAPS::UnsignedInteger8,NULL,NULL,1)
+
+
 MAPS_END_OUTPUTS_DEFINITION
 
 // Use the macros to declare the properties
@@ -220,6 +248,14 @@ void MAPSros_topic_subscriber::Dynamic()
         if (use_default_message_idx)
             selected_message = 0;
         break;
+    case TOPIC_TYPE_RMP:
+        for (unsigned int i=0; i < 3; i++)
+        {
+            messages.enumValues->Append() = s_rmp_msgs[i];
+        }
+        if (use_default_message_idx)
+            selected_message = 0;
+        break;
     default :
 		messages.enumValues->Append() = "None";
 		ReportError("This topic type is not supported yet.");
@@ -253,6 +289,9 @@ void MAPSros_topic_subscriber::Dynamic()
         break;
     case TOPIC_TYPE_CAN:
         CreateIOsForCANTopics(&m_ros_header_avail);
+        break;
+    case TOPIC_TYPE_RMP:
+        CreateIOsForRmpTopics(&m_ros_header_avail);
         break;
     default:
 		ReportError("Topic is not supported yet.");
@@ -452,6 +491,43 @@ void MAPSros_topic_subscriber::CreateIOsForCANTopics(bool* ros_header_avail)
     NewOutput("can_frames");
 }
 
+void MAPSros_topic_subscriber::CreateIOsForRmpTopics(bool* ros_header_avail)
+{
+    *ros_header_avail = true;
+    switch(m_message)
+    {
+        case RMP_MSG_MOTOR_STATUS:
+            NewOutput("output_motor_status_current");
+            NewOutput("output_motor_status_current_limit");
+            NewOutput("output_motor_status_mcu_inst_power");
+            NewOutput("output_motor_status_mcu_total_energy");
+            NewOutput("output_motor_status_max_current");
+            NewOutput("output_motor_status_min_current_limit");
+            break;
+        case RMP_MSG_BATTERY:
+            NewOutput("output_battery_charge_state");
+            NewOutput("output_battery_temperature");
+            NewOutput("output_battery_min_propulsion_charge_state");
+            NewOutput("output_battery_aux_battery_voltage");
+            NewOutput("output_battery_aux_battery_current");
+            NewOutput("output_battery_abb_system_status");
+            NewOutput("output_battery_aux_battery_status");
+            break;
+        case RMP_MSG_FAULT_STATUS:
+            NewOutput("output_fault_status");
+            break;
+//        case RMP_MSG_BOOL_STAMPED:
+//            NewOutput("output_bool");
+//            break;
+//        case RMP_MSG_AUDIO_COMMAND:
+//            NewOutput("output_audio_command_command");
+//            break;
+        default:
+            ReportError("This topic is not supported yet.");
+    }
+    NewOutput("can_frames");
+}
+
 void MAPSros_topic_subscriber::Birth()
 {
 	m_first_time = true;
@@ -644,6 +720,36 @@ void MAPSros_topic_subscriber::Birth()
     case TOPIC_TYPE_CAN:
         *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSCANFrameReceivedCallback, this );
         break;
+
+    case TOPIC_TYPE_RMP:
+
+        switch(m_message)
+        {
+            case RMP_MSG_MOTOR_STATUS:
+                *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSRmpMotorStatusReceivedCallback,this);
+                break;
+            case RMP_MSG_BATTERY:
+                *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSRmpBatteryReceivedCallback,this);
+                break;
+            case RMP_MSG_FAULT_STATUS:
+                *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSRmpFaultStatusReceivedCallback,this);
+                break;
+//            case RMP_MSG_BOOL_STAMPED:
+//                *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSRMPBoolStampedReceivedCallback,this);
+//                break;
+//            case RMP_MSG_AUDIO_COMMAND:
+//                *m_sub = m_n->subscribe((const char*)topic_name, queue_size == -1?1000:queue_size, &MAPSros_topic_subscriber::ROSRMPAudioCommandReceivedCallback,this);
+//                break;
+            default:
+            {
+                MAPSStreamedString ss;
+                ss << "Topic " << GetStringProperty("topic_type") << "/" << GetStringProperty("message") << " not supported yet.";
+                Error(ss);
+            }
+                break;
+        }
+        break;
+
 	}
 
 	if (m_sub == NULL) 
@@ -1991,6 +2097,209 @@ void MAPSros_topic_subscriber::ROSVisuMarkerArrayReceivedCallback(const visualiz
     {
         auto p = boost::make_shared< const visualization_msgs::Marker >(m);
         ROSVisuMarkerReceivedCallback(p);
+    }
+}
+
+
+//void MAPSros_topic_subscriber::RROSRmpAudioCommandReceivedCallback(const rmp_msgs::AudioCommand::ConstPtr& audio_command)
+//{
+//    try
+//    {
+//        MAPSTimestamp t;
+//        if (false == m_transfer_ros_timestamp)
+//            t = MAPS::CurrentTime();
+//        else
+//            t = MAPSRosUtils::ROSTimeToMAPSTimestamp(audio_command->header.stamp);
+//
+//        MAPSIOElt* ioeltout_command = StartWriting(Output(0));
+//
+//        ioeltout_command ->UnsignedInteger32() = audio_command->command;
+//        ioeltout_command->Timestamp()=t;
+//        StopWriting(ioeltout_command);
+//    }
+//    catch (int error)
+//    {
+//        if (error == MAPS::ModuleDied)
+//            return;
+//        throw error;
+//    }
+//}
+//void MAPSros_topic_subscriber::RROSRmpBoolStampedReceivedCallback(const rmp_msgs::BoolStamped::ConstPtr& bool_stamped)
+//{
+//    try
+//    {
+//        MAPSTimestamp t;
+//        if (false == m_transfer_ros_timestamp)
+//            t = MAPS::CurrentTime();
+//        else
+//            t = MAPSRosUtils::ROSTimeToMAPSTimestamp(bool_stamped->header.stamp);
+//
+//        MAPSIOElt* ioeltout_data = StartWriting(Output(0));
+//
+//        ioeltout_data->UnsignedInteger8() = bool_stamped->data;
+//
+//        ioeltout_data->Timestamp()=t;
+//
+//        StopWriting(ioeltout_data);
+//    }
+//    catch (int error)
+//    {
+//        if (error == MAPS::ModuleDied)
+//            return;
+//        throw error;
+//    }
+//}
+void MAPSros_topic_subscriber::ROSRmpBatteryReceivedCallback(const rmp_msgs::Battery::ConstPtr& battery)
+{
+    try
+    {
+        MAPSTimestamp t;
+        if (false == m_transfer_ros_timestamp)
+            t = MAPS::CurrentTime();
+        else
+            t = MAPSRosUtils::ROSTimeToMAPSTimestamp(battery->header.stamp);
+
+        MAPSIOElt* ioeltout_charge_state = StartWriting(Output(0));
+        MAPSIOElt* ioeltout_temperature = StartWriting(Output(1));
+        MAPSIOElt* ioeltout_min_propulsion_charge_state = StartWriting(Output(2));
+        MAPSIOElt* ioeltout_aux_battery_voltage = StartWriting(Output(3));
+        MAPSIOElt* ioeltout_aux_battery_current = StartWriting(Output(4));
+        MAPSIOElt* ioeltout_aux_abb_system_status = StartWriting(Output(5));
+        MAPSIOElt* ioeltout_aux_battery_status = StartWriting(Output(6));
+
+        for (int i=0; i<5; i++) {
+            ioeltout_charge_state->Float32(i) = battery->charge_state[i];
+        }
+
+        for (int i=0; i<5; i++) {
+            ioeltout_temperature->Float32(i) = battery->temperature[i];
+        }
+
+        ioeltout_min_propulsion_charge_state->Float32() = battery->min_propulsion_charge_state;
+        ioeltout_aux_battery_voltage->Float32() = battery->aux_battery_voltage;
+        ioeltout_aux_battery_current->Float32() = battery->aux_battery_current;
+        ioeltout_aux_abb_system_status->Integer32() = battery->abb_system_status;
+        ioeltout_aux_battery_status->Integer32() = battery->aux_battery_status;
+
+        ioeltout_charge_state->Timestamp()=t;
+        ioeltout_temperature->Timestamp()=t;
+        ioeltout_min_propulsion_charge_state->Timestamp()=t;
+        ioeltout_aux_battery_voltage->Timestamp()=t;
+        ioeltout_aux_battery_current->Timestamp()=t;
+        ioeltout_aux_abb_system_status->Timestamp()=t;
+        ioeltout_aux_battery_status->Timestamp()=t;
+
+        StopWriting(ioeltout_charge_state);
+        StopWriting(ioeltout_temperature);
+        StopWriting(ioeltout_min_propulsion_charge_state);
+        StopWriting(ioeltout_aux_battery_voltage);
+        StopWriting(ioeltout_aux_battery_current);
+        StopWriting(ioeltout_aux_abb_system_status);
+        StopWriting(ioeltout_aux_battery_status);
+    }
+    catch (int error)
+    {
+        if (error == MAPS::ModuleDied)
+            return;
+        throw error;
+    }
+}
+void MAPSros_topic_subscriber::ROSRmpFaultStatusReceivedCallback(const rmp_msgs::FaultStatus::ConstPtr& fault_status)
+{
+    try
+    {
+        MAPSTimestamp t;
+        if (false == m_transfer_ros_timestamp)
+            t = MAPS::CurrentTime();
+        else
+            t = MAPSRosUtils::ROSTimeToMAPSTimestamp(fault_status->header.stamp);
+
+        MAPSIOElt* ioeltout_fault_list = StartWriting(Output(0));
+
+
+        int vectorsize_out = fault_status->fault_list.size();
+
+
+        char* data_out = ioeltout_fault_list->TextAscii();
+        int txt_len_total=0;
+        for (int i=0; i<vectorsize_out;i++)
+        {
+            int txt_len = fault_status->fault_list[i].size();
+
+            MAPS::Memcpy(data_out,fault_status->fault_list[i].c_str(),txt_len);
+            txt_len_total+=txt_len;
+
+        }
+        ioeltout_fault_list->TextAscii()[txt_len_total] = '\0';
+
+        ioeltout_fault_list->VectorSize() = txt_len_total;
+        ioeltout_fault_list->Timestamp() = t;
+        StopWriting(ioeltout_fault_list);
+    }
+    catch (int error)
+    {
+        if (error == MAPS::ModuleDied)
+            return;
+        throw error;
+    }
+}
+void MAPSros_topic_subscriber::ROSRmpMotorStatusReceivedCallback(const rmp_msgs::MotorStatus::ConstPtr& motor_status)
+{
+    try
+    {
+        MAPSTimestamp t;
+        if (false == m_transfer_ros_timestamp)
+            t = MAPS::CurrentTime();
+        else
+            t = MAPSRosUtils::ROSTimeToMAPSTimestamp(motor_status->header.stamp);
+
+        MAPSIOElt* ioeltout_current = StartWriting(Output(0));
+        MAPSIOElt* ioeltout_current_limit = StartWriting(Output(1));
+        MAPSIOElt* ioeltout_mcu_inst_power = StartWriting(Output(2));
+        MAPSIOElt* ioeltout_mcu_total_energy = StartWriting(Output(3));
+        MAPSIOElt* ioeltout_max_current = StartWriting(Output(4));
+        MAPSIOElt* ioeltout_min_current_limit = StartWriting(Output(5));
+
+        for (int i=0; i<4; i++) {
+            ioeltout_current->Float32(i) = motor_status->current[i];
+        }
+
+        for (int i=0; i<4; i++) {
+            ioeltout_current_limit->Float32(i) = motor_status->current_limit[i];
+        }
+
+        for (int i=0; i<4; i++) {
+            ioeltout_mcu_inst_power->Float32(i) = motor_status->mcu_inst_power[i];
+        }
+
+        for (int i=0; i<4; i++) {
+            ioeltout_mcu_total_energy->Float32(i) = motor_status->mcu_total_energy[i];
+        }
+
+        ioeltout_max_current->Float32() = motor_status->max_current;
+        ioeltout_min_current_limit->Float32() = motor_status->min_current_limit;
+
+
+        ioeltout_current->Timestamp()=t;
+        ioeltout_current_limit->Timestamp()=t;
+        ioeltout_mcu_inst_power->Timestamp()=t;
+        ioeltout_mcu_total_energy->Timestamp()=t;
+        ioeltout_max_current->Timestamp()=t;
+        ioeltout_min_current_limit->Timestamp()=t;
+
+
+        StopWriting(ioeltout_current);
+        StopWriting(ioeltout_current_limit);
+        StopWriting(ioeltout_mcu_inst_power);
+        StopWriting(ioeltout_mcu_total_energy);
+        StopWriting(ioeltout_max_current);
+        StopWriting(ioeltout_min_current_limit);
+    }
+    catch (int error)
+    {
+        if (error == MAPS::ModuleDied)
+            return;
+        throw error;
     }
 }
 

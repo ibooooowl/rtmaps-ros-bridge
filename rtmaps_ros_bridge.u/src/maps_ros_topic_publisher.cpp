@@ -43,6 +43,8 @@ MAPS_BEGIN_INPUTS_DEFINITION(MAPSros_topic_publisher)
     MAPS_INPUT("input_image",MAPS::FilterIplImage,MAPS::FifoReader)
     MAPS_INPUT("input_mapsimage",MAPS::FilterMAPSImage,MAPS::FifoReader)
     MAPS_INPUT("input_pointcloud_xyz",MAPS::FilterNumbers,MAPS::FifoReader)
+    MAPS_INPUT("input_uint8",MAPS::FilterUnsignedInteger8,MAPS::FifoReader)
+    MAPS_INPUT("input_uint32",MAPS::FilterUnsignedInteger32,MAPS::FifoReader)
 MAPS_END_INPUTS_DEFINITION
 
 // Use the macros to declare the outputs
@@ -150,6 +152,12 @@ void MAPSros_topic_publisher::Dynamic()
             messages.enumValues->Append() = s_nav_msgs[i];
         }
         break;
+    case TOPIC_TYPE_RMP:
+        for (unsigned int i=3; i < sizeof(s_rmp_msgs)/sizeof(const char*); i++)
+        {
+            messages.enumValues->Append() = s_rmp_msgs[i];
+        }
+        break;
 	default :
 		messages.enumValues->Append() = "None";
 		ReportError("This topic type is not supported yet.");
@@ -174,6 +182,9 @@ void MAPSros_topic_publisher::Dynamic()
 		break;
     case TOPIC_TYPE_NAV:
         m_nb_inputs = CreateIOsForNavTopics(&m_output_header);
+        break;
+    case TOPIC_TYPE_RMP:
+        m_nb_inputs = CreateIOsForRmpTopics(&m_output_header);
         break;
 	}
 
@@ -348,6 +359,30 @@ int MAPSros_topic_publisher::CreateIOsForNavTopics(bool* output_header)
     }
     return nb_inputs;
 }
+
+int MAPSros_topic_publisher::CreateIOsForRmpTopics(bool* output_header)
+{
+    if (output_header)
+        *output_header = false;
+    int nb_inputs = 1;
+    switch(m_message)
+    {
+        case RMP_MSG_BOOL_STAMPED:
+            if (output_header)
+                *output_header = true;
+            NewInput("input_uint8","input_deadman");
+            break;
+        case RMP_MSG_AUDIO_COMMAND:
+            if (output_header)
+                *output_header = true;
+            NewInput("input_uint32","input_audio_command");
+            break;
+        default:
+            ReportError("This topic type is not supported yet.");
+    }
+    return nb_inputs;
+}
+
 void MAPSros_topic_publisher::Birth()
 {
 	m_first_time = true;
@@ -458,6 +493,20 @@ void MAPSros_topic_publisher::Birth()
         }
 
         break;
+    case TOPIC_TYPE_RMP:
+        switch(m_message)
+        {
+            case RMP_MSG_BOOL_STAMPED:
+                *m_pub = m_n->advertise<rmp_msgs::BoolStamped>((const char*)topic_name,100);
+                break;
+            case RMP_MSG_AUDIO_COMMAND:
+                *m_pub = m_n->advertise<rmp_msgs::AudioCommand>((const char*)topic_name,100);
+                break;
+            default:
+                Error("Selected topic is not supported yet.");
+        }
+
+        break;
 	default:
 		Error("Selected topic is not supported yet.");
 	}
@@ -511,6 +560,9 @@ void MAPSros_topic_publisher::Core()
 		break;
     case TOPIC_TYPE_NAV:
         PublishNavMsg();
+        break;
+    case TOPIC_TYPE_RMP:
+        PublishRmpMsg();
         break;
 	}
 
@@ -1135,6 +1187,31 @@ void MAPSros_topic_publisher::PublishNavMsg()
         break;
     }
 }
+
+void MAPSros_topic_publisher::PublishRmpMsg()
+{
+    switch(m_message)
+    {
+        case RMP_MSG_BOOL_STAMPED:
+        {
+            rmp_msgs::BoolStamped bool_stamped;
+            bool_stamped.header = m_header;
+            bool_stamped.data = *(m_ioeltin->Stream8());
+            m_pub->publish(bool_stamped);
+        }
+            break;
+        case RMP_MSG_AUDIO_COMMAND:
+        {
+            rmp_msgs::AudioCommand audio_command;
+            audio_command.header = m_header;
+            audio_command.command = m_ioeltin->Integer32();
+            m_pub->publish(audio_command);
+        }
+            break;
+
+    }
+}
+
 
 void MAPSros_topic_publisher::Death()
 {

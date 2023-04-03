@@ -191,6 +191,7 @@ class MAPSros_topic_subscriber : public MAPSComponent
     void CreateIOsForNavTopics(bool* ros_header_avail);
     void CreateIOsForVisuTopics(bool* ros_header_avail);
     void CreateIOsForCANTopics(bool* ros_header_avail);
+    void CreateIOsForRmpTopics(bool* ros_header_avail);
     void AllocateOutputsForVisuTopics();
 
 	// Place here your specific methods and attributes
@@ -251,6 +252,13 @@ class MAPSros_topic_subscriber : public MAPSComponent
     void ROSVisuMarkerArrayReceivedCallback(const visualization_msgs::MarkerArray::ConstPtr& markers);
 
     void ROSCANFrameReceivedCallback(const can_msgs::Frame::ConstPtr& frame);
+
+
+//    void ROSRmpAudioCommandReceivedCallback(const rmp_msgs::AudioCommand::ConstPtr& audio_command);
+//    void ROSRmpBoolStampedReceivedCallback(const rmp_msgs::BoolStamped::ConstPtr& bool_stamped);
+    void ROSRmpBatteryReceivedCallback(const rmp_msgs::Battery::ConstPtr& battery);
+    void ROSRmpFaultStatusReceivedCallback(const rmp_msgs::FaultStatus::ConstPtr& fault_status);
+    void ROSRmpMotorStatusReceivedCallback(const rmp_msgs::MotorStatus::ConstPtr& motor_status);
 
 	void OutputArrayLayout(const std_msgs::MultiArrayLayout* ros_layout, MAPSTimestamp t);
     void SetComponentInError();

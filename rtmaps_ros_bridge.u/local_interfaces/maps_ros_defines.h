@@ -60,6 +60,11 @@
 #include "nav_msgs/Odometry.h"
 #include "visualization_msgs/Marker.h"
 #include "visualization_msgs/MarkerArray.h"
+#include "rmp_msgs/AudioCommand.h"
+#include "rmp_msgs/BoolStamped.h"
+#include "rmp_msgs/Battery.h"
+#include "rmp_msgs/FaultStatus.h"
+#include "rmp_msgs/MotorStatus.h"
 
 static const char* s_topic_types[] = {
 		"std_msgs",
@@ -71,7 +76,8 @@ static const char* s_topic_types[] = {
 		"visualization_msgs",
 		"actionlib_msgs",
         "diagnostic_msgs",
-        "can_msgs"
+        "can_msgs",
+        "rmp_msgs"
 };
 
 #define TOPIC_TYPE_STD 			0
@@ -84,6 +90,7 @@ static const char* s_topic_types[] = {
 #define TOPIC_TYPE_ACTION		7
 #define TOPIC_TYPE_DIAG			8
 #define TOPIC_TYPE_CAN          9
+#define TOPIC_TYPE_RMP          10
 
 static const char* s_std_msgs[] = {
 		"Int 32",
@@ -217,21 +224,36 @@ static const char* s_visu_msgs[] = {
 #define VISU_MSG_MARKER        0
 #define VISU_MSG_MARKER_ARRAY  1
 
+static const char* s_rmp_msgs[] = {
+        "MotorStatus",
+        "Battery",
+        "FaultStatus",
+        "BoolStamped",
+        "AudioCommand"
+};
+#define RMP_MSG_MOTOR_STATUS        0
+#define RMP_MSG_BATTERY             1
+#define RMP_MSG_FAULT_STATUS        2
+#define RMP_MSG_BOOL_STAMPED        3
+#define RMP_MSG_AUDIO_COMMAND       4
+
+
 #define MAX_ARRAY_LAYOUT_LABEL_SIZE	256
 #define MAX_ARRAY_LAYOUT_DIMENSIONS	3
 
-#define DATA_TYPE_TEXT 			0
-#define DATA_TYPE_IMG			1
-#define DATA_TYPE_INT32			2
-#define DATA_TYPE_INT32_ARRAY	3
-#define DATA_TYPE_INT64			4
-#define DATA_TYPE_INT64_ARRAY	5
-#define DATA_TYPE_FLOAT32		6
-#define DATA_TYPE_FLOAT32_ARRAY	7
-#define DATA_TYPE_FLOAT64		8
-#define DATA_TYPE_FLOAT64_ARRAY	9
-#define DATA_TYPE_LASER_SCAN	10
-#define DATA_TYPE_TWIST			11
+#define DATA_TYPE_TEXT 			        0
+#define DATA_TYPE_IMG			        1
+#define DATA_TYPE_INT32			        2
+#define DATA_TYPE_INT32_ARRAY	        3
+#define DATA_TYPE_INT64			        4
+#define DATA_TYPE_INT64_ARRAY	        5
+#define DATA_TYPE_FLOAT32		        6
+#define DATA_TYPE_FLOAT32_ARRAY	        7
+#define DATA_TYPE_FLOAT64		        8
+#define DATA_TYPE_FLOAT64_ARRAY	        9
+#define DATA_TYPE_LASER_SCAN	        10
+#define DATA_TYPE_TWIST			        11
+#define DATA_TYPE_UINT32			    12
 
 typedef struct ROSArrayLayoutDim
 {

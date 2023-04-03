@@ -24,8 +24,8 @@ add_rtmaps_package(${PCK} PCKINFO "rtmaps_ros_bridge.pckinfo"
     "local_interfaces"
     "src"
 )
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs sensor_msgs nav_msgs geometry_msgs)
-include_directories(include ../rtmaps_ros_bridge_core_function.u/public_interfaces ${catkin_INCLUDE_DIRS})
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs sensor_msgs nav_msgs geometry_msgs rmp_msgs)
+include_directories(include ../rtmaps_ros_bridge_core_function.u/public_interfaces ${catkin_INCLUDE_DIRS} ../rmp_msgs/build/devel/include)
 
 target_link_libraries(${PCK} ${catkin_LIBRARIES})
 
