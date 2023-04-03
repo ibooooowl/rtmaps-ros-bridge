@@ -228,7 +228,7 @@ static const char* s_rmp_msgs[] = {
         "MotorStatus",
         "Battery",
         "FaultStatus",
-        "BoolStamped",
+        "Deadman",
         "AudioCommand"
 };
 #define RMP_MSG_MOTOR_STATUS        0
