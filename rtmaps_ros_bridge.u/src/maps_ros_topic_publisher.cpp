@@ -35,6 +35,132 @@
 
 // Use the macros to declare the inputs
 MAPS_BEGIN_INPUTS_DEFINITION(MAPSros_topic_publisher)
+//struct MAPSInputDefinition
+//{
+//    const char*					name;
+//    int							reserved;
+//    MAPSTypeFilterBase const*	typeFilter;
+//    int							readerType;
+//    int							subsampling;
+//};
+//#  define MAPS_INPUT(namex,filter,typex)\
+//{										\
+//	namex,								\
+//	0,									\
+//	&filter,							\
+//	typex,								\
+//	1									\
+//}
+////! Filters any user-defined structure type
+//extern const MAPSTypeFilterBase FilterStructure;
+////! Filters any user-defined structure type
+//extern const MAPSTypeFilterBase FilterDynamicStructure;
+////! Filters signed and unsigned integer types (same as Filter*Integers*)
+//extern const MAPSTypeFilterBase FilterInteger8;
+//extern const MAPSTypeFilterBase FilterInteger16;
+//extern const MAPSTypeFilterBase FilterInteger32;
+//extern const MAPSTypeFilterBase FilterInteger64;
+//extern const MAPSTypeFilterBase FilterUnsignedInteger8;
+//extern const MAPSTypeFilterBase FilterUnsignedInteger16;
+//extern const MAPSTypeFilterBase FilterUnsignedInteger32;
+//extern const MAPSTypeFilterBase FilterUnsignedInteger64;
+//extern const MAPSTypeFilterBase FilterFloat64;
+////! Filters MAPSFloat64 type (same as FilterFloats64)
+//extern const MAPSTypeFilterBase FilterDouble;
+////! Filters MAPSFloat32 type (same as FilterFloats32)
+//extern const MAPSTypeFilterBase FilterFloat32;
+////! Filters integer or MAPSFloat64/MAPSFloat32 type (same as FilterNumbers)
+//extern const MAPSTypeFilterBase FilterNumber;
+////! Filters MAPSFloat32 or MAPSFloat64
+//extern const MAPSTypeFilterBase FilterAnyFloats;
+////! Filters MAPSInt32 or MAPSInt64
+//extern const MAPSTypeFilterBase FilterAnyIntegers;
+////! Filters integer scalars or vectors (same as Filter*Integer*)
+//extern const MAPSTypeFilterBase FilterIntegers8;
+//extern const MAPSTypeFilterBase FilterIntegers16;
+//extern const MAPSTypeFilterBase FilterIntegers32;
+//extern const MAPSTypeFilterBase FilterIntegers64;
+//extern const MAPSTypeFilterBase FilterUnsignedIntegers8;
+//extern const MAPSTypeFilterBase FilterUnsignedIntegers16;
+//extern const MAPSTypeFilterBase FilterUnsignedIntegers32;
+//extern const MAPSTypeFilterBase FilterUnsignedIntegers64;
+////! Filters MAPSFloat64 scalars or vectors
+//extern const MAPSTypeFilterBase FilterFloats64;
+////! Filters MAPSFloat64 scalars or vectors
+//extern const MAPSTypeFilterBase FilterDoubles;
+////! Filters MAPSFloat32 scalars or vectors
+//extern const MAPSTypeFilterBase FilterFloats32;
+////! Filters integer or MAPSFloat64/MAPSFloat32 scalars or vectors
+//extern const MAPSTypeFilterBase FilterNumbers;
+////! Filters Signed Integers
+//extern const MAPSTypeFilterBase FilterSignedIntegers;
+////! Filters Unsigned Integers
+//extern const MAPSTypeFilterBase FilterUnsignedIntegers;
+////! Filters Signed Numbers
+//extern const MAPSTypeFilterBase FilterSignedNumbers;
+////! Filters Unsigned Numbers
+//extern const MAPSTypeFilterBase FilterUnsignedNumbers;
+////! Filters integer types (excludes vectors of integers)
+//extern const MAPSTypeFilterBase FilterOneInteger8;
+//extern const MAPSTypeFilterBase FilterOneInteger16;
+//extern const MAPSTypeFilterBase FilterOneInteger32;
+//extern const MAPSTypeFilterBase FilterOneInteger64;
+//extern const MAPSTypeFilterBase FilterOneUnsignedInteger8;
+//extern const MAPSTypeFilterBase FilterOneUnsignedInteger16;
+//extern const MAPSTypeFilterBase FilterOneUnsignedInteger32;
+//extern const MAPSTypeFilterBase FilterOneUnsignedInteger64;
+////! Filters MAPSFloat64 type (excludes vectors of MAPSFloat64)
+//extern const MAPSTypeFilterBase FilterOneFloat64;
+////! Filters MAPSFloat64 type (excludes vectors of MAPSFloat64)
+//extern const MAPSTypeFilterBase FilterOneDouble;
+////! Filters MAPSFloat32 type (excludes vectors of MAPSFloat32)
+//extern const MAPSTypeFilterBase FilterOneFloat32;
+////! Filters integer or MAPSFloat type (excludes vectors)
+//extern const MAPSTypeFilterBase FilterOneNumber;
+////! Filters custom types
+//extern const MAPSTypeFilterBase FilterCustomType;
+////! Filters ASCII text string
+//extern const MAPSTypeFilterBase FilterTextAscii;
+////! Filters UTF-8 text string (same as FilterTextAscii)
+//extern const MAPSTypeFilterBase FilterTextUTF8;
+////! Filters Unicode (16 bits) text string
+//extern const MAPSTypeFilterBase FilterTextUnicode;
+////! Filters UTF-16 text string (same as FilterTextUnicode)
+//extern const MAPSTypeFilterBase FilterTextUTF16;
+////! Filters IplImages or MAPSImages
+//extern const MAPSTypeFilterBase FilterImage;
+////! Filters IplImages
+//extern const MAPSTypeFilterBase FilterIplImage;
+////! Filters MAPSImages
+//extern const MAPSTypeFilterBase FilterMAPSImage;
+////! Filters CANFrames
+//extern const MAPSTypeFilterBase FilterCANFrame;
+////! Filters CANFDFrames
+//extern const MAPSTypeFilterBase FilterCANFDFrame;
+////! Filters CANUniFrames
+//extern const MAPSTypeFilterBase FilterCANUniFrame;
+////! Filters Any CAN/CANFD Frame
+//extern const MAPSTypeFilterBase FilterAnyCANFrame;
+////! Filters MATLAB-Like matrices
+//extern const MAPSTypeFilterBase FilterMatrix;
+////! Filters RTMaps Real Objects
+//extern const MAPSTypeFilterBase FilterRealObjects;
+////! Filters RTMaps Drawing Objects
+//extern const MAPSTypeFilterBase FilterDrawingObjects;
+////! Filters 3D triangles
+//extern const MAPSTypeFilterBase FilterTriangles3D;
+////! Filters 8-bit data streams
+//extern const MAPSTypeFilterBase FilterStream8;
+////! Filters 16-bit data streams
+//extern const MAPSTypeFilterBase FilterStream16;
+////! Filters 32-bit data streams
+//extern const MAPSTypeFilterBase FilterStream32;
+////! Filters audio signal native structure (MAPSAudioSignal)
+//extern const MAPSTypeFilterBase FilterAudioSignal;
+////! Filters audio signals (either MAPSAudioSignal, MAPSFloat32 or Stream8)
+//extern const MAPSTypeFilterBase FilterAudioSignals;
+////! Filters any kind of data
+//extern const MAPSTypeFilterBase FilterAny;
     MAPS_INPUT("input_int32",MAPS::FilterInteger32,MAPS::FifoReader)
     MAPS_INPUT("input_int64",MAPS::FilterInteger64,MAPS::FifoReader)
     MAPS_INPUT("input_float32",MAPS::FilterFloat32,MAPS::FifoReader)
@@ -43,17 +169,68 @@ MAPS_BEGIN_INPUTS_DEFINITION(MAPSros_topic_publisher)
     MAPS_INPUT("input_image",MAPS::FilterIplImage,MAPS::FifoReader)
     MAPS_INPUT("input_mapsimage",MAPS::FilterMAPSImage,MAPS::FifoReader)
     MAPS_INPUT("input_pointcloud_xyz",MAPS::FilterNumbers,MAPS::FifoReader)
-    MAPS_INPUT("input_uint8",MAPS::FilterUnsignedInteger8,MAPS::FifoReader)
-    MAPS_INPUT("input_uint32",MAPS::FilterUnsignedInteger32,MAPS::FifoReader)
+//    MAPS_INPUT("input_uint8",MAPS::FilterStream8,MAPS::FifoReader)
+//    MAPS_INPUT("input_uint32",MAPS::FilterStream32,MAPS::FifoReader)
 MAPS_END_INPUTS_DEFINITION
 
 // Use the macros to declare the outputs
 MAPS_BEGIN_OUTPUTS_DEFINITION(MAPSros_topic_publisher)
+//struct MAPSOutputDefinition
+//{
+//    const char*		name;
+//    int				reserved;
+//    MAPSTypeInfo	type;
+//    int				size;
+//    int				fifoSize;
+//    int				subsampling;
+//    int				shareable;
+//
+//    MAPSOutputDefinition& operator=(const MAPSOutputDefinition &outputDef);
+//};
+//#  define MAPS_OUTPUT(name,value,namex,unit,size) \
+//	MAPS_OUTPUT_FIFOSIZE(name,value,namex,unit,size,16)
+//#  define MAPS_OUTPUT_FIFOSIZE(name,value,namex,unit,size,fifosize) \
+//{name,0,{value,new MAPSString((const char*)namex),new MAPSString((const char*)unit)},size,fifosize,1,1},
+//#  define MAPS_OUTPUT_USER_STRUCTURE(name,structureName) \
+//{name,0,{MAPS::Structure,new MAPSString((const char*)#structureName),new MAPSString((const char*)NULL)},sizeof(structureName),16,1,1},
+//#  define MAPS_OUTPUT_USER_STRUCTURE_FIFOSIZE(name,structureName,fifosize) \
+//{name,0,{MAPS::Structure,new MAPSString((const char*)#structureName),new MAPSString((const char*)NULL)},sizeof(structureName),fifosize,1,1},
+//#  define MAPS_OUTPUT_USER_STRUCTURES_VECTOR(name,structureName,maxNbElementsInVector) \
+//{name,0,{MAPS::Structure,new MAPSString((const char*)#structureName),new MAPSString((const char*)NULL)},maxNbElementsInVector*sizeof(structureName),16,1,1},
+//#  define MAPS_OUTPUT_USER_STRUCTURES_VECTOR_FIFOSIZE(name,structureName,maxNbElementsInVector,fifosize) \
+//{name,0,{MAPS::Structure,new MAPSString((const char*)#structureName),new MAPSString((const char*)NULL)},maxNbElementsInVector*sizeof(structureName),fifosize,1,1},
+//#  define MAPS_OUTPUT_USER_DYNAMIC_STRUCTURES_VECTOR(name,structureName,maxNbElementsInVector) \
+//{name,0,{MAPS::DynamicStructure,new MAPSString((const char*)#structureName),new MAPSString((const char*)NULL)},maxNbElementsInVector*sizeof(structureName),16,1,1},
+//#  define MAPS_OUTPUT_USER_DYNAMIC_STRUCTURES_VECTOR_FIFOSIZE(name,structureName,maxNbElementsInVector,fifosize) \
+//{name,0,{MAPS::DynamicStructure,new MAPSString((const char*)#structureName),new MAPSString((const char*)NULL)},maxNbElementsInVector*sizeof(structureName),fifosize,1,1},
+
     //MAPS_OUTPUT("oName",MAPS::Integer,NULL,NULL,1)
 MAPS_END_OUTPUTS_DEFINITION
 
 // Use the macros to declare the properties
 MAPS_BEGIN_PROPERTIES_DEFINITION(MAPSros_topic_publisher)
+//struct MAPSPropertyValue {
+//    int type;
+//    union {
+//        bool boolValue;
+//        MAPSInt64 intValue;
+//        MAPSFloat64 floatValue;
+//        MAPSString *stringValue;
+//        MAPSEnumStruct *enumStruct;
+//    };
+//}
+//struct MAPSPropertyDefinition
+//{
+//    const char*			name;
+//    MAPSPropertyValue*	value;
+//    const char*			unit;
+//    bool				needs2BeInitialized;
+//    bool				canBeModifiedAfterStart;
+//    bool				readOnly;
+//    bool				locked;
+//    int					subtype;
+//    ~MAPSPropertyDefinition();
+//};
     MAPS_PROPERTY("topic_name","rtmaps/ros_topic_name",false,false)
     MAPS_PROPERTY_ENUM("topic_type","None",0,false,false)
     MAPS_PROPERTY("frame_id","map",false,false)
@@ -77,6 +254,17 @@ MAPS_END_PROPERTIES_DEFINITION
 
 // Use the macros to declare the actions
 MAPS_BEGIN_ACTIONS_DEFINITION(MAPSros_topic_publisher)
+//struct MAPSActionDefinition
+//{
+//    const char*				name;
+//    MAPSActionFunction*		action;
+//    bool					allowedWhenComponentDead;
+//    char					reserved[3];
+//    ~MAPSActionDefinition();
+//    void operator=(const MAPSActionDefinition& ad)
+//    {name=ad.name;allowedWhenComponentDead=ad.allowedWhenComponentDead;action = new MAPSActionFunction(*ad.action);}
+//    bool NeedArgument() const { return action->action_arg != NULL; }
+//};
     //MAPS_ACTION("aName",MAPSros_topic_publisher::ActionName)
 MAPS_END_ACTIONS_DEFINITION
 
@@ -374,13 +562,13 @@ int MAPSros_topic_publisher::CreateIOsForRmpTopics(bool* output_header)
         case RMP_MSG_BOOL_STAMPED:
             if (output_header)
                 *output_header = true;
-            NewInput("input_uint8","input_deadman");
+            NewInput("input_int32","input_deadman_0_1");
             DirectSet(Property("topic_name"),"/rmp440le/deadman");
             break;
         case RMP_MSG_AUDIO_COMMAND:
             if (output_header)
                 *output_header = true;
-            NewInput("input_uint32","input_audio_command");
+            NewInput("input_int32","input_audio_command_0_16");
             DirectSet(Property("topic_name"),"/rmp440le/audio_cmd");
             break;
         default:
@@ -500,7 +688,7 @@ void MAPSros_topic_publisher::Birth()
 
         break;
     case TOPIC_TYPE_RMP:
-        switch(m_message)
+        switch(m_message+3)
         {
             case RMP_MSG_BOOL_STAMPED:
                 *m_pub = m_n->advertise<rmp_msgs::BoolStamped>((const char*)topic_name,100);
@@ -1196,13 +1384,18 @@ void MAPSros_topic_publisher::PublishNavMsg()
 
 void MAPSros_topic_publisher::PublishRmpMsg()
 {
-    switch(m_message)
+    switch(m_message+3)
     {
         case RMP_MSG_BOOL_STAMPED:
         {
             rmp_msgs::BoolStamped bool_stamped;
             bool_stamped.header = m_header;
-            bool_stamped.data = *(m_ioeltin->Stream8());
+            uint32_t value_tmp = (uint32_t)m_ioeltin->Integer32();
+            if( value_tmp >0 ) {
+                bool_stamped.data = true;
+            }else{
+                bool_stamped.data = false;
+            }
             m_pub->publish(bool_stamped);
         }
             break;
@@ -1210,7 +1403,7 @@ void MAPSros_topic_publisher::PublishRmpMsg()
         {
             rmp_msgs::AudioCommand audio_command;
             audio_command.header = m_header;
-            audio_command.command = *(m_ioeltin->Stream32());
+            audio_command.command = (uint32_t) m_ioeltin->Integer32();
             m_pub->publish(audio_command);
         }
             break;

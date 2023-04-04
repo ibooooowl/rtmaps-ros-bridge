@@ -24,8 +24,11 @@ add_rtmaps_package(${PCK} PCKINFO "rtmaps_ros_bridge.pckinfo"
     "local_interfaces"
     "src"
 )
+set(rmp_msgs_DIR ../../segwayrmp_LE440/devel/share/rmp_msgs/cmake)
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs sensor_msgs nav_msgs geometry_msgs rmp_msgs)
-include_directories(include ../rtmaps_ros_bridge_core_function.u/public_interfaces ${catkin_INCLUDE_DIRS} ../rmp_msgs/build/devel/include)
+
+
+include_directories(include ../rtmaps_ros_bridge_core_function.u/public_interfaces ${catkin_INCLUDE_DIRS} ../../segwayrmp_LE440/devel/include)
 
 target_link_libraries(${PCK} ${catkin_LIBRARIES})
 

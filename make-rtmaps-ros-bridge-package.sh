@@ -7,7 +7,6 @@ ARCH=$(uname -m)
 ROS_VER=$(rosversion -d)
 BUILD_CORE_FUNCTION=rtmaps_ros_bridge_core_function.u/build
 BUILD_BRIDGE=rtmaps_ros_bridge.u/build
-BUILD_RMP_MSGS=rmp_msgs/build
 TARGET_BRIDGE=rtmaps_ros_bridge.u/build/rtmaps_ros_bridge.pck
 TARGET_CORE_FUNCTION=rtmaps_ros_bridge_core_function.u/build/rtmaps_ros_bridge_core_function.pck
 package_name=rtmaps-ros-bridge
@@ -22,9 +21,7 @@ if [[ -e $BUILD_BRIDGE ]]; then
   rm -rf $BUILD_BRIDGE
 fi
 
-if [[ -e $BUILD_RMP_MSGS ]]; then
-  rm -rf $BUILD_RMP_MSGS
-fi
+
 
 
 if [[ -f $TARGET_BRIDGE ]]; then
@@ -37,12 +34,7 @@ fi
  
 export RTMAPS_SDKDIR=/opt/rtmaps
 
-mkdir -p rmp_msgs/build
-cd rmp_msgs/build
-cmake ..
-make
-source devel/setup.bash
-cd ../..
+
 
 #compile the RTMaps ROS Bridge Core Function
 mkdir -p $BUILD_CORE_FUNCTION
