@@ -37,3 +37,4 @@ For each ROS Marker type, the 3DViewer object type has to be set up accordingly:
 - Triangle list: Triangles
 
 
+## RMP Message can be found in https://github.com/ibooooowl/segwayrmp_LE440/tree/master/segwayrmp/rmp_msgs
